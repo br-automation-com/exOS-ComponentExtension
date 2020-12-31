@@ -14,7 +14,8 @@
 	],
 	"activationEvents": [
 		"onCommand:exos-component-extension.generateTemplate",
-		"onCommand:exos-component-extension.updateHeader"
+		"onCommand:exos-component-extension.updateHeader",
+		"onCommand:exos-component-extension.generateXml"
 	],
 	"main": "./extension.js",
 	"contributes": {
@@ -26,6 +27,10 @@
 			{
 				"command": "exos-component-extension.updateHeader",
 				"title": "Update exOS Header"
+			},
+			{
+				"command": "exos-component-extension.generateXml",
+				"title": "Generate XML"
 			}
 		],
 		"menus": {
@@ -38,6 +43,11 @@
 				{
 					"when": "filesExplorerFocus && resourceExtname == .typ",
 					"command": "exos-component-extension.updateHeader",
+					"group": "2_workspace"
+				},
+				{
+					"when": "filesExplorerFocus && resourceExtname == .xml",
+					"command": "exos-component-extension.generateXml",
 					"group": "2_workspace"
 				}
 			]

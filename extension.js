@@ -6,6 +6,7 @@ const exostemplate = require('./c-template/exos_template');
 const exosas = require("./c-template/exos_template_as");
 const path = require('path');
 const fs = require('fs')
+const xmler = require('./xmler');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -57,6 +58,17 @@ function activate(context) {
 
 	});
 	context.subscriptions.push(updateHeader);
+
+	let generateXml = vscode.commands.registerCommand('exos-component-extension.generateXml', function (uri) {
+		console.log('hello');
+		try{	
+			xmler.createXml(uri.fsPath);
+		} catch (error) {
+			vscode.window.showErrorMessage(error);
+		}
+	});
+	context.subscriptions.push(generateXml);
+
 }
 exports.activate = activate;
 

@@ -1,0 +1,116 @@
+{
+    "name": "struct",
+    "attributes": {
+        "name": "<NAME>",
+        "dataType": "MyApplication",
+        "comment": ""
+    },
+    "children": [
+        {
+            "name": "variable",
+            "attributes": {
+                "name": "Enable",
+                "dataType": "BOOL",
+                "comment": "SUB"
+            },
+            "children": []
+        },
+        {
+            "name": "variable",
+            "attributes": {
+                "name": "Counter",
+                "dataType": "INT",
+                "comment": "PUB"
+            },
+            "children": []
+        },
+        {
+            "name": "variable",
+            "attributes": {
+                "name": "Temperature",
+                "dataType": "REAL",
+                "comment": "PUB"
+            },
+            "children": []
+        },
+        {
+            "name": "variable",
+            "attributes": {
+                "name": "Buffer",
+                "dataType": "USINT",
+                "comment": "PUB",
+                "arraySize": "1000"
+            },
+            "children": []
+        },
+        {
+            "name": "struct",
+            "attributes": {
+                "name": "Config",
+                "dataType": "myApplicationConfig",
+                "comment": "PUB SUB"
+            },
+            "children": [
+                {
+                    "name": "variable",
+                    "attributes": {
+                        "name": "MaxPressure",
+                        "dataType": "LREAL",
+                        "comment": ""
+                    },
+                    "children": []
+                },
+                {
+                    "name": "variable",
+                    "attributes": {
+                        "name": "SleepTime",
+                        "dataType": "LREAL",
+                        "comment": ""
+                    },
+                    "children": []
+                }
+            ],
+            "content": ""
+        },
+        {
+            "name": "struct",
+            "attributes": {
+                "name": "Status",
+                "dataType": "myApplicationStatus",
+                "comment": "PUB"
+            },
+            "children": [
+                {
+                    "name": "variable",
+                    "attributes": {
+                        "name": "Result",
+                        "dataType": "UINT",
+                        "comment": ""
+                    },
+                    "children": []
+                },
+                {
+                    "name": "variable",
+                    "attributes": {
+                        "name": "ActualPressure",
+                        "dataType": "LREAL",
+                        "comment": ""
+                    },
+                    "children": []
+                },
+                {
+                    "name": "variable",
+                    "attributes": {
+                        "name": "Message",
+                        "dataType": "STRING",
+                        "stringLength": "81",
+                        "comment": ""
+                    },
+                    "children": []
+                }
+            ],
+            "content": ""
+        }
+    ],
+    "content": ""
+}
