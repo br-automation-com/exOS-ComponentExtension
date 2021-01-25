@@ -109,7 +109,7 @@ static void datamodelEvent(exos_datamodel_handle_t *datamodel, const EXOS_DATAMO
 
         printf("Application changed state to %s\n", exos_get_state_string(datamodel->connection_state));
 
-        if (napi_ok != napi_get_reference_value(env, display.ref, &display.object_value))
+        /*        if (napi_ok != napi_get_reference_value(env, display.ref, &display.object_value))
         {
             napi_throw_error(env, "EINVAL", "Can't get reference");
             return NULL;
@@ -120,7 +120,7 @@ static void datamodelEvent(exos_datamodel_handle_t *datamodel, const EXOS_DATAMO
             napi_throw_error(env, "EINVAL", "Can't get property");
             return NULL;
         }
-
+*/
         switch (datamodel->connection_state)
         {
         case EXOS_STATE_DISCONNECTED:
@@ -133,12 +133,12 @@ static void datamodelEvent(exos_datamodel_handle_t *datamodel, const EXOS_DATAMO
         case EXOS_STATE_ABORTED:
             printf("application error %d (%s) occured", datamodel->error, exos_get_error_string(datamodel->error));
 
-            if (napi_ok != napi_set_value_utf8(env, display.value, &simple_value))
+            /*            if (napi_ok != napi_set_value_utf8(env, display.value, &simple_value))
             {
                 napi_throw_error(env, "EINVAL", "Expected number");
                 return NULL;
             }
-
+*/
             break;
         }
         break;
@@ -224,7 +224,7 @@ napi_value display_publish_method(napi_env env, napi_callback_info info)
     }
 
     exos_data.Display = (int16_t)simple_value;
-    exos_value_publish(&exos_display);
+    exos_dataset_publish(&exos_display);
     printf("Published Display: %i\n", exos_data.Display);
 
     return NULL;
@@ -293,24 +293,54 @@ napi_value init_simpanel(napi_env env, napi_value exports)
         return NULL;
     }
 
+    EXOS_ERROR_CODE ec = EXOS_ERROR_OK;
+
     //exos inits
-    exos_datamodel_init(&exos_simpanel, "SimPanel", "SimPanel");
+    ec = exos_datamodel_init(&exos_simpanel, "SimPanel", "SimPanel_NodeJS");
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't initialize SimPanel");
+    }
     //set the user_context to access custom data in the callbacks
     exos_simpanel.user_context = NULL; //user defined
     exos_simpanel.user_tag = 0;        //user defined
-    exos_dataset_init(&display, &exos_simpanel, "Display", &exos_data.Display, sizeof(exos_data.Display));
+
+    ec = exos_dataset_init(&exos_display, &exos_simpanel, "Display", &exos_data.Display, sizeof(exos_data.Display));
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't initialize Display");
+    }
     exos_display.user_context = NULL; //user defined
     exos_display.user_tag = 0;        //user defined
-    exos_dataset_init(&encoder, &exos_simpanel, "Encoder", &exos_data.Encoder, sizeof(exos_data.Encoder));
+
+    ec = exos_dataset_init(&exos_encoder, &exos_simpanel, "Encoder", &exos_data.Encoder, sizeof(exos_data.Encoder));
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't initialize Encoder");
+    }
     exos_encoder.user_context = NULL; //user defined
     exos_encoder.user_tag = 0;        //user defined
 
+    ec = exos_datamodel_connect_simpanel(&exos_simpanel, datamodelEvent);
+
     //register the artefact
-    exos_datamodel_connect_simpanel(&exos_simpanel, datamodelEvent);
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't connect SimPanel");
+    }
 
     //register datasets
-    exos_dataset_connect(&exos_display, EXOS_DATASET_PUBLISH, datasetEvent);
-    exos_dataset_connect(&exos_encoder, EXOS_DATASET_SUBSCRIBE, datasetEvent);
+    ec = exos_dataset_connect(&exos_display, EXOS_DATASET_PUBLISH, datasetEvent);
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't connect Display");
+    }
+
+    ec = exos_dataset_connect(&exos_encoder, EXOS_DATASET_SUBSCRIBE, datasetEvent);
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't connect Encoder");
+    }
 
     uv_idle_init(uv_default_loop(), &cyclic_h);
     uv_idle_start(&cyclic_h, cyclic);
