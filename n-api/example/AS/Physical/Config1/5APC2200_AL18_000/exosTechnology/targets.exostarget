@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<Configuration>
+  <Element ID="exostarget" Type="exostarget">
+    <Group ID="General">
+      <Selector ID="Communication" Value="Manual">
+        <Property ID="ConnectionIP" Value="192.168.137.2" />
+        <Selector ID="Deployment" Value="On">
+          <Selector ID="Security" Value="None" />
+        </Selector>
+        <Selector ID="DataConnection" Value="On">
+          <Property ID="ConnectionType" Value="SharedMemory" />
+          <Group ID="TimeSynchronization">
+            <Group ID="TimeConnection">
+              <Property ID="TimePort" Value="49001" />
+              <Property ID="TimeShmPath" Value="exos_time" />
+            </Group>
+            <Property ID="PrecisionUsec" Value="100" />
+            <Property ID="GuardTimeSec" Value="10" />
+            <Property ID="ReplyTimeoutMs" Value="1" />
+          </Group>
+          <Group ID="Logging">
+            <Property ID="Level" Value="DEBUG" />
+            <Property ID="Type[0]" Value="USER" />
+            <Property ID="Type[1]" Value="SYSTEM" />
+            <Property ID="Type[2]" Value="None" />
+            <Group ID="LogConnection">
+              <Property ID="LogPort" Value="49002" />
+              <Property ID="LogShmPath" Value="exos_log" />
+            </Group>
+            <Group ID="ARLogger">
+              <Property ID="TargetLogTaskClass" Value="8" />
+              <Selector ID="ARLogSink" Value="Volatile" />
+            </Group>
+            <Group ID="GPOSLogger">
+              <Property ID="AppConsoleOutput" Value="No" />
+              <Selector ID="GPOSLogSink" Value="None" />
+            </Group>
+          </Group>
+        </Selector>
+      </Selector>
+    </Group>
+    <Group ID="Components">
+      <Group ID="ComponentsGeneral">
+        <Property ID="ComponentsHeartbeatMsec" Value="500" />
+        <Property ID="ComponentsTimeoutSec" Value="2" />
+        <Property ID="ComponentsTaskClass" Value="2" />
+      </Group>
+      <Group ID="Component[0]">
+        <Property ID="ComponentConfigurationLink" Value="SimPanel_0" />
+        <Group ID="DataModels">
+          <Group ID="Instance[0]">
+            <Property ID="InstanceName" Value="SimPanel" />
+            <Group ID="InstanceConnection">
+              <Property ID="InstancePort" Value="49004" />
+              <Property ID="InstanceShmPath" Value="SimPanel" />
+            </Group>
+          </Group>
+        </Group>
+      </Group>
+      <Group ID="Component[1]">
+        <Property ID="ComponentConfigurationLink" Value="DataX_0" />
+        <Group ID="DataModels">
+          <Group ID="Instance[0]">
+            <Property ID="InstanceName" Value="DataX" />
+            <Group ID="InstanceConnection">
+              <Property ID="InstancePort" Value="49003" />
+              <Property ID="InstanceShmPath" Value="DataX" />
+            </Group>
+          </Group>
+        </Group>
+      </Group>
+    </Group>
+    <Group ID="ComponentDataConnection">
+      <Property ID="Version" Value="1.0.1-1" />
+      <Selector ID="ErrorHandling" Value="Abort" />
+      <Property ID="StartupTimeout" Value="6" />
+      <Group ID="FileGroup">
+        <Group ID="File[0]">
+          <Property ID="Name" Value="exos-api-ports.txt" />
+          <Property ID="FileName" Value="exos-api-ports.txt" />
+          <Selector ID="FileType" Value="Project" />
+        </Group>
+        <Group ID="File[1]">
+          <Property ID="Name" Value="exos-api-ports-allow.sh" />
+          <Property ID="FileName" Value="exos-api-ports-allow.sh" />
+          <Selector ID="FileType" Value="Project" />
+        </Group>
+        <Group ID="File[2]">
+          <Property ID="Name" Value="exos-api.conf" />
+          <Property ID="FileName" Value="exos-api.conf" />
+          <Selector ID="FileType" Value="Project" />
+        </Group>
+        <Group ID="File[3]">
+          <Property ID="Name" Value="exos-api" />
+          <Property ID="FileName" Value="exos-api_1.0.1-1_amd64.deb" />
+          <Selector ID="FileType" Value="Project" />
+        </Group>
+        <Group ID="File[4]">
+          <Property ID="Name" Value="exos-api-eth" />
+          <Property ID="FileName" Value="exos-api-eth_1.0.1-1_amd64.deb" />
+          <Selector ID="FileType" Value="Project" />
+        </Group>
+        <Group ID="File[5]">
+          <Property ID="Name" Value="runserver" />
+          <Property ID="FileName" Value="run_server.sh" />
+          <Selector ID="FileType" Value="Project" />
+        </Group>
+        <Group ID="File[6]">
+          <Property ID="Name" Value="setupenvironemnt" />
+          <Property ID="FileName" Value="setup_build_environment.sh" />
+          <Selector ID="FileType" Value="Project" />
+        </Group>
+        <Group ID="File[7]">
+          <Property ID="Name" Value="libzmq5" />
+          <Property ID="FileName" Value="libzmq5_4.2.1-4+deb9u2_amd64.deb" />
+          <Selector ID="FileType" Value="System" />
+        </Group>
+        <Group ID="File[8]">
+          <Property ID="Name" Value="libzmq3-dev" />
+          <Property ID="FileName" Value="libzmq3-dev_4.2.1-4+deb9u2_amd64.deb" />
+          <Selector ID="FileType" Value="System" />
+        </Group>
+        <Group ID="File[9]">
+          <Property ID="Name" Value="libpgm-5.2-0" />
+          <Property ID="FileName" Value="libpgm-5.2-0_5.2.122~dfsg-2_amd64.deb" />
+          <Selector ID="FileType" Value="System" />
+        </Group>
+        <Group ID="File[10]">
+          <Property ID="Name" Value="libsodium18" />
+          <Property ID="FileName" Value="libsodium18_1.0.11-2_amd64.deb" />
+          <Selector ID="FileType" Value="System" />
+        </Group>
+        <Group ID="File[11]">
+          <Property ID="Name" Value="libsodium18" />
+          <Property ID="FileName" Value="libsodium18_1.0.11-2_amd64.deb" />
+          <Selector ID="FileType" Value="System" />
+        </Group>
+      </Group>
+      <Group ID="Installation">
+        <Group ID="InstallCommand[0]">
+          <Selector ID="EventType" Value="Prerun" />
+          <Property ID="Command" Value="cp /var/cache/exos/exos-api.conf /etc/exos-api.conf" />
+        </Group>
+        <Group ID="InstallCommand[1]">
+          <Selector ID="EventType" Value="Prerun" />
+          <Property ID="Command" Value="sh /var/cache/exos/exos-api-ports-allow.sh" />
+        </Group>
+      </Group>
+      <Group ID="Services">
+        <Group ID="Service[0]">
+          <Property ID="Name" Value="exos-log" />
+          <Property ID="Executable" Value="/usr/bin/exos_log" />
+          <Property ID="Arguments" />
+        </Group>
+        <Group ID="Service[1]">
+          <Property ID="Name" Value="exos-api" />
+          <Property ID="Executable" Value="/usr/bin/exos_api_server" />
+          <Property ID="Arguments" />
+        </Group>
+      </Group>
+    </Group>
+    <Group ID="Simulation">
+      <Selector ID="SimCommunication" Value="Manual">
+        <Property ID="SimConnectionIP" Value="127.0.0.1" />
+        <Selector ID="SimDeployment" Value="Off" />
+        <Selector ID="SimDataConnection" Value="On">
+          <Property ID="SimConnectionType" Value="TCPIP" />
+          <Group ID="SimTimeSynchronization">
+            <Property ID="SimPrecisionUsec" Value="1000000" />
+            <Property ID="SimGuardTimeSec" Value="30" />
+          </Group>
+          <Group ID="SimLogging">
+            <Group ID="SimARLogger">
+              <Selector ID="SimARLogSink" Value="Volatile" />
+            </Group>
+            <Group ID="SimGPOSLogger">
+              <Property ID="SimAppConsoleOutput" Value="Yes" />
+              <Selector ID="SimGPOSLogSink" Value="Console" />
+            </Group>
+          </Group>
+        </Selector>
+      </Selector>
+      <Group ID="SimComponentsGeneral">
+        <Property ID="SimComponentsHeartbeatMsec" Value="10000" />
+        <Property ID="SimComponentsTimeoutSec" Value="3600" />
+      </Group>
+    </Group>
+  </Element>
+</Configuration>

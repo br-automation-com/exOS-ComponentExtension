@@ -1,3 +1,8 @@
 node_modules
 .vscode-test/
 n-api/example/simpanel/node
+n-api/example/AS/Temp
+n-api/example/AS/Binaries
+n-api/example/AS/Diagnosis
+n-api/example/AS/*.set
+n-api/example/AS/*.isopen

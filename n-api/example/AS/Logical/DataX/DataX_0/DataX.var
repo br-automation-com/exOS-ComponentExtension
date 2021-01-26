@@ -1,0 +1,5 @@
+VAR
+    DataXInit_0 : DataXInit;
+    DataXCyclic_0 : DataXCyclic;
+    DataXExit_0 : DataXExit;
+END_VAR

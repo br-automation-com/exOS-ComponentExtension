@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio Version=4.9.1.69?>
+<Package SubType="exosPackage" PackageType="exosPackage" xmlns="http://br-automation.co.at/AS/Package">
+  <Objects>
+    <Object Type="File">DataX.exospkg</Object>
+    <Object Type="Program" Language="IEC">DataX_0</Object>
+    <Object Type="Library" Language="ANSIC">DataX</Object>
+    <Object Type="Package">Linux</Object>
+  </Objects>
+</Package>

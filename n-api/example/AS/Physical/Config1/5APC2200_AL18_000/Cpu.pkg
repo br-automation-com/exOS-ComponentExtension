@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<Cpu xmlns="http://br-automation.co.at/AS/Cpu">
+  <Objects>
+    <Object Type="File" Description="Software configuration">Cpu.sw</Object>
+    <Object Type="File" Description="Permanent variables">Cpu.per</Object>
+    <Object Type="File" Description="I/O mapping">IoMap.iom</Object>
+    <Object Type="File" Description="Variable mapping">PvMap.vvm</Object>
+    <Object Type="Package">Connectivity</Object>
+    <Object Type="Package">TextSystem</Object>
+    <Object Type="Package">UnitSystem</Object>
+    <Object Type="Package">AccessAndSecurity</Object>
+    <Object Type="Package">exosTechnology</Object>
+  </Objects>
+  <Configuration ModuleId="5APC2200.AL18-000">
+    <AutomationRuntime Version="C4.90" />
+    <Build GccVersion="6.3.0" />
+    <DefaultTargetMemory Tasks="UserROM" />
+    <Safety SafetyRelease="0.0" />
+    <Transfer AddToUserPart="False" AdditionalUserDir="" AllowDowngrade="False" AllowInitialTransfer="False" AllowPartitioning="False" ExecuteInitExitProgram="True" ForceInitialTransfer="False" IdentificationTypeValue="" IgnoreVersion="False" KeepNonVolatileMemory="False" ModuleSystemForPip="" PreserveVariableValues="False" ProjectConsistent="True" RebootDuringTransfer="False" TargetIdentificationType="Always" TryToBootInRunMode="True" UserFilesIgnoreDifference="False" />
+    <Vc FirmwareVersion="" />
+    <OnlineConfiguration Name="NewTCPIPConnection" DeviceType="TCPIP" DeviceParameters="/IF=tcpip /LOPO=11159 /SA=1" ConnectionParameters="/COMT=2500 /RT=1000 /AM=* /SDT=5 /DAIP=192.168.1.52 /REPO=11159 /ANSL=1 /PT=11169" Description="" />
+  </Configuration>
+</Cpu>

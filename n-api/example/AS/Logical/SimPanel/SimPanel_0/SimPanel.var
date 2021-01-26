@@ -1,0 +1,5 @@
+VAR
+    SimPanelInit_0 : SimPanelInit;
+    SimPanelCyclic_0 : SimPanelCyclic;
+    SimPanelExit_0 : SimPanelExit;
+END_VAR

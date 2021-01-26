@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ComponentPackage ErrorHandling="Ignore" StartupTimeout="0">
+    <File Name="exar-simpanel" FileName="Linux\exar-simpanel-1.0.0.deb" Type="Project"/>
+    <Service Name="SimPanel Runtime Service" Executable="/home/user/simpanel" Arguments=""/>
+    <DataModelInstance Name="SimPanel"/>
+    <Build>
+        <GenerateHeader FileName="SimPanel\SimPanel.typ" TypeName="SimPanel">
+            <Output Path="Linux"/>
+            <Output Path="SimPanel"/>
+        </GenerateHeader>
+        <BuildCommand Command="C:\Windows\Sysnative\wsl.exe" WorkingDirectory="Linux" Arguments="-d Debian -e sh build.sh">
+            <Dependency FileName="Linux\exos_simpanel.h"/>
+            <Dependency FileName="Linux\simpanel.c"/>
+            <Dependency FileName="Linux\termination.h"/>
+            <Dependency FileName="Linux\termination.c"/>
+        </BuildCommand>
+    </Build>
+</ComponentPackage>
