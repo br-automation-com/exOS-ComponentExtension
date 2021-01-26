@@ -13,7 +13,7 @@ typedef struct
     napi_ref ref;
     uint32_t ref_count;
     napi_threadsafe_function onchange_cb;
-    napi_threadsafe_function connectionchange_cb;
+    napi_threadsafe_function connectiononchange_cb;
     napi_value object_value; //volatile placeholder.
     napi_value value;        //volatile placeholder.
 } obj_handles;
@@ -36,21 +36,19 @@ void cyclic(uv_idle_t *handle)
     usleep(2000);
 }
 
+// exOS call backs
 static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE event_type, void *info)
 {
     switch (event_type)
     {
     case EXOS_DATASET_EVENT_UPDATED:
-        printf("exosValueChanged()\n");
         //handle each subscription dataset separately
         if (0 == strcmp(dataset->name, "Encoder"))
         {
-            printf("exosValueChanged() - %s\n", dataset->name);
             exos_data.Encoder = *(uint16_t *)dataset->data;
 
             if (encoder.onchange_cb != NULL)
             {
-                printf("exosValueChanged() - %s - trig callback with dataset %i\n", dataset->name, exos_data.Encoder);
                 napi_acquire_threadsafe_function(encoder.onchange_cb);
                 napi_call_threadsafe_function(encoder.onchange_cb, &exos_data.Encoder, napi_tsfn_blocking);
                 napi_release_threadsafe_function(encoder.onchange_cb, napi_tsfn_release);
@@ -63,8 +61,7 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         //handle each published dataset separately
         if (0 == strcmp(dataset->name, "Display"))
         {
-            int16_t *display = (int16_t *)dataset->data;
-            printf("dataset %s published value: %d\n", dataset->name, *display);
+            //int16_t *display = (int16_t *)dataset->data;
         }
         break;
     }
@@ -74,14 +71,33 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         //handle each published dataset separately
         if (0 == strcmp(dataset->name, "Display"))
         {
-            int16_t *display = (int16_t *)dataset->data;
-            printf("dataset %s delivered value: %d\n", dataset->name, *display);
+            //int16_t *display = (int16_t *)dataset->data;
         }
         break;
     }
 
     case EXOS_DATASET_EVENT_CONNECTION_CHANGED:
-        printf("dataset %s changed state to %s\n", dataset->name, exos_get_state_string(dataset->connection_state));
+
+        printf("Dataset %s changed state to %s\n", dataset->name, exos_get_state_string(dataset->connection_state));
+
+        if (0 == strcmp(dataset->name, "Display"))
+        {
+            if (display.connectiononchange_cb != NULL)
+            {
+                napi_acquire_threadsafe_function(display.connectiononchange_cb);
+                napi_call_threadsafe_function(display.connectiononchange_cb, exos_get_state_string(dataset->connection_state), napi_tsfn_blocking);
+                napi_release_threadsafe_function(display.connectiononchange_cb, napi_tsfn_release);
+            }
+        }
+        else if (0 == strcmp(dataset->name, "Encoder"))
+        {
+            if (encoder.connectiononchange_cb != NULL)
+            {
+                napi_acquire_threadsafe_function(encoder.connectiononchange_cb);
+                napi_call_threadsafe_function(encoder.connectiononchange_cb, exos_get_state_string(dataset->connection_state), napi_tsfn_blocking);
+                napi_release_threadsafe_function(encoder.connectiononchange_cb, napi_tsfn_release);
+            }
+        }
 
         switch (dataset->connection_state)
         {
@@ -94,7 +110,6 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         case EXOS_STATE_OPERATIONAL:
             break;
         case EXOS_STATE_ABORTED:
-            printf("dataset %s error %d (%s) occured\n", dataset->name, dataset->error, exos_get_error_string(dataset->error));
             break;
         }
         break;
@@ -106,21 +121,13 @@ static void datamodelEvent(exos_datamodel_handle_t *datamodel, const EXOS_DATAMO
     switch (event_type)
     {
     case EXOS_DATASET_EVENT_CONNECTION_CHANGED:
-
-        printf("Application changed state to %s\n", exos_get_state_string(datamodel->connection_state));
-
-        /*        if (napi_ok != napi_get_reference_value(env, display.ref, &display.object_value))
+        if (simpanel.connectiononchange_cb != NULL)
         {
-            napi_throw_error(env, "EINVAL", "Can't get reference");
-            return NULL;
+            napi_acquire_threadsafe_function(simpanel.connectiononchange_cb);
+            napi_call_threadsafe_function(simpanel.connectiononchange_cb, exos_get_state_string(datamodel->connection_state), napi_tsfn_blocking);
+            napi_release_threadsafe_function(simpanel.connectiononchange_cb, napi_tsfn_release);
         }
 
-        if (napi_ok != napi_get_named_property(env, display.object_value, "value", &display.value))
-        {
-            napi_throw_error(env, "EINVAL", "Can't get property");
-            return NULL;
-        }
-*/
         switch (datamodel->connection_state)
         {
         case EXOS_STATE_DISCONNECTED:
@@ -128,21 +135,128 @@ static void datamodelEvent(exos_datamodel_handle_t *datamodel, const EXOS_DATAMO
         case EXOS_STATE_CONNECTED:
             break;
         case EXOS_STATE_OPERATIONAL:
-            printf("SimPanel operational!");
             break;
         case EXOS_STATE_ABORTED:
-            printf("application error %d (%s) occured", datamodel->error, exos_get_error_string(datamodel->error));
-
-            /*            if (napi_ok != napi_set_value_utf8(env, display.value, &simple_value))
-            {
-                napi_throw_error(env, "EINVAL", "Expected number");
-                return NULL;
-            }
-*/
             break;
         }
         break;
     }
+}
+
+// napi callback setup main function
+napi_value init_napi_onchange(napi_env env, napi_callback_info info, const char *identifier, napi_threadsafe_function_call_js call_js_cb, napi_threadsafe_function *result)
+{
+    size_t argc = 1;
+    napi_value argv[1];
+
+    if (napi_ok != napi_get_cb_info(env, info, &argc, argv, NULL, NULL))
+    {
+        char msg[100] = {};
+        strcpy(msg, "init_napi_onchange() napi_get_cb_info failed - ");
+        strcat(msg, identifier);
+        napi_throw_error(env, "EINVAL", msg);
+        return NULL;
+    }
+
+    if (argc < 1)
+    {
+        napi_throw_error(env, "EINVAL", "Too few arguments");
+        return NULL;
+    }
+
+    napi_value work_name;
+    if (napi_ok != napi_create_string_utf8(env, identifier, NAPI_AUTO_LENGTH, &work_name))
+    {
+        char msg[100] = {};
+        strcpy(msg, "init_napi_onchange() napi_create_string_utf8 failed - ");
+        strcat(msg, identifier);
+        napi_throw_error(env, "EINVAL", msg);
+        return NULL;
+    }
+
+    napi_valuetype cb_typ;
+    if (napi_ok != napi_typeof(env, argv[0], &cb_typ))
+    {
+        char msg[100] = {};
+        strcpy(msg, "init_napi_onchange() napi_typeof failed - ");
+        strcat(msg, identifier);
+        napi_throw_error(env, "EINVAL", msg);
+        return NULL;
+    }
+
+    if (cb_typ == napi_function)
+    {
+        if (napi_ok != napi_create_threadsafe_function(env, argv[0], NULL, work_name, 0, 1, NULL, NULL, NULL, call_js_cb, result))
+        {
+            const napi_extended_error_info *info;
+            napi_get_last_error_info(env, &info);
+
+            napi_throw_error(env, NULL, info->error_message);
+            return NULL;
+        }
+    }
+    return NULL;
+}
+
+// js object callbacks
+static void simpanel_connonchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
+{
+    const char *string = data;
+    napi_value undefined;
+
+    napi_get_undefined(env, &undefined);
+
+    if (napi_ok != napi_create_string_utf8(env, string, strlen(string), &simpanel.value))
+        napi_throw_error(env, "EINVAL", "Can't create utf8 string from char*");
+
+    if (napi_ok != napi_get_reference_value(env, simpanel.ref, &simpanel.object_value))
+        napi_throw_error(env, "EINVAL", "Can't get reference");
+
+    if (napi_ok != napi_set_named_property(env, simpanel.object_value, "connectionState", simpanel.value))
+        napi_throw_error(env, "EINVAL", "Can't set \"connectionState\" property");
+
+    if (napi_ok != napi_call_function(env, undefined, js_cb, 0, NULL, NULL))
+        napi_throw_error(env, "EINVAL", "Can't call \"connectionOnChange\" callback");
+}
+
+static void display_connonchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
+{
+    const char *string = data;
+    napi_value undefined;
+
+    napi_get_undefined(env, &undefined);
+
+    if (napi_ok != napi_create_string_utf8(env, string, strlen(string), &display.value))
+        napi_throw_error(env, "EINVAL", "Can't create utf8 string from char*");
+
+    if (napi_ok != napi_get_reference_value(env, display.ref, &display.object_value))
+        napi_throw_error(env, "EINVAL", "Can't get reference");
+
+    if (napi_ok != napi_set_named_property(env, display.object_value, "connectionState", display.value))
+        napi_throw_error(env, "EINVAL", "Can't set \"connectionState\" property");
+
+    if (napi_ok != napi_call_function(env, undefined, js_cb, 0, NULL, NULL))
+        napi_throw_error(env, "EINVAL", "Can't call \"connectionOnChange\" callback");
+}
+
+static void encoder_connonchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
+{
+    const char *string = data;
+    napi_value undefined;
+
+    napi_get_undefined(env, &undefined);
+
+    if (napi_ok != napi_create_string_utf8(env, string, strlen(string), &encoder.value))
+        napi_throw_error(env, "EINVAL", "Can't create utf8 string from char*");
+
+    if (napi_ok != napi_get_reference_value(env, encoder.ref, &encoder.object_value))
+        napi_throw_error(env, "EINVAL", "Can't get reference");
+
+    if (napi_ok != napi_set_named_property(env, encoder.object_value, "connectionState", encoder.value))
+        napi_throw_error(env, "EINVAL", "Can't set \"connectionState\" property");
+
+    if (napi_ok != napi_call_function(env, undefined, js_cb, 0, NULL, NULL))
+        napi_throw_error(env, "EINVAL", "Can't call \"connectionOnChange\" callback");
 }
 
 static void encoder_onchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
@@ -165,40 +279,25 @@ static void encoder_onchange_js_cb(napi_env env, napi_value js_cb, void *context
         napi_throw_error(env, "EINVAL", "Can't call \"onChange\" callback");
 }
 
+// js callback instances
+napi_value simpanel_connonchange_init(napi_env env, napi_callback_info info)
+{
+    return init_napi_onchange(env, info, "SimPanel connection change", simpanel_connonchange_js_cb, &simpanel.connectiononchange_cb);
+}
+
+napi_value display_connonchange_init(napi_env env, napi_callback_info info)
+{
+    return init_napi_onchange(env, info, "Display connection change", display_connonchange_js_cb, &display.connectiononchange_cb);
+}
+
+napi_value encoder_connonchange_init(napi_env env, napi_callback_info info)
+{
+    return init_napi_onchange(env, info, "encoder connection change", encoder_connonchange_js_cb, &encoder.connectiononchange_cb);
+}
+
 napi_value encoder_onchange_init(napi_env env, napi_callback_info info)
 {
-    size_t argc = 1;
-    napi_value argv[1];
-    encoder.onchange_cb = NULL;
-
-    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
-
-    if (argc < 1)
-    {
-        napi_throw_error(env, "EINVAL", "Too few arguments");
-        return NULL;
-    }
-
-    napi_value work_name;
-    napi_create_string_utf8(env,
-                            "ValueChanged Callback",
-                            NAPI_AUTO_LENGTH,
-                            &work_name);
-
-    napi_valuetype cb_typ;
-    napi_typeof(env, argv[0], &cb_typ);
-    if (cb_typ == napi_function)
-    {
-        if (napi_ok != napi_create_threadsafe_function(env, argv[0], NULL, work_name, 0, 1, NULL, NULL, NULL, encoder_onchange_js_cb, &encoder.onchange_cb))
-        {
-            const napi_extended_error_info *info;
-            napi_get_last_error_info(env, &info);
-
-            napi_throw_error(env, NULL, info->error_message);
-            return NULL;
-        }
-    }
-    return NULL;
+    return init_napi_onchange(env, info, "Encoder dataset change", encoder_onchange_js_cb, &encoder.onchange_cb);
 }
 
 napi_value display_publish_method(napi_env env, napi_callback_info info)
@@ -225,17 +324,19 @@ napi_value display_publish_method(napi_env env, napi_callback_info info)
 
     exos_data.Display = (int16_t)simple_value;
     exos_dataset_publish(&exos_display);
-    printf("Published Display: %i\n", exos_data.Display);
 
     return NULL;
 }
 
 napi_value init_simpanel(napi_env env, napi_value exports)
 {
+    napi_value simpanel_conn_change;
+    napi_value display_conn_change;
+    napi_value encoder_conn_change;
+
     napi_value display_publish;
-    //napi_value display_value;
     napi_value encoder_onchange;
-    //napi_value encoder_value;
+
     napi_value dataModel;
     napi_value undefined;
 
@@ -257,20 +358,24 @@ napi_value init_simpanel(napi_env env, napi_value exports)
 
     napi_create_function(env, NULL, 0, display_publish_method, NULL, &display_publish);
     napi_set_named_property(env, display.value, "publish", display_publish);
-    //napi_create_int32(env, (int32_t)exos_data.Display, &display_value);
     napi_set_named_property(env, display.value, "value", undefined);
+    napi_create_function(env, NULL, 0, display_connonchange_init, NULL, &display_conn_change);
+    napi_set_named_property(env, display.value, "connectionOnChange", display_conn_change);
     napi_set_named_property(env, display.value, "connectionState", undefined);
 
     napi_create_function(env, NULL, 0, encoder_onchange_init, NULL, &encoder_onchange);
     napi_set_named_property(env, encoder.value, "onChange", encoder_onchange);
-    //napi_create_uint32(env, (uint32_t)exos_data.Encoder, &encoder_value);
     napi_set_named_property(env, encoder.value, "value", undefined);
+    napi_create_function(env, NULL, 0, encoder_connonchange_init, NULL, &encoder_conn_change);
+    napi_set_named_property(env, encoder.value, "connectionOnChange", encoder_conn_change);
     napi_set_named_property(env, encoder.value, "connectionState", undefined);
 
     //bind topics to artefact
     napi_set_named_property(env, dataModel, "Display", display.value);
     napi_set_named_property(env, dataModel, "Encoder", encoder.value);
     napi_set_named_property(env, simpanel.value, "DataModel", dataModel);
+    napi_create_function(env, NULL, 0, simpanel_connonchange_init, NULL, &simpanel_conn_change);
+    napi_set_named_property(env, simpanel.value, "connectionOnChange", simpanel_conn_change);
     napi_set_named_property(env, simpanel.value, "connectionState", undefined);
 
     //export the simpanel
