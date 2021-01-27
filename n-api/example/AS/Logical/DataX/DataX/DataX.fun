@@ -1,4 +1,3 @@
-
 FUNCTION_BLOCK DataXInit
 	VAR_OUTPUT
 		Handle : UDINT;

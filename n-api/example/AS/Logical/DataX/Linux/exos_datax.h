@@ -7,6 +7,9 @@
 #include "exos_api_internal.h"
 #endif
 
+#if defined(_SG4) && !defined(EXOS_STATIC_INCLUDE)
+#include <DataX.h>
+#else
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -19,6 +22,8 @@ typedef struct DataX
     int32_t countDown; //SUB
 
 } DataX;
+
+#endif // _SG4 && !EXOS_STATIC_INCLUDE
 
 #ifndef EXOS_INCLUDE_ONLY_DATATYPE
 #ifdef EXOS_STATIC_INCLUDE

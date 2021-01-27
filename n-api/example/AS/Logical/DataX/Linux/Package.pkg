@@ -8,6 +8,6 @@
     <Object Type="File">datax.c</Object>
     <Object Type="File">termination.c</Object>
     <Object Type="File">termination.h</Object>
-    <Object Type="File">exar-datax-1.0.0.deb</Object>
+    <Object Type="File">exos-comp-datax-1.0.0.deb</Object>
   </Objects>
 </Package>

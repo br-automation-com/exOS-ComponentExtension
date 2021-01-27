@@ -63,7 +63,7 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
             if (knobs.onchange_cb != NULL)
             {
                 napi_acquire_threadsafe_function(knobs.onchange_cb);
-                napi_call_threadsafe_function(knobs.onchange_cb, &exos_data.Encoder, napi_tsfn_blocking);
+                napi_call_threadsafe_function(knobs.onchange_cb, &exos_data.Knobs, napi_tsfn_blocking);
                 napi_release_threadsafe_function(knobs.onchange_cb, napi_tsfn_release);
             }
         }
@@ -90,9 +90,6 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
     }
 
     case EXOS_DATASET_EVENT_CONNECTION_CHANGED:
-
-        printf("Dataset %s changed state to %s\n", dataset->name, exos_get_state_string(dataset->connection_state));
-
         if (0 == strcmp(dataset->name, "Display"))
         {
             if (display.connectiononchange_cb != NULL)
@@ -429,13 +426,13 @@ napi_value knobs_publish_method(napi_env env, napi_callback_info info)
         return NULL;
     }
 
-    if (napi_ok != napi_get_named_property(env, display.object_value, "value", &display.value))
+    if (napi_ok != napi_get_named_property(env, knobs.object_value, "value", &knobs.value))
     {
         napi_throw_error(env, "EINVAL", "Can't get property");
         return NULL;
     }
 
-    if (napi_ok != napi_get_named_property(env, display.object_value, "P1", &P1))
+    if (napi_ok != napi_get_named_property(env, knobs.value, "P1", &P1))
     {
         napi_throw_error(env, "EINVAL", "Can't get property");
         return NULL;
@@ -443,11 +440,11 @@ napi_value knobs_publish_method(napi_env env, napi_callback_info info)
 
     if (napi_ok != napi_get_value_int32(env, P1, &simple_value_P1))
     {
-        napi_throw_error(env, "EINVAL", "Expected number");
+        napi_throw_error(env, "EINVAL", "P1 - Expected number");
         return NULL;
     }
 
-    if (napi_ok != napi_get_named_property(env, display.object_value, "P2", &P2))
+    if (napi_ok != napi_get_named_property(env, knobs.value, "P2", &P2))
     {
         napi_throw_error(env, "EINVAL", "Can't get property");
         return NULL;
@@ -455,13 +452,13 @@ napi_value knobs_publish_method(napi_env env, napi_callback_info info)
 
     if (napi_ok != napi_get_value_int32(env, P2, &simple_value_P2))
     {
-        napi_throw_error(env, "EINVAL", "Expected number");
+        napi_throw_error(env, "EINVAL", "P2 - Expected number");
         return NULL;
     }
 
     exos_data.Knobs.P1 = (int16_t)simple_value_P1;
     exos_data.Knobs.P2 = (int16_t)simple_value_P2;
-    exos_dataset_publish(&exos_display);
+    exos_dataset_publish(&exos_knobs);
 
     return NULL;
 }
@@ -620,7 +617,7 @@ napi_value init_simpanel(napi_env env, napi_value exports)
         napi_throw_error(env, "EINVAL", "Can't connect Encoder");
     }
 
-    ec = exos_dataset_connect(&exos_knobs, EXOS_DATASET_SUBSCRIBE, datasetEvent);
+    ec = exos_dataset_connect(&exos_knobs, EXOS_DATASET_SUBSCRIBE + EXOS_DATASET_PUBLISH, datasetEvent);
     if (EXOS_ERROR_OK != ec)
     {
         napi_throw_error(env, "EINVAL", "Can't connect Knobs");
@@ -633,3 +630,5 @@ napi_value init_simpanel(napi_env env, napi_value exports)
 }
 
 NAPI_MODULE(NODE_GYP_MODULE_NAME, init_simpanel);
+
+//IMPLEMENT API_EXTERN napi_status napi_remove_env_cleanup_hook(napi_env env, void (*fun)(void* arg), void* arg);

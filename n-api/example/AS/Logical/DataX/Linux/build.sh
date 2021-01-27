@@ -28,6 +28,6 @@ if [ "$?" -ne 0 ] ; then
     finalize 3
 fi
 
-cp -f exar-*.deb ..
+cp -f exos-comp-*.deb ..
 
 finalize 0

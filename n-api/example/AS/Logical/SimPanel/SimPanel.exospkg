@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ComponentPackage ErrorHandling="Ignore" StartupTimeout="0">
-    <File Name="exar-simpanel" FileName="Linux\exar-simpanel-1.0.0.deb" Type="Project"/>
+<ComponentPackage Version="1.0.0" ErrorHandling="Ignore" StartupTimeout="0">
+    <File Name="exos-comp-simpanel" FileName="Linux\exos-comp-simpanel-1.0.0.deb" Type="Project"/>
     <Service Name="SimPanel Runtime Service" Executable="/home/user/simpanel" Arguments=""/>
     <DataModelInstance Name="SimPanel"/>
     <Build>
         <GenerateHeader FileName="SimPanel\SimPanel.typ" TypeName="SimPanel">
+            <SG4 Include="SimPanel.h"/>
             <Output Path="Linux"/>
             <Output Path="SimPanel"/>
         </GenerateHeader>

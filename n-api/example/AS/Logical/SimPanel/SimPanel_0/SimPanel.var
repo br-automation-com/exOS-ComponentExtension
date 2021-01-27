@@ -1,7 +1,7 @@
 VAR
-	ExTargetDeploymentInfo_0 : ExTargetDeploymentInfo;
-	Knobs : SimPanelKnobs;
-	SimPanelInit_0 : SimPanelInit;
 	SimPanelCyclic_0 : SimPanelCyclic;
 	SimPanelExit_0 : SimPanelExit;
+	SimPanelInit_0 : SimPanelInit;
+	Knobs : SimPanelKnobs;
+	ExTargetDeploymentInfo_0 : ExTargetDeploymentInfo;
 END_VAR

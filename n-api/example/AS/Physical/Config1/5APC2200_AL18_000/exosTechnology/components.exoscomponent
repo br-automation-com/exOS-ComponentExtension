@@ -7,8 +7,8 @@
     <Property ID="StartupTimeout" Value="0" />
     <Group ID="FileGroup">
       <Group ID="File[0]">
-        <Property ID="Name" Value="exar-datax" />
-        <Property ID="FileName" Value="Linux\exar-datax-1.0.0.deb" />
+        <Property ID="Name" Value="exos-comp-datax" />
+        <Property ID="FileName" Value="Linux\exos-comp-datax-1.0.0.deb" />
         <Selector ID="FileType" Value="Project" />
       </Group>
     </Group>
@@ -16,25 +16,6 @@
       <Group ID="Service[0]">
         <Property ID="Name" Value="DataX Runtime Service" />
         <Property ID="Executable" Value="/home/user/datax" />
-        <Property ID="Arguments" />
-      </Group>
-    </Group>
-  </Element>
-  <Element ID="SimPanel_0" Type="exoscomponent">
-    <Property ID="PackageSelection" Value="Logical\SimPanel\SimPanel.exospkg" />
-    <Selector ID="ErrorHandling" Value="Ignore" />
-    <Property ID="StartupTimeout" Value="0" />
-    <Group ID="FileGroup">
-      <Group ID="File[0]">
-        <Property ID="Name" Value="exar-simpanel" />
-        <Property ID="FileName" Value="Linux\exar-simpanel-1.0.0.deb" />
-        <Selector ID="FileType" Value="Project" />
-      </Group>
-    </Group>
-    <Group ID="Services">
-      <Group ID="Service[0]">
-        <Property ID="Name" Value="SimPanel Runtime Service" />
-        <Property ID="Executable" Value="/home/user/simpanel" />
         <Property ID="Arguments" />
       </Group>
     </Group>

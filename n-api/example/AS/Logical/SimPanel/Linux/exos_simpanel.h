@@ -7,6 +7,9 @@
 #include "exos_api_internal.h"
 #endif
 
+#if defined(_SG4) && !defined(EXOS_STATIC_INCLUDE)
+#include <SimPanel.h>
+#else
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -64,6 +67,8 @@ typedef struct SimPanel
     uint16_t Encoder; //PUB
 
 } SimPanel;
+
+#endif // _SG4 && !EXOS_STATIC_INCLUDE
 
 #ifndef EXOS_INCLUDE_ONLY_DATATYPE
 #ifdef EXOS_STATIC_INCLUDE

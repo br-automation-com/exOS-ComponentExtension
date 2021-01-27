@@ -1,9 +1,9 @@
-#include <DataX.h>
+#include <SimPanel.h>
 
 #define EXOS_ASSERT_LOG &handle->logger
 #define EXOS_ASSERT_CALLBACK inst->_state = 255;
 #include "exos_log.h"
-#include "exos_datax.h"
+#include "exos_simpanel.h"
 #include <string.h>
 
 #define SUCCESS(_format_, ...) exos_log_success(&handle->logger, EXOS_LOG_TYPE_USER, _format_, ##__VA_ARGS__);
@@ -15,55 +15,61 @@ typedef struct
 {
     void *self;
     exos_log_handle_t logger;
-    DataX data;
+    SimPanel data;
 
-    exos_datamodel_handle_t datax;
+    exos_datamodel_handle_t simpanel;
 
-    exos_dataset_handle_t enable_dataset;
-    exos_dataset_handle_t active_dataset;
-    exos_dataset_handle_t countup;
-    exos_dataset_handle_t countdown;
-} DataXHandle_t;
+    exos_dataset_handle_t knobs;
+    exos_dataset_handle_t display;
+    exos_dataset_handle_t encoder;
+} SimPanelHandle_t;
 
 static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE event_type, void *info)
 {
-    struct DataXCyclic *inst = (struct DataXCyclic *)dataset->datamodel->user_context;
-    DataXHandle_t *handle = (DataXHandle_t *)inst->Handle;
+    struct SimPanelCyclic *inst = (struct SimPanelCyclic *)dataset->datamodel->user_context;
+    SimPanelHandle_t *handle = (SimPanelHandle_t *)inst->Handle;
 
     switch (event_type)
     {
     case EXOS_DATASET_EVENT_UPDATED:
         VERBOSE("dataset %s updated! latency (us):%i", dataset->name, (exos_datamodel_get_nettime(dataset->datamodel,NULL) - dataset->nettime));
         //handle each subscription dataset separately
-        if(0 == strcmp(dataset->name, "active"))
+        if(0 == strcmp(dataset->name, "Knobs"))
         {
-            inst->active = *(BOOL *)dataset->data;
+            if(NULL != inst->Knobs)
+            {
+                memcpy(inst->Knobs, dataset->data, dataset->size);
+            }
         }
-        else if(0 == strcmp(dataset->name, "countUp"))
+        else if(0 == strcmp(dataset->name, "Display"))
         {
-            inst->countUp = *(DINT *)dataset->data;
-        }
-        else if(0 == strcmp(dataset->name, "countDown"))
-        {
-            inst->countDown = *(DINT *)dataset->data;
+            inst->Display = *(INT *)dataset->data;
         }
         break;
 
     case EXOS_DATASET_EVENT_PUBLISHED:
         VERBOSE("dataset %s published to local server for distribution! send buffer free:%i", dataset->name, dataset->send_buffer.free);
         //handle each published dataset separately
-        if(0 == strcmp(dataset->name, "enable"))
+        if(0 == strcmp(dataset->name, "Knobs"))
         {
-            // BOOL *enable_dataset = (BOOL *)dataset->data;
+            // SimPanelKnobs *knobs = (SimPanelKnobs *)dataset->data;
+        }
+        else if(0 == strcmp(dataset->name, "Encoder"))
+        {
+            // UINT *encoder = (UINT *)dataset->data;
         }
         break;
 
     case EXOS_DATASET_EVENT_DELIVERED:
         VERBOSE("dataset %s delivered to remote server for distribution! send buffer free:%i", dataset->name, dataset->send_buffer.free);
         //handle each published dataset separately
-        if(0 == strcmp(dataset->name, "enable"))
+        if(0 == strcmp(dataset->name, "Knobs"))
         {
-            // BOOL *enable_dataset = (BOOL *)dataset->data;
+            // SimPanelKnobs *knobs = (SimPanelKnobs *)dataset->data;
+        }
+        else if(0 == strcmp(dataset->name, "Encoder"))
+        {
+            // UINT *encoder = (UINT *)dataset->data;
         }
         break;
 
@@ -91,8 +97,8 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
 
 static void datamodelEvent(exos_datamodel_handle_t *datamodel, const EXOS_DATAMODEL_EVENT_TYPE event_type, void *info)
 {
-    struct DataXCyclic *inst = (struct DataXCyclic *)datamodel->user_context;
-    DataXHandle_t *handle = (DataXHandle_t *)inst->Handle;
+    struct SimPanelCyclic *inst = (struct SimPanelCyclic *)datamodel->user_context;
+    SimPanelHandle_t *handle = (SimPanelHandle_t *)inst->Handle;
 
     switch (event_type)
     {
@@ -114,7 +120,7 @@ static void datamodelEvent(exos_datamodel_handle_t *datamodel, const EXOS_DATAMO
             inst->Connected = 1;
             break;
         case EXOS_STATE_OPERATIONAL:
-            SUCCESS("DataX operational!");
+            SUCCESS("SimPanel operational!");
             inst->Operational = 1;
             break;
         case EXOS_STATE_ABORTED:
@@ -127,10 +133,10 @@ static void datamodelEvent(exos_datamodel_handle_t *datamodel, const EXOS_DATAMO
     }
 }
 
-_BUR_PUBLIC void DataXInit(struct DataXInit *inst)
+_BUR_PUBLIC void SimPanelInit(struct SimPanelInit *inst)
 {
-    DataXHandle_t *handle;
-    TMP_alloc(sizeof(DataXHandle_t), (void **)&handle);
+    SimPanelHandle_t *handle;
+    TMP_alloc(sizeof(SimPanelHandle_t), (void **)&handle);
     if (NULL == handle)
     {
         inst->Handle = 0;
@@ -140,28 +146,26 @@ _BUR_PUBLIC void DataXInit(struct DataXInit *inst)
     memset(&handle->data, 0, sizeof(handle->data));
     handle->self = handle;
 
-    exos_log_init(&handle->logger, "DataX_AR");
+    exos_log_init(&handle->logger, "SimPanel_AR");
 
     
     
-    exos_datamodel_handle_t *datax = &handle->datax;
-    exos_dataset_handle_t *enable_dataset = &handle->enable_dataset;
-    exos_dataset_handle_t *active_dataset = &handle->active_dataset;
-    exos_dataset_handle_t *countup = &handle->countup;
-    exos_dataset_handle_t *countdown = &handle->countdown;
-    EXOS_ASSERT_OK(exos_datamodel_init(datax, "DataX", "DataX_AR"));
+    exos_datamodel_handle_t *simpanel = &handle->simpanel;
+    exos_dataset_handle_t *knobs = &handle->knobs;
+    exos_dataset_handle_t *display = &handle->display;
+    exos_dataset_handle_t *encoder = &handle->encoder;
+    EXOS_ASSERT_OK(exos_datamodel_init(simpanel, "SimPanel", "SimPanel_AR"));
 
-    EXOS_ASSERT_OK(exos_dataset_init(enable_dataset, datax, "enable", &handle->data.enable, sizeof(handle->data.enable)));
-    EXOS_ASSERT_OK(exos_dataset_init(active_dataset, datax, "active", &handle->data.active, sizeof(handle->data.active)));
-    EXOS_ASSERT_OK(exos_dataset_init(countup, datax, "countUp", &handle->data.countUp, sizeof(handle->data.countUp)));
-    EXOS_ASSERT_OK(exos_dataset_init(countdown, datax, "countDown", &handle->data.countDown, sizeof(handle->data.countDown)));
+    EXOS_ASSERT_OK(exos_dataset_init(knobs, simpanel, "Knobs", &handle->data.Knobs, sizeof(handle->data.Knobs)));
+    EXOS_ASSERT_OK(exos_dataset_init(display, simpanel, "Display", &handle->data.Display, sizeof(handle->data.Display)));
+    EXOS_ASSERT_OK(exos_dataset_init(encoder, simpanel, "Encoder", &handle->data.Encoder, sizeof(handle->data.Encoder)));
     
     inst->Handle = (UDINT)handle;
 }
 
-_BUR_PUBLIC void DataXCyclic(struct DataXCyclic *inst)
+_BUR_PUBLIC void SimPanelCyclic(struct SimPanelCyclic *inst)
 {
-    DataXHandle_t *handle = (DataXHandle_t *)inst->Handle;
+    SimPanelHandle_t *handle = (SimPanelHandle_t *)inst->Handle;
 
     inst->Error = false;
     if (NULL == handle)
@@ -175,27 +179,23 @@ _BUR_PUBLIC void DataXCyclic(struct DataXCyclic *inst)
         return;
     }
 
-    DataX *data = &handle->data;
-    exos_datamodel_handle_t *datax = &handle->datax;
-    //the user context of the datamodel points to the DataXCyclic instance
-    datax->user_context = inst; //set it cyclically in case the program using the FUB is retransferred
-    datax->user_tag = 0; //user defined
+    SimPanel *data = &handle->data;
+    exos_datamodel_handle_t *simpanel = &handle->simpanel;
+    //the user context of the datamodel points to the SimPanelCyclic instance
+    simpanel->user_context = inst; //set it cyclically in case the program using the FUB is retransferred
+    simpanel->user_tag = 0; //user defined
 
-    exos_dataset_handle_t *enable_dataset = &handle->enable_dataset;
-    enable_dataset->user_context = NULL; //user defined
-    enable_dataset->user_tag = 0; //user defined
+    exos_dataset_handle_t *knobs = &handle->knobs;
+    knobs->user_context = NULL; //user defined
+    knobs->user_tag = 0; //user defined
 
-    exos_dataset_handle_t *active_dataset = &handle->active_dataset;
-    active_dataset->user_context = NULL; //user defined
-    active_dataset->user_tag = 0; //user defined
+    exos_dataset_handle_t *display = &handle->display;
+    display->user_context = NULL; //user defined
+    display->user_tag = 0; //user defined
 
-    exos_dataset_handle_t *countup = &handle->countup;
-    countup->user_context = NULL; //user defined
-    countup->user_tag = 0; //user defined
-
-    exos_dataset_handle_t *countdown = &handle->countdown;
-    countdown->user_context = NULL; //user defined
-    countdown->user_tag = 0; //user defined
+    exos_dataset_handle_t *encoder = &handle->encoder;
+    encoder->user_context = NULL; //user defined
+    encoder->user_tag = 0; //user defined
 
     //unregister on disable
     if (inst->_state && !inst->Enable)
@@ -220,14 +220,13 @@ _BUR_PUBLIC void DataXCyclic(struct DataXCyclic *inst)
     case 10:
         inst->_state = 100;
 
-        SUCCESS("starting DataX application..");
+        SUCCESS("starting SimPanel application..");
 
         //connect the datamodel, then the datasets
-        EXOS_ASSERT_OK(exos_datamodel_connect_datax(datax, datamodelEvent));
-        EXOS_ASSERT_OK(exos_dataset_connect(enable_dataset, EXOS_DATASET_PUBLISH, datasetEvent));
-        EXOS_ASSERT_OK(exos_dataset_connect(active_dataset, EXOS_DATASET_SUBSCRIBE, datasetEvent));
-        EXOS_ASSERT_OK(exos_dataset_connect(countup, EXOS_DATASET_SUBSCRIBE, datasetEvent));
-        EXOS_ASSERT_OK(exos_dataset_connect(countdown, EXOS_DATASET_SUBSCRIBE, datasetEvent));
+        EXOS_ASSERT_OK(exos_datamodel_connect_simpanel(simpanel, datamodelEvent));
+        EXOS_ASSERT_OK(exos_dataset_connect(knobs, EXOS_DATASET_PUBLISH + EXOS_DATASET_SUBSCRIBE, datasetEvent));
+        EXOS_ASSERT_OK(exos_dataset_connect(display, EXOS_DATASET_SUBSCRIBE, datasetEvent));
+        EXOS_ASSERT_OK(exos_dataset_connect(encoder, EXOS_DATASET_PUBLISH, datasetEvent));
 
         inst->Active = true;
         break;
@@ -238,7 +237,7 @@ _BUR_PUBLIC void DataXCyclic(struct DataXCyclic *inst)
         {
             if (inst->_state == 100)
             {
-                EXOS_ASSERT_OK(exos_datamodel_set_operational(datax));
+                EXOS_ASSERT_OK(exos_datamodel_set_operational(simpanel));
                 inst->_state = 101;
             }
         }
@@ -247,21 +246,30 @@ _BUR_PUBLIC void DataXCyclic(struct DataXCyclic *inst)
             inst->_state = 100;
         }
 
-        EXOS_ASSERT_OK(exos_datamodel_process(datax));
+        EXOS_ASSERT_OK(exos_datamodel_process(simpanel));
         //put your cyclic code here!
 
-        //publish the enable_dataset dataset as soon as there are changes
-        if (inst->enable != data->enable)
+        if (NULL != inst->Knobs)
         {
-            data->enable = inst->enable;
-            exos_dataset_publish(enable_dataset);
+            //publish the knobs dataset as soon as there are changes
+            if (0 != memcmp(inst->Knobs, &data->Knobs, sizeof(data->Knobs)))
+            {
+                memcpy(&data->Knobs, inst->Knobs, sizeof(data->Knobs));
+                exos_dataset_publish(knobs);
+            }
+        }
+        //publish the encoder dataset as soon as there are changes
+        if (inst->Encoder != data->Encoder)
+        {
+            data->Encoder = inst->Encoder;
+            exos_dataset_publish(encoder);
         }
 
         break;
 
     case 255:
         //disconnect the datamodel
-        EXOS_ASSERT_OK(exos_datamodel_disconnect(datax));
+        EXOS_ASSERT_OK(exos_datamodel_disconnect(simpanel));
 
         inst->Active = false;
         inst->_state = 254;
@@ -277,28 +285,28 @@ _BUR_PUBLIC void DataXCyclic(struct DataXCyclic *inst)
 
 }
 
-_BUR_PUBLIC void DataXExit(struct DataXExit *inst)
+_BUR_PUBLIC void SimPanelExit(struct SimPanelExit *inst)
 {
-    DataXHandle_t *handle = (DataXHandle_t *)inst->Handle;
+    SimPanelHandle_t *handle = (SimPanelHandle_t *)inst->Handle;
 
     if (NULL == handle)
     {
-        ERROR("DataXExit: NULL handle, cannot delete resources");
+        ERROR("SimPanelExit: NULL handle, cannot delete resources");
         return;
     }
     if ((void *)handle != handle->self)
     {
-        ERROR("DataXExit: invalid handle, cannot delete resources");
+        ERROR("SimPanelExit: invalid handle, cannot delete resources");
         return;
     }
 
-    exos_datamodel_handle_t *datax = &handle->datax;
+    exos_datamodel_handle_t *simpanel = &handle->simpanel;
 
-    EXOS_ASSERT_OK(exos_datamodel_delete(datax));
+    EXOS_ASSERT_OK(exos_datamodel_delete(simpanel));
 
     //finish with deleting the log
     exos_log_delete(&handle->logger);
     //free the allocated handle
-    TMP_free(sizeof(DataXHandle_t), (void *)handle);
+    TMP_free(sizeof(SimPanelHandle_t), (void *)handle);
 }
 

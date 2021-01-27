@@ -58,7 +58,7 @@
         </Group>
       </Group>
       <Group ID="Component[1]">
-        <Property ID="ComponentConfigurationLink" Value="SimPanel_0" />
+        <Property ID="ComponentConfigurationLink" />
         <Group ID="DataModels">
           <Group ID="Instance[0]">
             <Property ID="InstanceName" Value="SimPanel" />
