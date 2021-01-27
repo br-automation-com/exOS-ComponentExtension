@@ -20,10 +20,9 @@
             <Property ID="ReplyTimeoutMs" Value="1" />
           </Group>
           <Group ID="Logging">
-            <Property ID="Level" Value="DEBUG" />
+            <Property ID="Level" Value="SUCCESS" />
             <Property ID="Type[0]" Value="USER" />
             <Property ID="Type[1]" Value="SYSTEM" />
-            <Property ID="Type[2]" Value="None" />
             <Group ID="LogConnection">
               <Property ID="LogPort" Value="49002" />
               <Property ID="LogShmPath" Value="exos_log" />
@@ -47,18 +46,6 @@
         <Property ID="ComponentsTaskClass" Value="2" />
       </Group>
       <Group ID="Component[0]">
-        <Property ID="ComponentConfigurationLink" Value="SimPanel_0" />
-        <Group ID="DataModels">
-          <Group ID="Instance[0]">
-            <Property ID="InstanceName" Value="SimPanel" />
-            <Group ID="InstanceConnection">
-              <Property ID="InstancePort" Value="49004" />
-              <Property ID="InstanceShmPath" Value="SimPanel" />
-            </Group>
-          </Group>
-        </Group>
-      </Group>
-      <Group ID="Component[1]">
         <Property ID="ComponentConfigurationLink" Value="DataX_0" />
         <Group ID="DataModels">
           <Group ID="Instance[0]">
@@ -70,9 +57,21 @@
           </Group>
         </Group>
       </Group>
+      <Group ID="Component[1]">
+        <Property ID="ComponentConfigurationLink" Value="SimPanel_0" />
+        <Group ID="DataModels">
+          <Group ID="Instance[0]">
+            <Property ID="InstanceName" Value="SimPanel" />
+            <Group ID="InstanceConnection">
+              <Property ID="InstancePort" Value="49004" />
+              <Property ID="InstanceShmPath" Value="SimPanel" />
+            </Group>
+          </Group>
+        </Group>
+      </Group>
     </Group>
     <Group ID="ComponentDataConnection">
-      <Property ID="Version" Value="1.0.1-1" />
+      <Property ID="Version" Value="1.0.2-1" />
       <Selector ID="ErrorHandling" Value="Abort" />
       <Property ID="StartupTimeout" Value="6" />
       <Group ID="FileGroup">
@@ -93,12 +92,12 @@
         </Group>
         <Group ID="File[3]">
           <Property ID="Name" Value="exos-api" />
-          <Property ID="FileName" Value="exos-api_1.0.1-1_amd64.deb" />
+          <Property ID="FileName" Value="exos-api_1.0.2-1_amd64.deb" />
           <Selector ID="FileType" Value="Project" />
         </Group>
         <Group ID="File[4]">
           <Property ID="Name" Value="exos-api-eth" />
-          <Property ID="FileName" Value="exos-api-eth_1.0.1-1_amd64.deb" />
+          <Property ID="FileName" Value="exos-api-eth_1.0.2-1_amd64.deb" />
           <Selector ID="FileType" Value="Project" />
         </Group>
         <Group ID="File[5]">

@@ -21,6 +21,7 @@ typedef struct
 obj_handles simpanel = {};
 obj_handles display = {};
 obj_handles encoder = {};
+obj_handles knobs = {};
 
 napi_deferred deferred = NULL;
 uv_idle_t cyclic_h;
@@ -28,6 +29,7 @@ uv_idle_t cyclic_h;
 SimPanel exos_data = {};
 exos_dataset_handle_t exos_display;
 exos_dataset_handle_t exos_encoder;
+exos_dataset_handle_t exos_knobs;
 exos_datamodel_handle_t exos_simpanel;
 
 void cyclic(uv_idle_t *handle)
@@ -52,6 +54,17 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
                 napi_acquire_threadsafe_function(encoder.onchange_cb);
                 napi_call_threadsafe_function(encoder.onchange_cb, &exos_data.Encoder, napi_tsfn_blocking);
                 napi_release_threadsafe_function(encoder.onchange_cb, napi_tsfn_release);
+            }
+        }
+        else if (0 == strcmp(dataset->name, "Knobs"))
+        {
+            exos_data.Knobs = *(SimPanelKnobs *)dataset->data;
+
+            if (knobs.onchange_cb != NULL)
+            {
+                napi_acquire_threadsafe_function(knobs.onchange_cb);
+                napi_call_threadsafe_function(knobs.onchange_cb, &exos_data.Encoder, napi_tsfn_blocking);
+                napi_release_threadsafe_function(knobs.onchange_cb, napi_tsfn_release);
             }
         }
         break;
@@ -96,6 +109,15 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
                 napi_acquire_threadsafe_function(encoder.connectiononchange_cb);
                 napi_call_threadsafe_function(encoder.connectiononchange_cb, exos_get_state_string(dataset->connection_state), napi_tsfn_blocking);
                 napi_release_threadsafe_function(encoder.connectiononchange_cb, napi_tsfn_release);
+            }
+        }
+        else if (0 == strcmp(dataset->name, "Knobs"))
+        {
+            if (knobs.connectiononchange_cb != NULL)
+            {
+                napi_acquire_threadsafe_function(knobs.connectiononchange_cb);
+                napi_call_threadsafe_function(knobs.connectiononchange_cb, exos_get_state_string(dataset->connection_state), napi_tsfn_blocking);
+                napi_release_threadsafe_function(knobs.connectiononchange_cb, napi_tsfn_release);
             }
         }
 
@@ -259,6 +281,26 @@ static void encoder_connonchange_js_cb(napi_env env, napi_value js_cb, void *con
         napi_throw_error(env, "EINVAL", "Can't call \"connectionOnChange\" callback");
 }
 
+static void knobs_connonchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
+{
+    const char *string = data;
+    napi_value undefined;
+
+    napi_get_undefined(env, &undefined);
+
+    if (napi_ok != napi_create_string_utf8(env, string, strlen(string), &knobs.value))
+        napi_throw_error(env, "EINVAL", "Can't create utf8 string from char*");
+
+    if (napi_ok != napi_get_reference_value(env, knobs.ref, &knobs.object_value))
+        napi_throw_error(env, "EINVAL", "Can't get reference");
+
+    if (napi_ok != napi_set_named_property(env, knobs.object_value, "connectionState", knobs.value))
+        napi_throw_error(env, "EINVAL", "Can't set \"connectionState\" property");
+
+    if (napi_ok != napi_call_function(env, undefined, js_cb, 0, NULL, NULL))
+        napi_throw_error(env, "EINVAL", "Can't call \"connectionOnChange\" callback");
+}
+
 static void encoder_onchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
 {
     uint32_t *number = data;
@@ -273,6 +315,42 @@ static void encoder_onchange_js_cb(napi_env env, napi_value js_cb, void *context
         napi_throw_error(env, "EINVAL", "Can't get reference");
 
     if (napi_ok != napi_set_named_property(env, encoder.object_value, "value", encoder.value))
+        napi_throw_error(env, "EINVAL", "Can't set \"value\" property");
+
+    if (napi_ok != napi_call_function(env, undefined, js_cb, 0, NULL, NULL))
+        napi_throw_error(env, "EINVAL", "Can't call \"onChange\" callback");
+}
+
+static void knobs_onchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
+{
+    SimPanelKnobs *values = data;
+    int32_t castedP1;
+    int32_t castedP2;
+    napi_value undefined;
+    napi_value P1;
+    napi_value P2;
+
+    napi_get_undefined(env, &undefined);
+
+    castedP1 = (int32_t)values->P1;
+    castedP2 = (int32_t)values->P2;
+
+    if (napi_ok != napi_get_reference_value(env, knobs.ref, &knobs.object_value))
+        napi_throw_error(env, "EINVAL", "Can't get reference");
+
+    if (napi_ok != napi_get_named_property(env, knobs.object_value, "value", &knobs.value))
+        napi_throw_error(env, "EINVAL", "Can't get property");
+
+    if (napi_ok != napi_create_int32(env, castedP1, &P1))
+        napi_throw_error(env, "EINVAL", "Can't create number from uint32_t");
+
+    if (napi_ok != napi_set_named_property(env, knobs.value, "P1", P1))
+        napi_throw_error(env, "EINVAL", "Can't set \"value\" property");
+
+    if (napi_ok != napi_create_int32(env, castedP2, &P2))
+        napi_throw_error(env, "EINVAL", "Can't create number from uint32_t");
+
+    if (napi_ok != napi_set_named_property(env, knobs.value, "P2", P2))
         napi_throw_error(env, "EINVAL", "Can't set \"value\" property");
 
     if (napi_ok != napi_call_function(env, undefined, js_cb, 0, NULL, NULL))
@@ -295,9 +373,19 @@ napi_value encoder_connonchange_init(napi_env env, napi_callback_info info)
     return init_napi_onchange(env, info, "encoder connection change", encoder_connonchange_js_cb, &encoder.connectiononchange_cb);
 }
 
+napi_value knobs_connonchange_init(napi_env env, napi_callback_info info)
+{
+    return init_napi_onchange(env, info, "knobs connection change", knobs_connonchange_js_cb, &knobs.connectiononchange_cb);
+}
+
 napi_value encoder_onchange_init(napi_env env, napi_callback_info info)
 {
     return init_napi_onchange(env, info, "Encoder dataset change", encoder_onchange_js_cb, &encoder.onchange_cb);
+}
+
+napi_value knobs_onchange_init(napi_env env, napi_callback_info info)
+{
+    return init_napi_onchange(env, info, "Knobs dataset change", knobs_onchange_js_cb, &knobs.onchange_cb);
 }
 
 napi_value display_publish_method(napi_env env, napi_callback_info info)
@@ -328,14 +416,68 @@ napi_value display_publish_method(napi_env env, napi_callback_info info)
     return NULL;
 }
 
+napi_value knobs_publish_method(napi_env env, napi_callback_info info)
+{
+    int32_t simple_value_P1;
+    int32_t simple_value_P2;
+    napi_value P1;
+    napi_value P2;
+
+    if (napi_ok != napi_get_reference_value(env, knobs.ref, &knobs.object_value))
+    {
+        napi_throw_error(env, "EINVAL", "Can't get reference");
+        return NULL;
+    }
+
+    if (napi_ok != napi_get_named_property(env, display.object_value, "value", &display.value))
+    {
+        napi_throw_error(env, "EINVAL", "Can't get property");
+        return NULL;
+    }
+
+    if (napi_ok != napi_get_named_property(env, display.object_value, "P1", &P1))
+    {
+        napi_throw_error(env, "EINVAL", "Can't get property");
+        return NULL;
+    }
+
+    if (napi_ok != napi_get_value_int32(env, P1, &simple_value_P1))
+    {
+        napi_throw_error(env, "EINVAL", "Expected number");
+        return NULL;
+    }
+
+    if (napi_ok != napi_get_named_property(env, display.object_value, "P2", &P2))
+    {
+        napi_throw_error(env, "EINVAL", "Can't get property");
+        return NULL;
+    }
+
+    if (napi_ok != napi_get_value_int32(env, P2, &simple_value_P2))
+    {
+        napi_throw_error(env, "EINVAL", "Expected number");
+        return NULL;
+    }
+
+    exos_data.Knobs.P1 = (int16_t)simple_value_P1;
+    exos_data.Knobs.P2 = (int16_t)simple_value_P2;
+    exos_dataset_publish(&exos_display);
+
+    return NULL;
+}
+
 napi_value init_simpanel(napi_env env, napi_value exports)
 {
     napi_value simpanel_conn_change;
     napi_value display_conn_change;
     napi_value encoder_conn_change;
+    napi_value knobs_conn_change;
 
     napi_value display_publish;
     napi_value encoder_onchange;
+    napi_value knobs_publish;
+    napi_value knobs_onchange;
+    napi_value knobs_value_object;
 
     napi_value dataModel;
     napi_value undefined;
@@ -356,6 +498,12 @@ napi_value init_simpanel(napi_env env, napi_value exports)
     if (napi_ok != napi_create_object(env, &encoder.value))
         return NULL;
 
+    if (napi_ok != napi_create_object(env, &knobs.value))
+        return NULL;
+
+    if (napi_ok != napi_create_object(env, &knobs_value_object))
+        return NULL;
+
     napi_create_function(env, NULL, 0, display_publish_method, NULL, &display_publish);
     napi_set_named_property(env, display.value, "publish", display_publish);
     napi_set_named_property(env, display.value, "value", undefined);
@@ -370,9 +518,21 @@ napi_value init_simpanel(napi_env env, napi_value exports)
     napi_set_named_property(env, encoder.value, "connectionOnChange", encoder_conn_change);
     napi_set_named_property(env, encoder.value, "connectionState", undefined);
 
+    napi_create_function(env, NULL, 0, knobs_onchange_init, NULL, &knobs_onchange);
+    napi_set_named_property(env, knobs.value, "onChange", knobs_onchange);
+    napi_create_function(env, NULL, 0, knobs_publish_method, NULL, &knobs_publish);
+    napi_set_named_property(env, knobs.value, "publish", knobs_publish);
+    napi_set_named_property(env, knobs_value_object, "P1", undefined);
+    napi_set_named_property(env, knobs_value_object, "P2", undefined);
+    napi_set_named_property(env, knobs.value, "value", knobs_value_object);
+    napi_create_function(env, NULL, 0, knobs_connonchange_init, NULL, &knobs_conn_change);
+    napi_set_named_property(env, knobs.value, "connectionOnChange", knobs_conn_change);
+    napi_set_named_property(env, knobs.value, "connectionState", undefined);
+
     //bind topics to artefact
     napi_set_named_property(env, dataModel, "Display", display.value);
     napi_set_named_property(env, dataModel, "Encoder", encoder.value);
+    napi_set_named_property(env, dataModel, "Knobs", knobs.value);
     napi_set_named_property(env, simpanel.value, "DataModel", dataModel);
     napi_create_function(env, NULL, 0, simpanel_connonchange_init, NULL, &simpanel_conn_change);
     napi_set_named_property(env, simpanel.value, "connectionOnChange", simpanel_conn_change);
@@ -393,6 +553,11 @@ napi_value init_simpanel(napi_env env, napi_value exports)
         return NULL;
     }
     if (napi_ok != napi_create_reference(env, encoder.value, encoder.ref_count, &encoder.ref))
+    {
+        napi_throw_error(env, "EINVAL", "Can't create simpanel reference");
+        return NULL;
+    }
+    if (napi_ok != napi_create_reference(env, knobs.value, knobs.ref_count, &knobs.ref))
     {
         napi_throw_error(env, "EINVAL", "Can't create simpanel reference");
         return NULL;
@@ -426,6 +591,14 @@ napi_value init_simpanel(napi_env env, napi_value exports)
     exos_encoder.user_context = NULL; //user defined
     exos_encoder.user_tag = 0;        //user defined
 
+    ec = exos_dataset_init(&exos_knobs, &exos_simpanel, "Knobs", &exos_data.Knobs, sizeof(exos_data.Knobs));
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't initialize Knobs");
+    }
+    exos_knobs.user_context = NULL; //user defined
+    exos_knobs.user_tag = 0;        //user defined
+
     ec = exos_datamodel_connect_simpanel(&exos_simpanel, datamodelEvent);
 
     //register the artefact
@@ -445,6 +618,12 @@ napi_value init_simpanel(napi_env env, napi_value exports)
     if (EXOS_ERROR_OK != ec)
     {
         napi_throw_error(env, "EINVAL", "Can't connect Encoder");
+    }
+
+    ec = exos_dataset_connect(&exos_knobs, EXOS_DATASET_SUBSCRIBE, datasetEvent);
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't connect Knobs");
     }
 
     uv_idle_init(uv_default_loop(), &cyclic_h);

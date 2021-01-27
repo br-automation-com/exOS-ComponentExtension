@@ -12,6 +12,7 @@ FUNCTION_BLOCK SimPanelCyclic
 		Enable : BOOL;
 		Handle : UDINT;
 		Start : BOOL;
+		Knobs : REFERENCE TO SimPanelKnobs;
 		Encoder : UINT;
 	END_VAR
 	VAR_OUTPUT

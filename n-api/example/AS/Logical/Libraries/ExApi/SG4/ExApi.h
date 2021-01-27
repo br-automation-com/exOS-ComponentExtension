@@ -1,6 +1,6 @@
 /* Automation Studio generated header file */
 /* Do not edit ! */
-/* ExApi 1.00.1 */
+/* ExApi 1.00.2 */
 
 #ifndef _EXAPI_
 #define _EXAPI_
@@ -9,7 +9,7 @@ extern "C"
 {
 #endif
 #ifndef _ExApi_VERSION
-#define _ExApi_VERSION 1.00.1
+#define _ExApi_VERSION 1.00.2
 #endif
 
 #include <bur/plctypes.h>
@@ -99,7 +99,7 @@ typedef struct ExApiSystemInfoSyncType
 typedef struct ExLogConfigChange
 {
 	/* VAR_INPUT (analog) */
-	unsigned long ExLink;
+	unsigned long ExTargetLink;
 	struct ExLogConfigType* LogConfig;
 	/* VAR_OUTPUT (analog) */
 	unsigned short ErrorID;
@@ -120,7 +120,7 @@ typedef struct ExLogConfigChange
 typedef struct ExApiSystemInfo
 {
 	/* VAR_INPUT (analog) */
-	unsigned long ExLink;
+	unsigned long ExTargetLink;
 	/* VAR_OUTPUT (analog) */
 	struct ExApiSystemInfoCycleType CycleTime;
 	struct ExApiSystemInfoSyncType TimeSync;

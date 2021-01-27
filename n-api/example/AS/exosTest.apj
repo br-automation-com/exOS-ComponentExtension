@@ -8,6 +8,6 @@
   <Project StoreRuntimeInProject="false" />
   <Variables DefaultInitValue="0" DefaultRetain="false" DefaultVolatile="true" />
   <TechnologyPackages>
-    <exosTechnology Version="1.0.1" />
+    <exosTechnology Version="1.0.2" />
   </TechnologyPackages>
 </Project>

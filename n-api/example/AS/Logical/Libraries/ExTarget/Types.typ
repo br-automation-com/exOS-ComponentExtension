@@ -1,16 +1,16 @@
 
 TYPE
 	ExTargetDeploymentInfoCounters : 	STRUCT 
-		ArtefactsUninstalled : UINT;
+		ComponentsUninstalled : UINT;
 		ServicesRemoved : UINT;
-		ArtefactsInstalled : UINT;
+		ComponentsInstalled : UINT;
 		ServicesCreated : UINT;
 		FilesDeployed : UINT;
 		ServicesCompleted : UINT;
-		ArtefactsRunning : UINT;
+		ComponentsRunning : UINT;
 		ServicesRunning : UINT;
 	END_STRUCT;
 	ExTargetLinkType : 	STRUCT 
-		Internal : UDINT;
+		INTERNAL : UDINT;
 	END_STRUCT;
 END_TYPE

@@ -6,7 +6,7 @@
 /**
  * The version of the exos api
  */
-#define EXOS_API_VERSION "1.0.1-1"
+#define EXOS_API_VERSION "1.0.2-1"
 /*
 NUMERIC version
 0-1000 build revision
@@ -14,7 +14,7 @@ NUMERIC version
 100 000 - 9 999 999 1-99 minor version
 10 000 000 - 100 000 000 1-10 major version
 */
-#define EXOS_API_NUMERIC_VERSION 10010001
+#define EXOS_API_NUMERIC_VERSION 10020001
 #ifdef _SG4
 #include <bur/plctypes.h>
 #else

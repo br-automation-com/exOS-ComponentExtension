@@ -1,6 +1,6 @@
 /* Automation Studio generated header file */
 /* Do not edit ! */
-/* ExTarget 1.00.1 */
+/* ExTarget 1.00.2 */
 
 #ifndef _EXTARGET_
 #define _EXTARGET_
@@ -9,7 +9,7 @@ extern "C"
 {
 #endif
 #ifndef _ExTarget_VERSION
-#define _ExTarget_VERSION 1.00.1
+#define _ExTarget_VERSION 1.00.2
 #endif
 
 #include <bur/plctypes.h>
@@ -33,24 +33,24 @@ extern "C"
 
 /* Datatypes and datatypes of function blocks */
 typedef struct ExTargetDeploymentInfoCounters
-{	unsigned short ArtefactsUninstalled;
+{	unsigned short ComponentsUninstalled;
 	unsigned short ServicesRemoved;
-	unsigned short ArtefactsInstalled;
+	unsigned short ComponentsInstalled;
 	unsigned short ServicesCreated;
 	unsigned short FilesDeployed;
 	unsigned short ServicesCompleted;
-	unsigned short ArtefactsRunning;
+	unsigned short ComponentsRunning;
 	unsigned short ServicesRunning;
 } ExTargetDeploymentInfoCounters;
 
 typedef struct ExTargetLinkType
-{	unsigned long Internal;
+{	unsigned long INTERNAL;
 } ExTargetLinkType;
 
 typedef struct ExTargetDeploymentInfo
 {
 	/* VAR_INPUT (analog) */
-	unsigned long ExLink;
+	unsigned long ExTargetLink;
 	/* VAR_OUTPUT (analog) */
 	unsigned long Failures;
 	struct ExTargetDeploymentInfoCounters Counters;

@@ -1,7 +1,7 @@
 
 FUNCTION_BLOCK ExLogConfigChange
 	VAR_INPUT
-		ExLink : UDINT;
+		ExTargetLink : UDINT;
 		Enable : BOOL;
 		LogConfig : REFERENCE TO ExLogConfigType;
 		ChangeConfig : BOOL;
@@ -22,7 +22,7 @@ END_FUNCTION_BLOCK
 
 FUNCTION_BLOCK ExApiSystemInfo
 	VAR_INPUT
-		ExLink : UDINT;
+		ExTargetLink : UDINT;
 		Enable : BOOL;
 		Reset : BOOL;
 	END_VAR
