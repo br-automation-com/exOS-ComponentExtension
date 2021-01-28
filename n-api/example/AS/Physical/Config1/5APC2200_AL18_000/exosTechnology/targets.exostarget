@@ -58,13 +58,25 @@
         </Group>
       </Group>
       <Group ID="Component[1]">
-        <Property ID="ComponentConfigurationLink" />
+        <Property ID="ComponentConfigurationLink" Value="" />
         <Group ID="DataModels">
           <Group ID="Instance[0]">
             <Property ID="InstanceName" Value="SimPanel" />
             <Group ID="InstanceConnection">
-              <Property ID="InstancePort" Value="49004" />
+              <Property ID="InstancePort" Value="49006" />
               <Property ID="InstanceShmPath" Value="SimPanel" />
+            </Group>
+          </Group>
+        </Group>
+      </Group>
+      <Group ID="Component[2]">
+        <Property ID="ComponentConfigurationLink" Value="" />
+        <Group ID="DataModels">
+          <Group ID="Instance[0]">
+            <Property ID="InstanceName" Value="NodeJS" />
+            <Group ID="InstanceConnection">
+              <Property ID="InstancePort" Value="49005" />
+              <Property ID="InstanceShmPath" Value="NodeJS" />
             </Group>
           </Group>
         </Group>

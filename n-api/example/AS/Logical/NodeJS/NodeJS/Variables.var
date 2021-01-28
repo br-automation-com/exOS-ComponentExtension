@@ -1,0 +1,6 @@
+VAR
+    Enable : BOOL;
+    _Enable : BOOL;
+    counters : Counters_typ;
+    run_counter : BOOL;
+END_VAR

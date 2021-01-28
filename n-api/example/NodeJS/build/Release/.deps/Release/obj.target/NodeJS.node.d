@@ -1,0 +1,1 @@
+cmd_Release/obj.target/NodeJS.node := g++ -o Release/obj.target/NodeJS.node -shared -pthread -rdynamic -m64  -Wl,-soname=NodeJS.node -Wl,--start-group Release/obj.target/NodeJS/libnodejs.o -Wl,--end-group -lexos-api -lzmq

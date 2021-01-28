@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio Version=4.9.1.69?>
+<Package SubType="exosPackage" PackageType="exosPackage" xmlns="http://br-automation.co.at/AS/Package">
+  <Objects>
+    <Object Type="File">NodeJS.exospkg</Object>
+    <Object Type="Program" Language="ANSIC">NodeJS</Object>
+    <Object Type="Library" Language="ANSIC">libNodeJS</Object>
+    <Object Type="Package">Linux</Object>
+  </Objects>
+</Package>

@@ -36,5 +36,8 @@
     <Group ID="SharedMemoryPartition4" />
     <Parameter ID="SharedMemoryName4" Value="SimPanel" />
     <Parameter ID="SharedMemorySize4" Value="200000" />
+    <Group ID="SharedMemoryPartition5" />
+    <Parameter ID="SharedMemoryName5" Value="NodeJS" />
+    <Parameter ID="SharedMemorySize5" Value="200000" />
   </Module>
 </Hardware>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ComponentPackage Version="1.0.0" ErrorHandling="Ignore" StartupTimeout="0">
+    <File Name="exos-comp-nodejs" FileName="Linux\exos-comp-nodejs-1.0.0.deb" Type="Project"/>
+    <Service Name="NodeJS Runtime Service" Executable="/usr/bin/python" Arguments="/home/user/nodejs/nodejs.py"/>
+    <DataModelInstance Name="NodeJS"/>
+    <Build>
+        <GenerateHeader FileName="NodeJS\NodeJS.typ" TypeName="NodeJS">
+            <SG4 Include="nodejsTYP.h"/>
+            <Output Path="Linux"/>
+            <Output Path="libNodeJS"/>
+        </GenerateHeader>
+        <BuildCommand Command="C:\Windows\Sysnative\wsl.exe" WorkingDirectory="Linux" Arguments="-d Debian -e sh build.sh">
+            <Dependency FileName="Linux\exos_nodejs.h"/>
+            <Dependency FileName="Linux\nodejs.py"/>
+            <Dependency FileName="Linux\libnodejs.h"/>
+            <Dependency FileName="Linux\libnodejs.c"/>
+            <Dependency FileName="Linux\libnodejs.i"/>
+        </BuildCommand>
+    </Build>
+</ComponentPackage>

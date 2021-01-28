@@ -1,5 +1,14 @@
-const process = require('process');
-let SimPanel = require('./simpanel');
+//const process = require('process');
+
+
+const myModule = require('./NodeJS');
+
+console.log(myModule);
+
+myModule.libNodeJS_init();
+
+
+/*let SimPanel = require('./simpanel');
 
 let interval = (undefined != process.argv.find(element => element == "-i"));
 
@@ -40,3 +49,4 @@ if (interval) {
         console.log(SimPanel);
     }, 10000);
 }
+*/

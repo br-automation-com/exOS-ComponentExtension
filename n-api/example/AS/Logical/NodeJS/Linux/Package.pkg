@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio Version=4.9.1.69?>
+<Package SubType="exosLinuxPackage" PackageType="exosLinuxPackage" xmlns="http://br-automation.co.at/AS/Package">
+  <Objects>
+    <Object Type="File">build.sh</Object>
+    <Object Type="File">CMakeLists.txt</Object>
+    <Object Type="File">nodejs.py</Object>
+    <Object Type="File">exos_nodejs.h</Object>
+    <Object Type="File">libnodejs.h</Object>
+    <Object Type="File">libnodejs.c</Object>
+    <Object Type="File">_libNodeJS.so</Object>
+    <Object Type="File">libNodeJS.py</Object>
+    <Object Type="File">libnodejs.i</Object>
+    <Object Type="File">exos-comp-nodejs-1.0.0.deb</Object>
+  </Objects>
+</Package>
