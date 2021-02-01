@@ -12,9 +12,13 @@ static void on_connected_nodejs(void)
 {
 }
 
-static void on_change_counters_dataset(void)
+static void on_change_countup(void)
 {
-    memcpy(&counters, &(nodejs->counters.value), sizeof(counters));
+    countUp = nodejs->countUp.value;
+}
+static void on_change_countdown(void)
+{
+    countDown = nodejs->countDown.value;
 }
 void _INIT ProgramInit(void)
 {
@@ -25,7 +29,8 @@ void _INIT ProgramInit(void)
     nodejs->on_connected = on_connected_nodejs;
     // nodejs->on_disconnected = .. ;
     // nodejs->on_operational = .. ;
-    nodejs->counters.on_change = on_change_counters_dataset;
+    nodejs->countUp.on_change = on_change_countup;
+    nodejs->countDown.on_change = on_change_countdown;
 }
 
 void _CYCLIC ProgramCyclic(void)
@@ -47,16 +52,16 @@ void _CYCLIC ProgramCyclic(void)
 
     if (nodejs->is_connected)
     {
-        if (memcmp(&(nodejs->counters.value), &counters, sizeof(counters)))
+        if (nodejs->start.value != start)
         {
-            memcpy(&(nodejs->counters.value), &counters, sizeof(counters));
-            nodejs->counters.publish();
+            nodejs->start.value = start;
+            nodejs->start.publish();
         }
     
-        if (nodejs->run_counter.value != run_counter)
+        if (nodejs->reset.value != reset)
         {
-            nodejs->run_counter.value = run_counter;
-            nodejs->run_counter.publish();
+            nodejs->reset.value = reset;
+            nodejs->reset.publish();
         }
     
     }

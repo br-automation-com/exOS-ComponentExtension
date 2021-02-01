@@ -1,7 +1,6 @@
 #include <string.h>
 #define EXOS_ASSERT_LOG &logger
 #include "exos_log.h"
-#define EXOS_STATIC_INCLUDE
 #include "libnodejs.h"
 
 #define SUCCESS(_format_, ...) exos_log_success(&logger, EXOS_LOG_TYPE_USER, _format_, ##__VA_ARGS__);
@@ -31,20 +30,20 @@ static void libNodeJS_datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_
     case EXOS_DATASET_EVENT_UPDATED:
         VERBOSE("dataset %s updated! latency (us):%i", dataset->name, (exos_datamodel_get_nettime(dataset->datamodel,NULL) - dataset->nettime));
         //handle each subscription dataset separately
-        if (0 == strcmp(dataset->name,"countUp"))
+        if (0 == strcmp(dataset->name,"start"))
         {
             //trigger the callback if assigned
-            if (NULL != h_NodeJS.ext_nodejs.countUp.on_change)
+            if (NULL != h_NodeJS.ext_nodejs.start.on_change)
             {
-                h_NodeJS.ext_nodejs.countUp.on_change();
+                h_NodeJS.ext_nodejs.start.on_change();
             }
         }
-        else if (0 == strcmp(dataset->name,"countDown"))
+        else if (0 == strcmp(dataset->name,"reset"))
         {
             //trigger the callback if assigned
-            if (NULL != h_NodeJS.ext_nodejs.countDown.on_change)
+            if (NULL != h_NodeJS.ext_nodejs.reset.on_change)
             {
-                h_NodeJS.ext_nodejs.countDown.on_change();
+                h_NodeJS.ext_nodejs.reset.on_change();
             }
         }
         break;
@@ -100,13 +99,13 @@ static void libNodeJS_datamodelEvent(exos_datamodel_handle_t *datamodel, const E
     }
 }
 
-static void libNodeJS_publish_start_dataset(void)
+static void libNodeJS_publish_countup(void)
 {
-    exos_dataset_publish(&h_NodeJS.start_dataset);
+    exos_dataset_publish(&h_NodeJS.countup);
 }
-static void libNodeJS_publish_reset_dataset(void)
+static void libNodeJS_publish_countdown(void)
 {
-    exos_dataset_publish(&h_NodeJS.reset_dataset);
+    exos_dataset_publish(&h_NodeJS.countdown);
 }
 
 static void libNodeJS_connect(void)
@@ -115,10 +114,10 @@ static void libNodeJS_connect(void)
     EXOS_ASSERT_OK(exos_datamodel_connect_nodejs(&(h_NodeJS.nodejs), libNodeJS_datamodelEvent));
     
     //connect datasets
-    EXOS_ASSERT_OK(exos_dataset_connect(&(h_NodeJS.start_dataset), EXOS_DATASET_PUBLISH, libNodeJS_datasetEvent));
-    EXOS_ASSERT_OK(exos_dataset_connect(&(h_NodeJS.reset_dataset), EXOS_DATASET_PUBLISH, libNodeJS_datasetEvent));
-    EXOS_ASSERT_OK(exos_dataset_connect(&(h_NodeJS.countup), EXOS_DATASET_SUBSCRIBE, libNodeJS_datasetEvent));
-    EXOS_ASSERT_OK(exos_dataset_connect(&(h_NodeJS.countdown), EXOS_DATASET_SUBSCRIBE, libNodeJS_datasetEvent));
+    EXOS_ASSERT_OK(exos_dataset_connect(&(h_NodeJS.start_dataset), EXOS_DATASET_SUBSCRIBE, libNodeJS_datasetEvent));
+    EXOS_ASSERT_OK(exos_dataset_connect(&(h_NodeJS.reset_dataset), EXOS_DATASET_SUBSCRIBE, libNodeJS_datasetEvent));
+    EXOS_ASSERT_OK(exos_dataset_connect(&(h_NodeJS.countup), EXOS_DATASET_PUBLISH, libNodeJS_datasetEvent));
+    EXOS_ASSERT_OK(exos_dataset_connect(&(h_NodeJS.countdown), EXOS_DATASET_PUBLISH, libNodeJS_datasetEvent));
 }
 static void libNodeJS_disconnect(void)
 {
@@ -147,8 +146,8 @@ libNodeJS_t *libNodeJS_init(void)
 {
     memset(&h_NodeJS,0,sizeof(h_NodeJS));
 
-    h_NodeJS.ext_nodejs.start.publish = libNodeJS_publish_start_dataset;
-    h_NodeJS.ext_nodejs.reset.publish = libNodeJS_publish_reset_dataset;
+    h_NodeJS.ext_nodejs.countUp.publish = libNodeJS_publish_countup;
+    h_NodeJS.ext_nodejs.countDown.publish = libNodeJS_publish_countdown;
     
     h_NodeJS.ext_nodejs.connect = libNodeJS_connect;
     h_NodeJS.ext_nodejs.disconnect = libNodeJS_disconnect;
@@ -156,11 +155,11 @@ libNodeJS_t *libNodeJS_init(void)
     h_NodeJS.ext_nodejs.set_operational = libNodeJS_set_operational;
     h_NodeJS.ext_nodejs.dispose = libNodeJS_dispose;
     
-    exos_log_init(&logger, "NodeJS_AR");
+    exos_log_init(&logger, "NodeJS_Linux");
 
-    SUCCESS("starting NodeJS_AR application..");
+    SUCCESS("starting NodeJS_Linux application..");
 
-    EXOS_ASSERT_OK(exos_datamodel_init(&h_NodeJS.nodejs, "NodeJS", "NodeJS_AR"));
+    EXOS_ASSERT_OK(exos_datamodel_init(&h_NodeJS.nodejs, "NodeJS", "NodeJS_Linux"));
 
     //set the user_context to access custom data in the callbacks
     h_NodeJS.nodejs.user_context = NULL; //not used

@@ -9,8 +9,11 @@ try:
     while True:
         nodejs.process()
         # if nodejs.is_connected:
-            # nodejs.counters.value = .. 
-            # nodejs.counters.publish();
+            # nodejs.countUp.value = .. 
+            # nodejs.countUp.publish();
+            
+            # nodejs.countDown.value = .. 
+            # nodejs.countDown.publish();
             
 except (KeyboardInterrupt, SystemExit):
     print 'Application terminated, shutting down'

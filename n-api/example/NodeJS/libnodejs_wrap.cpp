@@ -1561,22 +1561,23 @@ fail: ;
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_Counters_typ swig_types[0]
-#define SWIGTYPE_p_NodeJS swig_types[1]
-#define SWIGTYPE_p_char swig_types[2]
-#define SWIGTYPE_p_int swig_types[3]
-#define SWIGTYPE_p_libNodeJS swig_types[4]
-#define SWIGTYPE_p_libNodeJScounters swig_types[5]
-#define SWIGTYPE_p_libNodeJSrun_counter swig_types[6]
-#define SWIGTYPE_p_long_long swig_types[7]
-#define SWIGTYPE_p_short swig_types[8]
-#define SWIGTYPE_p_signed_char swig_types[9]
-#define SWIGTYPE_p_unsigned_char swig_types[10]
-#define SWIGTYPE_p_unsigned_int swig_types[11]
-#define SWIGTYPE_p_unsigned_long_long swig_types[12]
-#define SWIGTYPE_p_unsigned_short swig_types[13]
-static swig_type_info *swig_types[15];
-static swig_module_info swig_module = {swig_types, 14, 0, 0, 0, 0};
+#define SWIGTYPE_p_NodeJS swig_types[0]
+#define SWIGTYPE_p_char swig_types[1]
+#define SWIGTYPE_p_int swig_types[2]
+#define SWIGTYPE_p_libNodeJS swig_types[3]
+#define SWIGTYPE_p_libNodeJScountDown swig_types[4]
+#define SWIGTYPE_p_libNodeJScountUp swig_types[5]
+#define SWIGTYPE_p_libNodeJSreset swig_types[6]
+#define SWIGTYPE_p_libNodeJSstart swig_types[7]
+#define SWIGTYPE_p_long_long swig_types[8]
+#define SWIGTYPE_p_short swig_types[9]
+#define SWIGTYPE_p_signed_char swig_types[10]
+#define SWIGTYPE_p_unsigned_char swig_types[11]
+#define SWIGTYPE_p_unsigned_int swig_types[12]
+#define SWIGTYPE_p_unsigned_long_long swig_types[13]
+#define SWIGTYPE_p_unsigned_short swig_types[14]
+static swig_type_info *swig_types[16];
+static swig_module_info swig_module = {swig_types, 15, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1689,211 +1690,40 @@ SWIG_From_bool  (bool value)
 }
 
 
+SWIGINTERN
+int SWIG_AsVal_int (v8::Handle<v8::Value> valRef, int* val)
+{
+  if (!valRef->IsNumber()) {
+    return SWIG_TypeError;
+  }
+  if(val) *val = SWIGV8_INTEGER_VALUE(valRef);
+
+  return SWIG_OK;
+}
+
+
+SWIGINTERNINLINE
+v8::Handle<v8::Value> SWIG_From_int  (int value)
+{
+  return SWIGV8_INT32_NEW(value);
+}
+
+
 #define SWIGV8_INIT libNodeJS_initialize
 
 
-SWIGV8_ClientData _exports_Counters_typ_clientData;
 SWIGV8_ClientData _exports_NodeJS_clientData;
-SWIGV8_ClientData _exports_libNodeJScounters_t_clientData;
-SWIGV8_ClientData _exports_libNodeJSrun_counter_t_clientData;
+SWIGV8_ClientData _exports_libNodeJSstart_t_clientData;
+SWIGV8_ClientData _exports_libNodeJSreset_t_clientData;
+SWIGV8_ClientData _exports_libNodeJScountUp_t_clientData;
+SWIGV8_ClientData _exports_libNodeJScountDown_t_clientData;
 SWIGV8_ClientData _exports_libNodeJS_t_clientData;
 
 
 #if (V8_MAJOR_VERSION-0) < 5
-static void _wrap_Counters_typ_c_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+static void _wrap_NodeJS_start_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #else
-  static void _wrap_Counters_typ_c_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
-#endif
-    SWIGV8_HANDLESCOPE();
-    
-    Counters_typ *arg1 = (Counters_typ *) 0 ;
-    int16_t *arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    
-    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_Counters_typ, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Counters_typ_c_set" "', argument " "1"" of type '" "Counters_typ *""'"); 
-    }
-    arg1 = reinterpret_cast< Counters_typ * >(argp1);
-    res2 = SWIG_ConvertPtr(value, &argp2,SWIGTYPE_p_short, 0 |  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Counters_typ_c_set" "', argument " "2"" of type '" "int16_t [11]""'"); 
-    } 
-    arg2 = reinterpret_cast< int16_t * >(argp2);
-    {
-      if (arg2) {
-        size_t ii = 0;
-        for (; ii < (size_t)11; ++ii) *(int16_t *)&arg1->c[ii] = *((int16_t *)arg2 + ii);
-      } else {
-        SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""c""' of type '""int16_t [11]""'");
-      }
-    }
-    
-    
-    
-    goto fail;
-  fail:
-    return;
-  }
-
-
-#if (V8_MAJOR_VERSION-0) < 5
-static SwigV8ReturnValue _wrap_Counters_typ_c_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
-#else
-  static SwigV8ReturnValue _wrap_Counters_typ_c_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
-#endif
-    SWIGV8_HANDLESCOPE();
-    
-    v8::Handle<v8::Value> jsresult;
-    Counters_typ *arg1 = (Counters_typ *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int16_t *result = 0 ;
-    
-    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_Counters_typ, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Counters_typ_c_get" "', argument " "1"" of type '" "Counters_typ *""'"); 
-    }
-    arg1 = reinterpret_cast< Counters_typ * >(argp1);
-    result = (int16_t *)(int16_t *) ((arg1)->c);
-    jsresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_short, 0 |  0 );
-    
-    
-    SWIGV8_RETURN_INFO(jsresult, info);
-    
-    goto fail;
-  fail:
-    SWIGV8_RETURN_INFO(SWIGV8_UNDEFINED(), info);
-  }
-
-
-static SwigV8ReturnValue _wrap_new_Counters_typ(const SwigV8Arguments &args) {
-  SWIGV8_HANDLESCOPE();
-  
-  v8::Handle<v8::Object> self = args.Holder();
-  Counters_typ *result;
-  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_new_Counters_typ.");
-  result = (Counters_typ *)new Counters_typ();
-  
-  
-  
-  SWIGV8_SetPrivateData(self, result, SWIGTYPE_p_Counters_typ, SWIG_POINTER_OWN);
-  SWIGV8_RETURN(self);
-  
-  goto fail;
-fail:
-  SWIGV8_RETURN(SWIGV8_UNDEFINED());
-}
-
-
-#if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
-static void _wrap_delete_Counters_typ(v8::Persistent<v8::Value> object, void *parameter) {
-  SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
-#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031900)
-  static void _wrap_delete_Counters_typ(v8::Isolate *isolate, v8::Persistent<v8::Value> object, void *parameter) {
-    SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
-#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
-    static void _wrap_delete_Counters_typ(v8::Isolate *isolate, v8::Persistent< v8::Object> *object, SWIGV8_Proxy *proxy) {
-#elif (V8_MAJOR_VERSION-0) < 5
-      static void _wrap_delete_Counters_typ(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &data) {
-        v8::Local<v8::Object> object = data.GetValue();
-        SWIGV8_Proxy *proxy = data.GetParameter();
-#else
-        static void _wrap_delete_Counters_typ(const v8::WeakCallbackInfo<SWIGV8_Proxy> &data) {
-          SWIGV8_Proxy *proxy = data.GetParameter();
-#endif
-          
-          if(proxy->swigCMemOwn && proxy->swigCObject) {
-            Counters_typ * arg1 = (Counters_typ *)proxy->swigCObject;
-            delete arg1;
-          }
-          delete proxy;
-          
-#if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
-          object.Dispose();
-#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031900)
-          object.Dispose(isolate);
-#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x032100)
-          object->Dispose(isolate);
-#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
-          object->Dispose();
-#elif (V8_MAJOR_VERSION-0) < 5
-          object.Clear();
-#endif
-        }
-
-
-#if (V8_MAJOR_VERSION-0) < 5
-static void _wrap_NodeJS_counters_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
-#else
-  static void _wrap_NodeJS_counters_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
-#endif
-    SWIGV8_HANDLESCOPE();
-    
-    NodeJS *arg1 = (NodeJS *) 0 ;
-    Counters_typ *arg2 = (Counters_typ *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    
-    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_counters_set" "', argument " "1"" of type '" "NodeJS *""'"); 
-    }
-    arg1 = reinterpret_cast< NodeJS * >(argp1);
-    res2 = SWIG_ConvertPtr(value, &argp2,SWIGTYPE_p_Counters_typ, 0 |  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "NodeJS_counters_set" "', argument " "2"" of type '" "Counters_typ *""'"); 
-    }
-    arg2 = reinterpret_cast< Counters_typ * >(argp2);
-    if (arg1) (arg1)->counters = *arg2;
-    
-    
-    
-    goto fail;
-  fail:
-    return;
-  }
-
-
-#if (V8_MAJOR_VERSION-0) < 5
-static SwigV8ReturnValue _wrap_NodeJS_counters_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
-#else
-  static SwigV8ReturnValue _wrap_NodeJS_counters_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
-#endif
-    SWIGV8_HANDLESCOPE();
-    
-    v8::Handle<v8::Value> jsresult;
-    NodeJS *arg1 = (NodeJS *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    Counters_typ *result = 0 ;
-    
-    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_counters_get" "', argument " "1"" of type '" "NodeJS *""'"); 
-    }
-    arg1 = reinterpret_cast< NodeJS * >(argp1);
-    result = (Counters_typ *)& ((arg1)->counters);
-    jsresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Counters_typ, 0 |  0 );
-    
-    
-    SWIGV8_RETURN_INFO(jsresult, info);
-    
-    goto fail;
-  fail:
-    SWIGV8_RETURN_INFO(SWIGV8_UNDEFINED(), info);
-  }
-
-
-#if (V8_MAJOR_VERSION-0) < 5
-static void _wrap_NodeJS_run_counter_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
-#else
-  static void _wrap_NodeJS_run_counter_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+  static void _wrap_NodeJS_start_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
@@ -1906,15 +1736,15 @@ static void _wrap_NodeJS_run_counter_set(v8::Local<v8::String> property, v8::Loc
     
     res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_run_counter_set" "', argument " "1"" of type '" "NodeJS *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_start_set" "', argument " "1"" of type '" "NodeJS *""'"); 
     }
     arg1 = reinterpret_cast< NodeJS * >(argp1);
     ecode2 = SWIG_AsVal_bool(value, &val2);
     if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "NodeJS_run_counter_set" "', argument " "2"" of type '" "bool""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "NodeJS_start_set" "', argument " "2"" of type '" "bool""'");
     } 
     arg2 = static_cast< bool >(val2);
-    if (arg1) (arg1)->run_counter = arg2;
+    if (arg1) (arg1)->start = arg2;
     
     
     
@@ -1925,9 +1755,9 @@ static void _wrap_NodeJS_run_counter_set(v8::Local<v8::String> property, v8::Loc
 
 
 #if (V8_MAJOR_VERSION-0) < 5
-static SwigV8ReturnValue _wrap_NodeJS_run_counter_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+static SwigV8ReturnValue _wrap_NodeJS_start_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
 #else
-  static SwigV8ReturnValue _wrap_NodeJS_run_counter_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+  static SwigV8ReturnValue _wrap_NodeJS_start_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
@@ -1939,11 +1769,203 @@ static SwigV8ReturnValue _wrap_NodeJS_run_counter_get(v8::Local<v8::String> prop
     
     res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_run_counter_get" "', argument " "1"" of type '" "NodeJS *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_start_get" "', argument " "1"" of type '" "NodeJS *""'"); 
     }
     arg1 = reinterpret_cast< NodeJS * >(argp1);
-    result = (bool) ((arg1)->run_counter);
+    result = (bool) ((arg1)->start);
     jsresult = SWIG_From_bool(static_cast< bool >(result));
+    
+    
+    SWIGV8_RETURN_INFO(jsresult, info);
+    
+    goto fail;
+  fail:
+    SWIGV8_RETURN_INFO(SWIGV8_UNDEFINED(), info);
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static void _wrap_NodeJS_reset_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#else
+  static void _wrap_NodeJS_reset_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    NodeJS *arg1 = (NodeJS *) 0 ;
+    bool arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    bool val2 ;
+    int ecode2 = 0 ;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_reset_set" "', argument " "1"" of type '" "NodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< NodeJS * >(argp1);
+    ecode2 = SWIG_AsVal_bool(value, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "NodeJS_reset_set" "', argument " "2"" of type '" "bool""'");
+    } 
+    arg2 = static_cast< bool >(val2);
+    if (arg1) (arg1)->reset = arg2;
+    
+    
+    
+    goto fail;
+  fail:
+    return;
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static SwigV8ReturnValue _wrap_NodeJS_reset_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+#else
+  static SwigV8ReturnValue _wrap_NodeJS_reset_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    v8::Handle<v8::Value> jsresult;
+    NodeJS *arg1 = (NodeJS *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    bool result;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_reset_get" "', argument " "1"" of type '" "NodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< NodeJS * >(argp1);
+    result = (bool) ((arg1)->reset);
+    jsresult = SWIG_From_bool(static_cast< bool >(result));
+    
+    
+    SWIGV8_RETURN_INFO(jsresult, info);
+    
+    goto fail;
+  fail:
+    SWIGV8_RETURN_INFO(SWIGV8_UNDEFINED(), info);
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static void _wrap_NodeJS_countUp_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#else
+  static void _wrap_NodeJS_countUp_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    NodeJS *arg1 = (NodeJS *) 0 ;
+    int32_t arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_countUp_set" "', argument " "1"" of type '" "NodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< NodeJS * >(argp1);
+    ecode2 = SWIG_AsVal_int(value, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "NodeJS_countUp_set" "', argument " "2"" of type '" "int32_t""'");
+    } 
+    arg2 = static_cast< int32_t >(val2);
+    if (arg1) (arg1)->countUp = arg2;
+    
+    
+    
+    goto fail;
+  fail:
+    return;
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static SwigV8ReturnValue _wrap_NodeJS_countUp_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+#else
+  static SwigV8ReturnValue _wrap_NodeJS_countUp_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    v8::Handle<v8::Value> jsresult;
+    NodeJS *arg1 = (NodeJS *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int32_t result;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_countUp_get" "', argument " "1"" of type '" "NodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< NodeJS * >(argp1);
+    result = (int32_t) ((arg1)->countUp);
+    jsresult = SWIG_From_int(static_cast< int >(result));
+    
+    
+    SWIGV8_RETURN_INFO(jsresult, info);
+    
+    goto fail;
+  fail:
+    SWIGV8_RETURN_INFO(SWIGV8_UNDEFINED(), info);
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static void _wrap_NodeJS_countDown_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#else
+  static void _wrap_NodeJS_countDown_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    NodeJS *arg1 = (NodeJS *) 0 ;
+    int32_t arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_countDown_set" "', argument " "1"" of type '" "NodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< NodeJS * >(argp1);
+    ecode2 = SWIG_AsVal_int(value, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "NodeJS_countDown_set" "', argument " "2"" of type '" "int32_t""'");
+    } 
+    arg2 = static_cast< int32_t >(val2);
+    if (arg1) (arg1)->countDown = arg2;
+    
+    
+    
+    goto fail;
+  fail:
+    return;
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static SwigV8ReturnValue _wrap_NodeJS_countDown_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+#else
+  static SwigV8ReturnValue _wrap_NodeJS_countDown_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    v8::Handle<v8::Value> jsresult;
+    NodeJS *arg1 = (NodeJS *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int32_t result;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_NodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NodeJS_countDown_get" "', argument " "1"" of type '" "NodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< NodeJS * >(argp1);
+    result = (int32_t) ((arg1)->countDown);
+    jsresult = SWIG_From_int(static_cast< int >(result));
     
     
     SWIGV8_RETURN_INFO(jsresult, info);
@@ -2010,58 +2032,31 @@ static void _wrap_delete_NodeJS(v8::Persistent<v8::Value> object, void *paramete
         }
 
 
-static SwigV8ReturnValue _wrap_libNodeJScounters_t_publish(const SwigV8Arguments &args) {
-  SWIGV8_HANDLESCOPE();
-  
-  v8::Handle<v8::Value> jsresult;
-  libNodeJScounters *arg1 = (libNodeJScounters *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_libNodeJScounters_t_publish.");
-  
-  res1 = SWIG_ConvertPtr(args.Holder(), &argp1,SWIGTYPE_p_libNodeJScounters, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJScounters_t_publish" "', argument " "1"" of type '" "libNodeJScounters *""'"); 
-  }
-  arg1 = reinterpret_cast< libNodeJScounters * >(argp1);
-  (arg1)->publish();
-  jsresult = SWIGV8_UNDEFINED();
-  
-  
-  SWIGV8_RETURN(jsresult);
-  
-  goto fail;
-fail:
-  SWIGV8_RETURN(SWIGV8_UNDEFINED());
-}
-
-
 #if (V8_MAJOR_VERSION-0) < 5
-static void _wrap_libNodeJScounters_t_value_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+static void _wrap_libNodeJSstart_t_value_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #else
-  static void _wrap_libNodeJScounters_t_value_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+  static void _wrap_libNodeJSstart_t_value_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
-    libNodeJScounters *arg1 = (libNodeJScounters *) 0 ;
-    Counters_typ *arg2 = (Counters_typ *) 0 ;
+    libNodeJSstart *arg1 = (libNodeJSstart *) 0 ;
+    bool arg2 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
+    bool val2 ;
+    int ecode2 = 0 ;
     
-    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJScounters, 0 |  0 );
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJSstart, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJScounters_t_value_set" "', argument " "1"" of type '" "libNodeJScounters *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJSstart_t_value_set" "', argument " "1"" of type '" "libNodeJSstart *""'"); 
     }
-    arg1 = reinterpret_cast< libNodeJScounters * >(argp1);
-    res2 = SWIG_ConvertPtr(value, &argp2,SWIGTYPE_p_Counters_typ, 0 |  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "libNodeJScounters_t_value_set" "', argument " "2"" of type '" "Counters_typ *""'"); 
-    }
-    arg2 = reinterpret_cast< Counters_typ * >(argp2);
-    if (arg1) (arg1)->value = *arg2;
+    arg1 = reinterpret_cast< libNodeJSstart * >(argp1);
+    ecode2 = SWIG_AsVal_bool(value, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "libNodeJSstart_t_value_set" "', argument " "2"" of type '" "bool""'");
+    } 
+    arg2 = static_cast< bool >(val2);
+    if (arg1) (arg1)->value = arg2;
     
     
     
@@ -2072,25 +2067,25 @@ static void _wrap_libNodeJScounters_t_value_set(v8::Local<v8::String> property, 
 
 
 #if (V8_MAJOR_VERSION-0) < 5
-static SwigV8ReturnValue _wrap_libNodeJScounters_t_value_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+static SwigV8ReturnValue _wrap_libNodeJSstart_t_value_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
 #else
-  static SwigV8ReturnValue _wrap_libNodeJScounters_t_value_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+  static SwigV8ReturnValue _wrap_libNodeJSstart_t_value_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
     v8::Handle<v8::Value> jsresult;
-    libNodeJScounters *arg1 = (libNodeJScounters *) 0 ;
+    libNodeJSstart *arg1 = (libNodeJSstart *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
-    Counters_typ *result = 0 ;
+    bool result;
     
-    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJScounters, 0 |  0 );
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJSstart, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJScounters_t_value_get" "', argument " "1"" of type '" "libNodeJScounters *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJSstart_t_value_get" "', argument " "1"" of type '" "libNodeJSstart *""'"); 
     }
-    arg1 = reinterpret_cast< libNodeJScounters * >(argp1);
-    result = (Counters_typ *)& ((arg1)->value);
-    jsresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Counters_typ, 0 |  0 );
+    arg1 = reinterpret_cast< libNodeJSstart * >(argp1);
+    result = (bool) ((arg1)->value);
+    jsresult = SWIG_From_bool(static_cast< bool >(result));
     
     
     SWIGV8_RETURN_INFO(jsresult, info);
@@ -2101,17 +2096,17 @@ static SwigV8ReturnValue _wrap_libNodeJScounters_t_value_get(v8::Local<v8::Strin
   }
 
 
-static SwigV8ReturnValue _wrap_new_libNodeJScounters_t(const SwigV8Arguments &args) {
+static SwigV8ReturnValue _wrap_new_libNodeJSstart_t(const SwigV8Arguments &args) {
   SWIGV8_HANDLESCOPE();
   
   v8::Handle<v8::Object> self = args.Holder();
-  libNodeJScounters *result;
-  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_new_libNodeJScounters_t.");
-  result = (libNodeJScounters *)new libNodeJScounters();
+  libNodeJSstart *result;
+  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_new_libNodeJSstart_t.");
+  result = (libNodeJSstart *)new libNodeJSstart();
   
   
   
-  SWIGV8_SetPrivateData(self, result, SWIGTYPE_p_libNodeJScounters, SWIG_POINTER_OWN);
+  SWIGV8_SetPrivateData(self, result, SWIGTYPE_p_libNodeJSstart, SWIG_POINTER_OWN);
   SWIGV8_RETURN(self);
   
   goto fail;
@@ -2121,24 +2116,24 @@ fail:
 
 
 #if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
-static void _wrap_delete_libNodeJScounters_t(v8::Persistent<v8::Value> object, void *parameter) {
+static void _wrap_delete_libNodeJSstart_t(v8::Persistent<v8::Value> object, void *parameter) {
   SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
 #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031900)
-  static void _wrap_delete_libNodeJScounters_t(v8::Isolate *isolate, v8::Persistent<v8::Value> object, void *parameter) {
+  static void _wrap_delete_libNodeJSstart_t(v8::Isolate *isolate, v8::Persistent<v8::Value> object, void *parameter) {
     SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
 #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
-    static void _wrap_delete_libNodeJScounters_t(v8::Isolate *isolate, v8::Persistent< v8::Object> *object, SWIGV8_Proxy *proxy) {
+    static void _wrap_delete_libNodeJSstart_t(v8::Isolate *isolate, v8::Persistent< v8::Object> *object, SWIGV8_Proxy *proxy) {
 #elif (V8_MAJOR_VERSION-0) < 5
-      static void _wrap_delete_libNodeJScounters_t(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &data) {
+      static void _wrap_delete_libNodeJSstart_t(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &data) {
         v8::Local<v8::Object> object = data.GetValue();
         SWIGV8_Proxy *proxy = data.GetParameter();
 #else
-        static void _wrap_delete_libNodeJScounters_t(const v8::WeakCallbackInfo<SWIGV8_Proxy> &data) {
+        static void _wrap_delete_libNodeJSstart_t(const v8::WeakCallbackInfo<SWIGV8_Proxy> &data) {
           SWIGV8_Proxy *proxy = data.GetParameter();
 #endif
           
           if(proxy->swigCMemOwn && proxy->swigCObject) {
-            libNodeJScounters * arg1 = (libNodeJScounters *)proxy->swigCObject;
+            libNodeJSstart * arg1 = (libNodeJSstart *)proxy->swigCObject;
             delete arg1;
           }
           delete proxy;
@@ -2158,27 +2153,27 @@ static void _wrap_delete_libNodeJScounters_t(v8::Persistent<v8::Value> object, v
 
 
 #if (V8_MAJOR_VERSION-0) < 5
-static void _wrap_libNodeJSrun_counter_t_value_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+static void _wrap_libNodeJSreset_t_value_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #else
-  static void _wrap_libNodeJSrun_counter_t_value_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+  static void _wrap_libNodeJSreset_t_value_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
-    libNodeJSrun_counter *arg1 = (libNodeJSrun_counter *) 0 ;
+    libNodeJSreset *arg1 = (libNodeJSreset *) 0 ;
     bool arg2 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     bool val2 ;
     int ecode2 = 0 ;
     
-    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJSrun_counter, 0 |  0 );
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJSreset, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJSrun_counter_t_value_set" "', argument " "1"" of type '" "libNodeJSrun_counter *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJSreset_t_value_set" "', argument " "1"" of type '" "libNodeJSreset *""'"); 
     }
-    arg1 = reinterpret_cast< libNodeJSrun_counter * >(argp1);
+    arg1 = reinterpret_cast< libNodeJSreset * >(argp1);
     ecode2 = SWIG_AsVal_bool(value, &val2);
     if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "libNodeJSrun_counter_t_value_set" "', argument " "2"" of type '" "bool""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "libNodeJSreset_t_value_set" "', argument " "2"" of type '" "bool""'");
     } 
     arg2 = static_cast< bool >(val2);
     if (arg1) (arg1)->value = arg2;
@@ -2192,23 +2187,23 @@ static void _wrap_libNodeJSrun_counter_t_value_set(v8::Local<v8::String> propert
 
 
 #if (V8_MAJOR_VERSION-0) < 5
-static SwigV8ReturnValue _wrap_libNodeJSrun_counter_t_value_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+static SwigV8ReturnValue _wrap_libNodeJSreset_t_value_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
 #else
-  static SwigV8ReturnValue _wrap_libNodeJSrun_counter_t_value_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+  static SwigV8ReturnValue _wrap_libNodeJSreset_t_value_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
     v8::Handle<v8::Value> jsresult;
-    libNodeJSrun_counter *arg1 = (libNodeJSrun_counter *) 0 ;
+    libNodeJSreset *arg1 = (libNodeJSreset *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     bool result;
     
-    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJSrun_counter, 0 |  0 );
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJSreset, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJSrun_counter_t_value_get" "', argument " "1"" of type '" "libNodeJSrun_counter *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJSreset_t_value_get" "', argument " "1"" of type '" "libNodeJSreset *""'"); 
     }
-    arg1 = reinterpret_cast< libNodeJSrun_counter * >(argp1);
+    arg1 = reinterpret_cast< libNodeJSreset * >(argp1);
     result = (bool) ((arg1)->value);
     jsresult = SWIG_From_bool(static_cast< bool >(result));
     
@@ -2221,17 +2216,17 @@ static SwigV8ReturnValue _wrap_libNodeJSrun_counter_t_value_get(v8::Local<v8::St
   }
 
 
-static SwigV8ReturnValue _wrap_new_libNodeJSrun_counter_t(const SwigV8Arguments &args) {
+static SwigV8ReturnValue _wrap_new_libNodeJSreset_t(const SwigV8Arguments &args) {
   SWIGV8_HANDLESCOPE();
   
   v8::Handle<v8::Object> self = args.Holder();
-  libNodeJSrun_counter *result;
-  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_new_libNodeJSrun_counter_t.");
-  result = (libNodeJSrun_counter *)new libNodeJSrun_counter();
+  libNodeJSreset *result;
+  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_new_libNodeJSreset_t.");
+  result = (libNodeJSreset *)new libNodeJSreset();
   
   
   
-  SWIGV8_SetPrivateData(self, result, SWIGTYPE_p_libNodeJSrun_counter, SWIG_POINTER_OWN);
+  SWIGV8_SetPrivateData(self, result, SWIGTYPE_p_libNodeJSreset, SWIG_POINTER_OWN);
   SWIGV8_RETURN(self);
   
   goto fail;
@@ -2241,24 +2236,318 @@ fail:
 
 
 #if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
-static void _wrap_delete_libNodeJSrun_counter_t(v8::Persistent<v8::Value> object, void *parameter) {
+static void _wrap_delete_libNodeJSreset_t(v8::Persistent<v8::Value> object, void *parameter) {
   SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
 #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031900)
-  static void _wrap_delete_libNodeJSrun_counter_t(v8::Isolate *isolate, v8::Persistent<v8::Value> object, void *parameter) {
+  static void _wrap_delete_libNodeJSreset_t(v8::Isolate *isolate, v8::Persistent<v8::Value> object, void *parameter) {
     SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
 #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
-    static void _wrap_delete_libNodeJSrun_counter_t(v8::Isolate *isolate, v8::Persistent< v8::Object> *object, SWIGV8_Proxy *proxy) {
+    static void _wrap_delete_libNodeJSreset_t(v8::Isolate *isolate, v8::Persistent< v8::Object> *object, SWIGV8_Proxy *proxy) {
 #elif (V8_MAJOR_VERSION-0) < 5
-      static void _wrap_delete_libNodeJSrun_counter_t(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &data) {
+      static void _wrap_delete_libNodeJSreset_t(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &data) {
         v8::Local<v8::Object> object = data.GetValue();
         SWIGV8_Proxy *proxy = data.GetParameter();
 #else
-        static void _wrap_delete_libNodeJSrun_counter_t(const v8::WeakCallbackInfo<SWIGV8_Proxy> &data) {
+        static void _wrap_delete_libNodeJSreset_t(const v8::WeakCallbackInfo<SWIGV8_Proxy> &data) {
           SWIGV8_Proxy *proxy = data.GetParameter();
 #endif
           
           if(proxy->swigCMemOwn && proxy->swigCObject) {
-            libNodeJSrun_counter * arg1 = (libNodeJSrun_counter *)proxy->swigCObject;
+            libNodeJSreset * arg1 = (libNodeJSreset *)proxy->swigCObject;
+            delete arg1;
+          }
+          delete proxy;
+          
+#if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
+          object.Dispose();
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031900)
+          object.Dispose(isolate);
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x032100)
+          object->Dispose(isolate);
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
+          object->Dispose();
+#elif (V8_MAJOR_VERSION-0) < 5
+          object.Clear();
+#endif
+        }
+
+
+static SwigV8ReturnValue _wrap_libNodeJScountUp_t_publish(const SwigV8Arguments &args) {
+  SWIGV8_HANDLESCOPE();
+  
+  v8::Handle<v8::Value> jsresult;
+  libNodeJScountUp *arg1 = (libNodeJScountUp *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_libNodeJScountUp_t_publish.");
+  
+  res1 = SWIG_ConvertPtr(args.Holder(), &argp1,SWIGTYPE_p_libNodeJScountUp, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJScountUp_t_publish" "', argument " "1"" of type '" "libNodeJScountUp *""'"); 
+  }
+  arg1 = reinterpret_cast< libNodeJScountUp * >(argp1);
+  (arg1)->publish();
+  jsresult = SWIGV8_UNDEFINED();
+  
+  
+  SWIGV8_RETURN(jsresult);
+  
+  goto fail;
+fail:
+  SWIGV8_RETURN(SWIGV8_UNDEFINED());
+}
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static void _wrap_libNodeJScountUp_t_value_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#else
+  static void _wrap_libNodeJScountUp_t_value_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    libNodeJScountUp *arg1 = (libNodeJScountUp *) 0 ;
+    int32_t arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJScountUp, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJScountUp_t_value_set" "', argument " "1"" of type '" "libNodeJScountUp *""'"); 
+    }
+    arg1 = reinterpret_cast< libNodeJScountUp * >(argp1);
+    ecode2 = SWIG_AsVal_int(value, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "libNodeJScountUp_t_value_set" "', argument " "2"" of type '" "int32_t""'");
+    } 
+    arg2 = static_cast< int32_t >(val2);
+    if (arg1) (arg1)->value = arg2;
+    
+    
+    
+    goto fail;
+  fail:
+    return;
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static SwigV8ReturnValue _wrap_libNodeJScountUp_t_value_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+#else
+  static SwigV8ReturnValue _wrap_libNodeJScountUp_t_value_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    v8::Handle<v8::Value> jsresult;
+    libNodeJScountUp *arg1 = (libNodeJScountUp *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int32_t result;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJScountUp, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJScountUp_t_value_get" "', argument " "1"" of type '" "libNodeJScountUp *""'"); 
+    }
+    arg1 = reinterpret_cast< libNodeJScountUp * >(argp1);
+    result = (int32_t) ((arg1)->value);
+    jsresult = SWIG_From_int(static_cast< int >(result));
+    
+    
+    SWIGV8_RETURN_INFO(jsresult, info);
+    
+    goto fail;
+  fail:
+    SWIGV8_RETURN_INFO(SWIGV8_UNDEFINED(), info);
+  }
+
+
+static SwigV8ReturnValue _wrap_new_libNodeJScountUp_t(const SwigV8Arguments &args) {
+  SWIGV8_HANDLESCOPE();
+  
+  v8::Handle<v8::Object> self = args.Holder();
+  libNodeJScountUp *result;
+  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_new_libNodeJScountUp_t.");
+  result = (libNodeJScountUp *)new libNodeJScountUp();
+  
+  
+  
+  SWIGV8_SetPrivateData(self, result, SWIGTYPE_p_libNodeJScountUp, SWIG_POINTER_OWN);
+  SWIGV8_RETURN(self);
+  
+  goto fail;
+fail:
+  SWIGV8_RETURN(SWIGV8_UNDEFINED());
+}
+
+
+#if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
+static void _wrap_delete_libNodeJScountUp_t(v8::Persistent<v8::Value> object, void *parameter) {
+  SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031900)
+  static void _wrap_delete_libNodeJScountUp_t(v8::Isolate *isolate, v8::Persistent<v8::Value> object, void *parameter) {
+    SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
+    static void _wrap_delete_libNodeJScountUp_t(v8::Isolate *isolate, v8::Persistent< v8::Object> *object, SWIGV8_Proxy *proxy) {
+#elif (V8_MAJOR_VERSION-0) < 5
+      static void _wrap_delete_libNodeJScountUp_t(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &data) {
+        v8::Local<v8::Object> object = data.GetValue();
+        SWIGV8_Proxy *proxy = data.GetParameter();
+#else
+        static void _wrap_delete_libNodeJScountUp_t(const v8::WeakCallbackInfo<SWIGV8_Proxy> &data) {
+          SWIGV8_Proxy *proxy = data.GetParameter();
+#endif
+          
+          if(proxy->swigCMemOwn && proxy->swigCObject) {
+            libNodeJScountUp * arg1 = (libNodeJScountUp *)proxy->swigCObject;
+            delete arg1;
+          }
+          delete proxy;
+          
+#if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
+          object.Dispose();
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031900)
+          object.Dispose(isolate);
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x032100)
+          object->Dispose(isolate);
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
+          object->Dispose();
+#elif (V8_MAJOR_VERSION-0) < 5
+          object.Clear();
+#endif
+        }
+
+
+static SwigV8ReturnValue _wrap_libNodeJScountDown_t_publish(const SwigV8Arguments &args) {
+  SWIGV8_HANDLESCOPE();
+  
+  v8::Handle<v8::Value> jsresult;
+  libNodeJScountDown *arg1 = (libNodeJScountDown *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_libNodeJScountDown_t_publish.");
+  
+  res1 = SWIG_ConvertPtr(args.Holder(), &argp1,SWIGTYPE_p_libNodeJScountDown, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJScountDown_t_publish" "', argument " "1"" of type '" "libNodeJScountDown *""'"); 
+  }
+  arg1 = reinterpret_cast< libNodeJScountDown * >(argp1);
+  (arg1)->publish();
+  jsresult = SWIGV8_UNDEFINED();
+  
+  
+  SWIGV8_RETURN(jsresult);
+  
+  goto fail;
+fail:
+  SWIGV8_RETURN(SWIGV8_UNDEFINED());
+}
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static void _wrap_libNodeJScountDown_t_value_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#else
+  static void _wrap_libNodeJScountDown_t_value_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    libNodeJScountDown *arg1 = (libNodeJScountDown *) 0 ;
+    int32_t arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJScountDown, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJScountDown_t_value_set" "', argument " "1"" of type '" "libNodeJScountDown *""'"); 
+    }
+    arg1 = reinterpret_cast< libNodeJScountDown * >(argp1);
+    ecode2 = SWIG_AsVal_int(value, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "libNodeJScountDown_t_value_set" "', argument " "2"" of type '" "int32_t""'");
+    } 
+    arg2 = static_cast< int32_t >(val2);
+    if (arg1) (arg1)->value = arg2;
+    
+    
+    
+    goto fail;
+  fail:
+    return;
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static SwigV8ReturnValue _wrap_libNodeJScountDown_t_value_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+#else
+  static SwigV8ReturnValue _wrap_libNodeJScountDown_t_value_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    v8::Handle<v8::Value> jsresult;
+    libNodeJScountDown *arg1 = (libNodeJScountDown *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int32_t result;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJScountDown, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJScountDown_t_value_get" "', argument " "1"" of type '" "libNodeJScountDown *""'"); 
+    }
+    arg1 = reinterpret_cast< libNodeJScountDown * >(argp1);
+    result = (int32_t) ((arg1)->value);
+    jsresult = SWIG_From_int(static_cast< int >(result));
+    
+    
+    SWIGV8_RETURN_INFO(jsresult, info);
+    
+    goto fail;
+  fail:
+    SWIGV8_RETURN_INFO(SWIGV8_UNDEFINED(), info);
+  }
+
+
+static SwigV8ReturnValue _wrap_new_libNodeJScountDown_t(const SwigV8Arguments &args) {
+  SWIGV8_HANDLESCOPE();
+  
+  v8::Handle<v8::Object> self = args.Holder();
+  libNodeJScountDown *result;
+  if(args.Length() != 0) SWIG_exception_fail(SWIG_ERROR, "Illegal number of arguments for _wrap_new_libNodeJScountDown_t.");
+  result = (libNodeJScountDown *)new libNodeJScountDown();
+  
+  
+  
+  SWIGV8_SetPrivateData(self, result, SWIGTYPE_p_libNodeJScountDown, SWIG_POINTER_OWN);
+  SWIGV8_RETURN(self);
+  
+  goto fail;
+fail:
+  SWIGV8_RETURN(SWIGV8_UNDEFINED());
+}
+
+
+#if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
+static void _wrap_delete_libNodeJScountDown_t(v8::Persistent<v8::Value> object, void *parameter) {
+  SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031900)
+  static void _wrap_delete_libNodeJScountDown_t(v8::Isolate *isolate, v8::Persistent<v8::Value> object, void *parameter) {
+    SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
+#elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
+    static void _wrap_delete_libNodeJScountDown_t(v8::Isolate *isolate, v8::Persistent< v8::Object> *object, SWIGV8_Proxy *proxy) {
+#elif (V8_MAJOR_VERSION-0) < 5
+      static void _wrap_delete_libNodeJScountDown_t(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &data) {
+        v8::Local<v8::Object> object = data.GetValue();
+        SWIGV8_Proxy *proxy = data.GetParameter();
+#else
+        static void _wrap_delete_libNodeJScountDown_t(const v8::WeakCallbackInfo<SWIGV8_Proxy> &data) {
+          SWIGV8_Proxy *proxy = data.GetParameter();
+#endif
+          
+          if(proxy->swigCMemOwn && proxy->swigCObject) {
+            libNodeJScountDown * arg1 = (libNodeJScountDown *)proxy->swigCObject;
             delete arg1;
           }
           delete proxy;
@@ -2541,14 +2830,14 @@ static SwigV8ReturnValue _wrap_libNodeJS_t_is_operational_get(v8::Local<v8::Stri
 
 
 #if (V8_MAJOR_VERSION-0) < 5
-static void _wrap_libNodeJS_t_counters_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+static void _wrap_libNodeJS_t_start_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #else
-  static void _wrap_libNodeJS_t_counters_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+  static void _wrap_libNodeJS_t_start_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
     libNodeJS *arg1 = (libNodeJS *) 0 ;
-    libNodeJScounters_t *arg2 = (libNodeJScounters_t *) 0 ;
+    libNodeJSstart_t *arg2 = (libNodeJSstart_t *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     void *argp2 = 0 ;
@@ -2556,15 +2845,15 @@ static void _wrap_libNodeJS_t_counters_set(v8::Local<v8::String> property, v8::L
     
     res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJS, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_counters_set" "', argument " "1"" of type '" "libNodeJS *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_start_set" "', argument " "1"" of type '" "libNodeJS *""'"); 
     }
     arg1 = reinterpret_cast< libNodeJS * >(argp1);
-    res2 = SWIG_ConvertPtr(value, &argp2,SWIGTYPE_p_libNodeJScounters, 0 |  0 );
+    res2 = SWIG_ConvertPtr(value, &argp2,SWIGTYPE_p_libNodeJSstart, 0 |  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "libNodeJS_t_counters_set" "', argument " "2"" of type '" "libNodeJScounters_t *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "libNodeJS_t_start_set" "', argument " "2"" of type '" "libNodeJSstart_t *""'"); 
     }
-    arg2 = reinterpret_cast< libNodeJScounters_t * >(argp2);
-    if (arg1) (arg1)->counters = *arg2;
+    arg2 = reinterpret_cast< libNodeJSstart_t * >(argp2);
+    if (arg1) (arg1)->start = *arg2;
     
     
     
@@ -2575,9 +2864,9 @@ static void _wrap_libNodeJS_t_counters_set(v8::Local<v8::String> property, v8::L
 
 
 #if (V8_MAJOR_VERSION-0) < 5
-static SwigV8ReturnValue _wrap_libNodeJS_t_counters_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+static SwigV8ReturnValue _wrap_libNodeJS_t_start_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
 #else
-  static SwigV8ReturnValue _wrap_libNodeJS_t_counters_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+  static SwigV8ReturnValue _wrap_libNodeJS_t_start_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
@@ -2585,15 +2874,15 @@ static SwigV8ReturnValue _wrap_libNodeJS_t_counters_get(v8::Local<v8::String> pr
     libNodeJS *arg1 = (libNodeJS *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
-    libNodeJScounters_t *result = 0 ;
+    libNodeJSstart_t *result = 0 ;
     
     res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJS, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_counters_get" "', argument " "1"" of type '" "libNodeJS *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_start_get" "', argument " "1"" of type '" "libNodeJS *""'"); 
     }
     arg1 = reinterpret_cast< libNodeJS * >(argp1);
-    result = (libNodeJScounters_t *)& ((arg1)->counters);
-    jsresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_libNodeJScounters, 0 |  0 );
+    result = (libNodeJSstart_t *)& ((arg1)->start);
+    jsresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_libNodeJSstart, 0 |  0 );
     
     
     SWIGV8_RETURN_INFO(jsresult, info);
@@ -2605,14 +2894,14 @@ static SwigV8ReturnValue _wrap_libNodeJS_t_counters_get(v8::Local<v8::String> pr
 
 
 #if (V8_MAJOR_VERSION-0) < 5
-static void _wrap_libNodeJS_t_run_counter_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+static void _wrap_libNodeJS_t_reset_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #else
-  static void _wrap_libNodeJS_t_run_counter_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+  static void _wrap_libNodeJS_t_reset_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
     libNodeJS *arg1 = (libNodeJS *) 0 ;
-    libNodeJSrun_counter_t *arg2 = (libNodeJSrun_counter_t *) 0 ;
+    libNodeJSreset_t *arg2 = (libNodeJSreset_t *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     void *argp2 = 0 ;
@@ -2620,15 +2909,15 @@ static void _wrap_libNodeJS_t_run_counter_set(v8::Local<v8::String> property, v8
     
     res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJS, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_run_counter_set" "', argument " "1"" of type '" "libNodeJS *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_reset_set" "', argument " "1"" of type '" "libNodeJS *""'"); 
     }
     arg1 = reinterpret_cast< libNodeJS * >(argp1);
-    res2 = SWIG_ConvertPtr(value, &argp2,SWIGTYPE_p_libNodeJSrun_counter, 0 |  0 );
+    res2 = SWIG_ConvertPtr(value, &argp2,SWIGTYPE_p_libNodeJSreset, 0 |  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "libNodeJS_t_run_counter_set" "', argument " "2"" of type '" "libNodeJSrun_counter_t *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "libNodeJS_t_reset_set" "', argument " "2"" of type '" "libNodeJSreset_t *""'"); 
     }
-    arg2 = reinterpret_cast< libNodeJSrun_counter_t * >(argp2);
-    if (arg1) (arg1)->run_counter = *arg2;
+    arg2 = reinterpret_cast< libNodeJSreset_t * >(argp2);
+    if (arg1) (arg1)->reset = *arg2;
     
     
     
@@ -2639,9 +2928,9 @@ static void _wrap_libNodeJS_t_run_counter_set(v8::Local<v8::String> property, v8
 
 
 #if (V8_MAJOR_VERSION-0) < 5
-static SwigV8ReturnValue _wrap_libNodeJS_t_run_counter_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+static SwigV8ReturnValue _wrap_libNodeJS_t_reset_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
 #else
-  static SwigV8ReturnValue _wrap_libNodeJS_t_run_counter_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+  static SwigV8ReturnValue _wrap_libNodeJS_t_reset_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
 #endif
     SWIGV8_HANDLESCOPE();
     
@@ -2649,15 +2938,143 @@ static SwigV8ReturnValue _wrap_libNodeJS_t_run_counter_get(v8::Local<v8::String>
     libNodeJS *arg1 = (libNodeJS *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
-    libNodeJSrun_counter_t *result = 0 ;
+    libNodeJSreset_t *result = 0 ;
     
     res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJS, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_run_counter_get" "', argument " "1"" of type '" "libNodeJS *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_reset_get" "', argument " "1"" of type '" "libNodeJS *""'"); 
     }
     arg1 = reinterpret_cast< libNodeJS * >(argp1);
-    result = (libNodeJSrun_counter_t *)& ((arg1)->run_counter);
-    jsresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_libNodeJSrun_counter, 0 |  0 );
+    result = (libNodeJSreset_t *)& ((arg1)->reset);
+    jsresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_libNodeJSreset, 0 |  0 );
+    
+    
+    SWIGV8_RETURN_INFO(jsresult, info);
+    
+    goto fail;
+  fail:
+    SWIGV8_RETURN_INFO(SWIGV8_UNDEFINED(), info);
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static void _wrap_libNodeJS_t_countUp_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#else
+  static void _wrap_libNodeJS_t_countUp_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    libNodeJS *arg1 = (libNodeJS *) 0 ;
+    libNodeJScountUp_t *arg2 = (libNodeJScountUp_t *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_countUp_set" "', argument " "1"" of type '" "libNodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< libNodeJS * >(argp1);
+    res2 = SWIG_ConvertPtr(value, &argp2,SWIGTYPE_p_libNodeJScountUp, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "libNodeJS_t_countUp_set" "', argument " "2"" of type '" "libNodeJScountUp_t *""'"); 
+    }
+    arg2 = reinterpret_cast< libNodeJScountUp_t * >(argp2);
+    if (arg1) (arg1)->countUp = *arg2;
+    
+    
+    
+    goto fail;
+  fail:
+    return;
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static SwigV8ReturnValue _wrap_libNodeJS_t_countUp_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+#else
+  static SwigV8ReturnValue _wrap_libNodeJS_t_countUp_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    v8::Handle<v8::Value> jsresult;
+    libNodeJS *arg1 = (libNodeJS *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    libNodeJScountUp_t *result = 0 ;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_countUp_get" "', argument " "1"" of type '" "libNodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< libNodeJS * >(argp1);
+    result = (libNodeJScountUp_t *)& ((arg1)->countUp);
+    jsresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_libNodeJScountUp, 0 |  0 );
+    
+    
+    SWIGV8_RETURN_INFO(jsresult, info);
+    
+    goto fail;
+  fail:
+    SWIGV8_RETURN_INFO(SWIGV8_UNDEFINED(), info);
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static void _wrap_libNodeJS_t_countDown_set(v8::Local<v8::String> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#else
+  static void _wrap_libNodeJS_t_countDown_set(v8::Local<v8::Name> property, v8::Local<v8::Value> value, const SwigV8PropertyCallbackInfoVoid &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    libNodeJS *arg1 = (libNodeJS *) 0 ;
+    libNodeJScountDown_t *arg2 = (libNodeJScountDown_t *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_countDown_set" "', argument " "1"" of type '" "libNodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< libNodeJS * >(argp1);
+    res2 = SWIG_ConvertPtr(value, &argp2,SWIGTYPE_p_libNodeJScountDown, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "libNodeJS_t_countDown_set" "', argument " "2"" of type '" "libNodeJScountDown_t *""'"); 
+    }
+    arg2 = reinterpret_cast< libNodeJScountDown_t * >(argp2);
+    if (arg1) (arg1)->countDown = *arg2;
+    
+    
+    
+    goto fail;
+  fail:
+    return;
+  }
+
+
+#if (V8_MAJOR_VERSION-0) < 5
+static SwigV8ReturnValue _wrap_libNodeJS_t_countDown_get(v8::Local<v8::String> property, const SwigV8PropertyCallbackInfo &info) {
+#else
+  static SwigV8ReturnValue _wrap_libNodeJS_t_countDown_get(v8::Local<v8::Name> property, const SwigV8PropertyCallbackInfo &info) {
+#endif
+    SWIGV8_HANDLESCOPE();
+    
+    v8::Handle<v8::Value> jsresult;
+    libNodeJS *arg1 = (libNodeJS *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    libNodeJScountDown_t *result = 0 ;
+    
+    res1 = SWIG_ConvertPtr(info.Holder(), &argp1,SWIGTYPE_p_libNodeJS, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "libNodeJS_t_countDown_get" "', argument " "1"" of type '" "libNodeJS *""'"); 
+    }
+    arg1 = reinterpret_cast< libNodeJS * >(argp1);
+    result = (libNodeJScountDown_t *)& ((arg1)->countDown);
+    jsresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_libNodeJScountDown, 0 |  0 );
     
     
     SWIGV8_RETURN_INFO(jsresult, info);
@@ -2745,13 +3162,14 @@ fail:
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_Counters_typ = {"_p_Counters_typ", "Counters_typ *|p_Counters_typ", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_NodeJS = {"_p_NodeJS", "NodeJS *|p_NodeJS", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "intptr_t *|int *|int_least32_t *|int_fast32_t *|int32_t *|int_fast16_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_libNodeJS = {"_p_libNodeJS", "libNodeJS *|libNodeJS_t *|p_libNodeJS", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_libNodeJScounters = {"_p_libNodeJScounters", "libNodeJScounters *|libNodeJScounters_t *|p_libNodeJScounters", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_libNodeJSrun_counter = {"_p_libNodeJSrun_counter", "p_libNodeJSrun_counter|libNodeJSrun_counter *|libNodeJSrun_counter_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_libNodeJScountDown = {"_p_libNodeJScountDown", "libNodeJScountDown *|p_libNodeJScountDown|libNodeJScountDown_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_libNodeJScountUp = {"_p_libNodeJScountUp", "libNodeJScountUp_t *|p_libNodeJScountUp|libNodeJScountUp *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_libNodeJSreset = {"_p_libNodeJSreset", "libNodeJSreset *|p_libNodeJSreset|libNodeJSreset_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_libNodeJSstart = {"_p_libNodeJSstart", "p_libNodeJSstart|libNodeJSstart_t *|libNodeJSstart *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_long_long = {"_p_long_long", "int_least64_t *|int_fast64_t *|int64_t *|long long *|intmax_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_short = {"_p_short", "short *|int_least16_t *|int16_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_signed_char = {"_p_signed_char", "signed char *|int_least8_t *|int_fast8_t *|int8_t *", 0, 0, (void*)0, 0};
@@ -2761,13 +3179,14 @@ static swig_type_info _swigt__p_unsigned_long_long = {"_p_unsigned_long_long", "
 static swig_type_info _swigt__p_unsigned_short = {"_p_unsigned_short", "unsigned short *|uint_least16_t *|uint16_t *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_Counters_typ,
   &_swigt__p_NodeJS,
   &_swigt__p_char,
   &_swigt__p_int,
   &_swigt__p_libNodeJS,
-  &_swigt__p_libNodeJScounters,
-  &_swigt__p_libNodeJSrun_counter,
+  &_swigt__p_libNodeJScountDown,
+  &_swigt__p_libNodeJScountUp,
+  &_swigt__p_libNodeJSreset,
+  &_swigt__p_libNodeJSstart,
   &_swigt__p_long_long,
   &_swigt__p_short,
   &_swigt__p_signed_char,
@@ -2777,13 +3196,14 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_unsigned_short,
 };
 
-static swig_cast_info _swigc__p_Counters_typ[] = {  {&_swigt__p_Counters_typ, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NodeJS[] = {  {&_swigt__p_NodeJS, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_libNodeJS[] = {  {&_swigt__p_libNodeJS, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_libNodeJScounters[] = {  {&_swigt__p_libNodeJScounters, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_libNodeJSrun_counter[] = {  {&_swigt__p_libNodeJSrun_counter, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_libNodeJScountDown[] = {  {&_swigt__p_libNodeJScountDown, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_libNodeJScountUp[] = {  {&_swigt__p_libNodeJScountUp, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_libNodeJSreset[] = {  {&_swigt__p_libNodeJSreset, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_libNodeJSstart[] = {  {&_swigt__p_libNodeJSstart, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_long_long[] = {  {&_swigt__p_long_long, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_short[] = {  {&_swigt__p_short, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_signed_char[] = {  {&_swigt__p_signed_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -2793,13 +3213,14 @@ static swig_cast_info _swigc__p_unsigned_long_long[] = {  {&_swigt__p_unsigned_l
 static swig_cast_info _swigc__p_unsigned_short[] = {  {&_swigt__p_unsigned_short, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_Counters_typ,
   _swigc__p_NodeJS,
   _swigc__p_char,
   _swigc__p_int,
   _swigc__p_libNodeJS,
-  _swigc__p_libNodeJScounters,
-  _swigc__p_libNodeJSrun_counter,
+  _swigc__p_libNodeJScountDown,
+  _swigc__p_libNodeJScountUp,
+  _swigc__p_libNodeJSreset,
+  _swigc__p_libNodeJSstart,
   _swigc__p_long_long,
   _swigc__p_short,
   _swigc__p_signed_char,
@@ -3120,33 +3541,40 @@ void SWIGV8_INIT (v8::Handle<v8::Object> exports, v8::Handle<v8::Object> /*modul
   
 
   /* create class templates */
-  /* Name: _exports_Counters_typ, Type: p_Counters_typ, Dtor: _wrap_delete_Counters_typ */
-v8::Handle<v8::FunctionTemplate> _exports_Counters_typ_class = SWIGV8_CreateClassTemplate("_exports_Counters_typ");
-SWIGV8_SET_CLASS_TEMPL(_exports_Counters_typ_clientData.class_templ, _exports_Counters_typ_class);
-_exports_Counters_typ_clientData.dtor = _wrap_delete_Counters_typ;
-if (SWIGTYPE_p_Counters_typ->clientdata == 0) {
-  SWIGTYPE_p_Counters_typ->clientdata = &_exports_Counters_typ_clientData;
-}
-/* Name: _exports_NodeJS, Type: p_NodeJS, Dtor: _wrap_delete_NodeJS */
+  /* Name: _exports_NodeJS, Type: p_NodeJS, Dtor: _wrap_delete_NodeJS */
 v8::Handle<v8::FunctionTemplate> _exports_NodeJS_class = SWIGV8_CreateClassTemplate("_exports_NodeJS");
 SWIGV8_SET_CLASS_TEMPL(_exports_NodeJS_clientData.class_templ, _exports_NodeJS_class);
 _exports_NodeJS_clientData.dtor = _wrap_delete_NodeJS;
 if (SWIGTYPE_p_NodeJS->clientdata == 0) {
   SWIGTYPE_p_NodeJS->clientdata = &_exports_NodeJS_clientData;
 }
-/* Name: _exports_libNodeJScounters_t, Type: p_libNodeJScounters, Dtor: _wrap_delete_libNodeJScounters_t */
-v8::Handle<v8::FunctionTemplate> _exports_libNodeJScounters_t_class = SWIGV8_CreateClassTemplate("_exports_libNodeJScounters_t");
-SWIGV8_SET_CLASS_TEMPL(_exports_libNodeJScounters_t_clientData.class_templ, _exports_libNodeJScounters_t_class);
-_exports_libNodeJScounters_t_clientData.dtor = _wrap_delete_libNodeJScounters_t;
-if (SWIGTYPE_p_libNodeJScounters->clientdata == 0) {
-  SWIGTYPE_p_libNodeJScounters->clientdata = &_exports_libNodeJScounters_t_clientData;
+/* Name: _exports_libNodeJSstart_t, Type: p_libNodeJSstart, Dtor: _wrap_delete_libNodeJSstart_t */
+v8::Handle<v8::FunctionTemplate> _exports_libNodeJSstart_t_class = SWIGV8_CreateClassTemplate("_exports_libNodeJSstart_t");
+SWIGV8_SET_CLASS_TEMPL(_exports_libNodeJSstart_t_clientData.class_templ, _exports_libNodeJSstart_t_class);
+_exports_libNodeJSstart_t_clientData.dtor = _wrap_delete_libNodeJSstart_t;
+if (SWIGTYPE_p_libNodeJSstart->clientdata == 0) {
+  SWIGTYPE_p_libNodeJSstart->clientdata = &_exports_libNodeJSstart_t_clientData;
 }
-/* Name: _exports_libNodeJSrun_counter_t, Type: p_libNodeJSrun_counter, Dtor: _wrap_delete_libNodeJSrun_counter_t */
-v8::Handle<v8::FunctionTemplate> _exports_libNodeJSrun_counter_t_class = SWIGV8_CreateClassTemplate("_exports_libNodeJSrun_counter_t");
-SWIGV8_SET_CLASS_TEMPL(_exports_libNodeJSrun_counter_t_clientData.class_templ, _exports_libNodeJSrun_counter_t_class);
-_exports_libNodeJSrun_counter_t_clientData.dtor = _wrap_delete_libNodeJSrun_counter_t;
-if (SWIGTYPE_p_libNodeJSrun_counter->clientdata == 0) {
-  SWIGTYPE_p_libNodeJSrun_counter->clientdata = &_exports_libNodeJSrun_counter_t_clientData;
+/* Name: _exports_libNodeJSreset_t, Type: p_libNodeJSreset, Dtor: _wrap_delete_libNodeJSreset_t */
+v8::Handle<v8::FunctionTemplate> _exports_libNodeJSreset_t_class = SWIGV8_CreateClassTemplate("_exports_libNodeJSreset_t");
+SWIGV8_SET_CLASS_TEMPL(_exports_libNodeJSreset_t_clientData.class_templ, _exports_libNodeJSreset_t_class);
+_exports_libNodeJSreset_t_clientData.dtor = _wrap_delete_libNodeJSreset_t;
+if (SWIGTYPE_p_libNodeJSreset->clientdata == 0) {
+  SWIGTYPE_p_libNodeJSreset->clientdata = &_exports_libNodeJSreset_t_clientData;
+}
+/* Name: _exports_libNodeJScountUp_t, Type: p_libNodeJScountUp, Dtor: _wrap_delete_libNodeJScountUp_t */
+v8::Handle<v8::FunctionTemplate> _exports_libNodeJScountUp_t_class = SWIGV8_CreateClassTemplate("_exports_libNodeJScountUp_t");
+SWIGV8_SET_CLASS_TEMPL(_exports_libNodeJScountUp_t_clientData.class_templ, _exports_libNodeJScountUp_t_class);
+_exports_libNodeJScountUp_t_clientData.dtor = _wrap_delete_libNodeJScountUp_t;
+if (SWIGTYPE_p_libNodeJScountUp->clientdata == 0) {
+  SWIGTYPE_p_libNodeJScountUp->clientdata = &_exports_libNodeJScountUp_t_clientData;
+}
+/* Name: _exports_libNodeJScountDown_t, Type: p_libNodeJScountDown, Dtor: _wrap_delete_libNodeJScountDown_t */
+v8::Handle<v8::FunctionTemplate> _exports_libNodeJScountDown_t_class = SWIGV8_CreateClassTemplate("_exports_libNodeJScountDown_t");
+SWIGV8_SET_CLASS_TEMPL(_exports_libNodeJScountDown_t_clientData.class_templ, _exports_libNodeJScountDown_t_class);
+_exports_libNodeJScountDown_t_clientData.dtor = _wrap_delete_libNodeJScountDown_t;
+if (SWIGTYPE_p_libNodeJScountDown->clientdata == 0) {
+  SWIGTYPE_p_libNodeJScountDown->clientdata = &_exports_libNodeJScountDown_t_clientData;
 }
 /* Name: _exports_libNodeJS_t, Type: p_libNodeJS, Dtor: _wrap_delete_libNodeJS_t */
 v8::Handle<v8::FunctionTemplate> _exports_libNodeJS_t_class = SWIGV8_CreateClassTemplate("_exports_libNodeJS_t");
@@ -3158,12 +3586,16 @@ if (SWIGTYPE_p_libNodeJS->clientdata == 0) {
 
 
   /* register wrapper functions */
-  SWIGV8_AddMemberVariable(_exports_Counters_typ_class, "c", _wrap_Counters_typ_c_get, _wrap_Counters_typ_c_set);
-SWIGV8_AddMemberVariable(_exports_NodeJS_class, "counters", _wrap_NodeJS_counters_get, _wrap_NodeJS_counters_set);
-SWIGV8_AddMemberVariable(_exports_NodeJS_class, "run_counter", _wrap_NodeJS_run_counter_get, _wrap_NodeJS_run_counter_set);
-SWIGV8_AddMemberFunction(_exports_libNodeJScounters_t_class, "publish", _wrap_libNodeJScounters_t_publish);
-SWIGV8_AddMemberVariable(_exports_libNodeJScounters_t_class, "value", _wrap_libNodeJScounters_t_value_get, _wrap_libNodeJScounters_t_value_set);
-SWIGV8_AddMemberVariable(_exports_libNodeJSrun_counter_t_class, "value", _wrap_libNodeJSrun_counter_t_value_get, _wrap_libNodeJSrun_counter_t_value_set);
+  SWIGV8_AddMemberVariable(_exports_NodeJS_class, "start", _wrap_NodeJS_start_get, _wrap_NodeJS_start_set);
+SWIGV8_AddMemberVariable(_exports_NodeJS_class, "reset", _wrap_NodeJS_reset_get, _wrap_NodeJS_reset_set);
+SWIGV8_AddMemberVariable(_exports_NodeJS_class, "countUp", _wrap_NodeJS_countUp_get, _wrap_NodeJS_countUp_set);
+SWIGV8_AddMemberVariable(_exports_NodeJS_class, "countDown", _wrap_NodeJS_countDown_get, _wrap_NodeJS_countDown_set);
+SWIGV8_AddMemberVariable(_exports_libNodeJSstart_t_class, "value", _wrap_libNodeJSstart_t_value_get, _wrap_libNodeJSstart_t_value_set);
+SWIGV8_AddMemberVariable(_exports_libNodeJSreset_t_class, "value", _wrap_libNodeJSreset_t_value_get, _wrap_libNodeJSreset_t_value_set);
+SWIGV8_AddMemberFunction(_exports_libNodeJScountUp_t_class, "publish", _wrap_libNodeJScountUp_t_publish);
+SWIGV8_AddMemberVariable(_exports_libNodeJScountUp_t_class, "value", _wrap_libNodeJScountUp_t_value_get, _wrap_libNodeJScountUp_t_value_set);
+SWIGV8_AddMemberFunction(_exports_libNodeJScountDown_t_class, "publish", _wrap_libNodeJScountDown_t_publish);
+SWIGV8_AddMemberVariable(_exports_libNodeJScountDown_t_class, "value", _wrap_libNodeJScountDown_t_value_get, _wrap_libNodeJScountDown_t_value_set);
 SWIGV8_AddMemberFunction(_exports_libNodeJS_t_class, "connect", _wrap_libNodeJS_t_connect);
 SWIGV8_AddMemberFunction(_exports_libNodeJS_t_class, "disconnect", _wrap_libNodeJS_t_disconnect);
 SWIGV8_AddMemberFunction(_exports_libNodeJS_t_class, "process", _wrap_libNodeJS_t_process);
@@ -3171,38 +3603,46 @@ SWIGV8_AddMemberFunction(_exports_libNodeJS_t_class, "set_operational", _wrap_li
 SWIGV8_AddMemberFunction(_exports_libNodeJS_t_class, "dispose", _wrap_libNodeJS_t_dispose);
 SWIGV8_AddMemberVariable(_exports_libNodeJS_t_class, "is_connected", _wrap_libNodeJS_t_is_connected_get, _wrap_libNodeJS_t_is_connected_set);
 SWIGV8_AddMemberVariable(_exports_libNodeJS_t_class, "is_operational", _wrap_libNodeJS_t_is_operational_get, _wrap_libNodeJS_t_is_operational_set);
-SWIGV8_AddMemberVariable(_exports_libNodeJS_t_class, "counters", _wrap_libNodeJS_t_counters_get, _wrap_libNodeJS_t_counters_set);
-SWIGV8_AddMemberVariable(_exports_libNodeJS_t_class, "run_counter", _wrap_libNodeJS_t_run_counter_get, _wrap_libNodeJS_t_run_counter_set);
+SWIGV8_AddMemberVariable(_exports_libNodeJS_t_class, "start", _wrap_libNodeJS_t_start_get, _wrap_libNodeJS_t_start_set);
+SWIGV8_AddMemberVariable(_exports_libNodeJS_t_class, "reset", _wrap_libNodeJS_t_reset_get, _wrap_libNodeJS_t_reset_set);
+SWIGV8_AddMemberVariable(_exports_libNodeJS_t_class, "countUp", _wrap_libNodeJS_t_countUp_get, _wrap_libNodeJS_t_countUp_set);
+SWIGV8_AddMemberVariable(_exports_libNodeJS_t_class, "countDown", _wrap_libNodeJS_t_countDown_get, _wrap_libNodeJS_t_countDown_set);
 
 
   /* setup inheritances */
   
 
   /* class instances */
-  /* Class: Counters_typ (_exports_Counters_typ) */
-v8::Handle<v8::FunctionTemplate> _exports_Counters_typ_class_0 = SWIGV8_CreateClassTemplate("Counters_typ");
-_exports_Counters_typ_class_0->SetCallHandler(_wrap_new_Counters_typ);
-_exports_Counters_typ_class_0->Inherit(_exports_Counters_typ_class);
-_exports_Counters_typ_class_0->SetHiddenPrototype(true);
-v8::Handle<v8::Object> _exports_Counters_typ_obj = _exports_Counters_typ_class_0->GetFunction();
-/* Class: NodeJS (_exports_NodeJS) */
+  /* Class: NodeJS (_exports_NodeJS) */
 v8::Handle<v8::FunctionTemplate> _exports_NodeJS_class_0 = SWIGV8_CreateClassTemplate("NodeJS");
 _exports_NodeJS_class_0->SetCallHandler(_wrap_new_NodeJS);
 _exports_NodeJS_class_0->Inherit(_exports_NodeJS_class);
 _exports_NodeJS_class_0->SetHiddenPrototype(true);
 v8::Handle<v8::Object> _exports_NodeJS_obj = _exports_NodeJS_class_0->GetFunction();
-/* Class: libNodeJScounters_t (_exports_libNodeJScounters_t) */
-v8::Handle<v8::FunctionTemplate> _exports_libNodeJScounters_t_class_0 = SWIGV8_CreateClassTemplate("libNodeJScounters_t");
-_exports_libNodeJScounters_t_class_0->SetCallHandler(_wrap_new_libNodeJScounters_t);
-_exports_libNodeJScounters_t_class_0->Inherit(_exports_libNodeJScounters_t_class);
-_exports_libNodeJScounters_t_class_0->SetHiddenPrototype(true);
-v8::Handle<v8::Object> _exports_libNodeJScounters_t_obj = _exports_libNodeJScounters_t_class_0->GetFunction();
-/* Class: libNodeJSrun_counter_t (_exports_libNodeJSrun_counter_t) */
-v8::Handle<v8::FunctionTemplate> _exports_libNodeJSrun_counter_t_class_0 = SWIGV8_CreateClassTemplate("libNodeJSrun_counter_t");
-_exports_libNodeJSrun_counter_t_class_0->SetCallHandler(_wrap_new_libNodeJSrun_counter_t);
-_exports_libNodeJSrun_counter_t_class_0->Inherit(_exports_libNodeJSrun_counter_t_class);
-_exports_libNodeJSrun_counter_t_class_0->SetHiddenPrototype(true);
-v8::Handle<v8::Object> _exports_libNodeJSrun_counter_t_obj = _exports_libNodeJSrun_counter_t_class_0->GetFunction();
+/* Class: libNodeJSstart_t (_exports_libNodeJSstart_t) */
+v8::Handle<v8::FunctionTemplate> _exports_libNodeJSstart_t_class_0 = SWIGV8_CreateClassTemplate("libNodeJSstart_t");
+_exports_libNodeJSstart_t_class_0->SetCallHandler(_wrap_new_libNodeJSstart_t);
+_exports_libNodeJSstart_t_class_0->Inherit(_exports_libNodeJSstart_t_class);
+_exports_libNodeJSstart_t_class_0->SetHiddenPrototype(true);
+v8::Handle<v8::Object> _exports_libNodeJSstart_t_obj = _exports_libNodeJSstart_t_class_0->GetFunction();
+/* Class: libNodeJSreset_t (_exports_libNodeJSreset_t) */
+v8::Handle<v8::FunctionTemplate> _exports_libNodeJSreset_t_class_0 = SWIGV8_CreateClassTemplate("libNodeJSreset_t");
+_exports_libNodeJSreset_t_class_0->SetCallHandler(_wrap_new_libNodeJSreset_t);
+_exports_libNodeJSreset_t_class_0->Inherit(_exports_libNodeJSreset_t_class);
+_exports_libNodeJSreset_t_class_0->SetHiddenPrototype(true);
+v8::Handle<v8::Object> _exports_libNodeJSreset_t_obj = _exports_libNodeJSreset_t_class_0->GetFunction();
+/* Class: libNodeJScountUp_t (_exports_libNodeJScountUp_t) */
+v8::Handle<v8::FunctionTemplate> _exports_libNodeJScountUp_t_class_0 = SWIGV8_CreateClassTemplate("libNodeJScountUp_t");
+_exports_libNodeJScountUp_t_class_0->SetCallHandler(_wrap_new_libNodeJScountUp_t);
+_exports_libNodeJScountUp_t_class_0->Inherit(_exports_libNodeJScountUp_t_class);
+_exports_libNodeJScountUp_t_class_0->SetHiddenPrototype(true);
+v8::Handle<v8::Object> _exports_libNodeJScountUp_t_obj = _exports_libNodeJScountUp_t_class_0->GetFunction();
+/* Class: libNodeJScountDown_t (_exports_libNodeJScountDown_t) */
+v8::Handle<v8::FunctionTemplate> _exports_libNodeJScountDown_t_class_0 = SWIGV8_CreateClassTemplate("libNodeJScountDown_t");
+_exports_libNodeJScountDown_t_class_0->SetCallHandler(_wrap_new_libNodeJScountDown_t);
+_exports_libNodeJScountDown_t_class_0->Inherit(_exports_libNodeJScountDown_t_class);
+_exports_libNodeJScountDown_t_class_0->SetHiddenPrototype(true);
+v8::Handle<v8::Object> _exports_libNodeJScountDown_t_obj = _exports_libNodeJScountDown_t_class_0->GetFunction();
 /* Class: libNodeJS_t (_exports_libNodeJS_t) */
 v8::Handle<v8::FunctionTemplate> _exports_libNodeJS_t_class_0 = SWIGV8_CreateClassTemplate("libNodeJS_t");
 _exports_libNodeJS_t_class_0->SetCallHandler(_wrap_new_libNodeJS_t);
@@ -3216,10 +3656,11 @@ v8::Handle<v8::Object> _exports_libNodeJS_t_obj = _exports_libNodeJS_t_class_0->
 
 
   /* register classes */
-  exports_obj->Set(SWIGV8_SYMBOL_NEW("Counters_typ"), _exports_Counters_typ_obj);
-exports_obj->Set(SWIGV8_SYMBOL_NEW("NodeJS"), _exports_NodeJS_obj);
-exports_obj->Set(SWIGV8_SYMBOL_NEW("libNodeJScounters_t"), _exports_libNodeJScounters_t_obj);
-exports_obj->Set(SWIGV8_SYMBOL_NEW("libNodeJSrun_counter_t"), _exports_libNodeJSrun_counter_t_obj);
+  exports_obj->Set(SWIGV8_SYMBOL_NEW("NodeJS"), _exports_NodeJS_obj);
+exports_obj->Set(SWIGV8_SYMBOL_NEW("libNodeJSstart_t"), _exports_libNodeJSstart_t_obj);
+exports_obj->Set(SWIGV8_SYMBOL_NEW("libNodeJSreset_t"), _exports_libNodeJSreset_t_obj);
+exports_obj->Set(SWIGV8_SYMBOL_NEW("libNodeJScountUp_t"), _exports_libNodeJScountUp_t_obj);
+exports_obj->Set(SWIGV8_SYMBOL_NEW("libNodeJScountDown_t"), _exports_libNodeJScountDown_t_obj);
 exports_obj->Set(SWIGV8_SYMBOL_NEW("libNodeJS_t"), _exports_libNodeJS_t_obj);
 
 

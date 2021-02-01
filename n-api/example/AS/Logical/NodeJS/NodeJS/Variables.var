@@ -1,6 +1,8 @@
 VAR
     Enable : BOOL;
     _Enable : BOOL;
-    counters : Counters_typ;
-    run_counter : BOOL;
+    start : BOOL;
+    reset : BOOL;
+    countUp : DINT;
+    countDown : DINT;
 END_VAR

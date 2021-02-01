@@ -6,3 +6,4 @@ n-api/example/AS/Binaries
 n-api/example/AS/Diagnosis
 n-api/example/AS/*.set
 n-api/example/AS/*.isopen
+n-api/example/NodeJS/build

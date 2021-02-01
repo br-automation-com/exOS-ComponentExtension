@@ -1,11 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?AutomationStudio FileVersion="4.9"?>
-<SwConfiguration CpuAddress="SL1"
-  xmlns="http://br-automation.co.at/AS/SwConfiguration">
+<SwConfiguration CpuAddress="SL1" xmlns="http://br-automation.co.at/AS/SwConfiguration">
   <TaskClass Name="Cyclic#1" />
   <TaskClass Name="Cyclic#2">
-    <Task Name="DataX_0" Source="DataX.DataX_0.prg" Memory="UserROM" Language="IEC" Debugging="true" />
-    <Task Name="SimPanel_0" Source="SimPanel.SimPanel_0.prg" Memory="UserROM" Language="IEC" Debugging="true" />
     <Task Name="NodeJS" Source="NodeJS.NodeJS.prg" Memory="UserROM" Language="ANSIC" Debugging="true" />
   </TaskClass>
   <TaskClass Name="Cyclic#3" />
@@ -31,7 +28,6 @@
     <BinaryObject Name="artefacts" Source="" Memory="UserROM" Language="Binary" />
   </Binaries>
   <Libraries>
-    <LibraryObject Name="SimPanel" Source="SimPanel.SimPanel.lby" Memory="UserROM" Language="ANSIC" Debugging="true" />
     <LibraryObject Name="ExApi" Source="Libraries.ExApi.lby" Memory="UserROM" Language="Binary" Debugging="true" />
     <LibraryObject Name="FileIO" Source="Libraries.FileIO.lby" Memory="UserROM" Language="binary" Debugging="true" />
     <LibraryObject Name="AsIOTime" Source="Libraries.AsIOTime.lby" Memory="UserROM" Language="binary" Debugging="true" />
@@ -40,10 +36,9 @@
     <LibraryObject Name="AsTCP" Source="Libraries.AsTCP.lby" Memory="UserROM" Language="binary" Debugging="true" />
     <LibraryObject Name="runtime" Source="Libraries.runtime.lby" Memory="UserROM" Language="binary" Debugging="true" />
     <LibraryObject Name="ExTarget" Source="Libraries.ExTarget.lby" Memory="UserROM" Language="Binary" Debugging="true" />
-    <LibraryObject Name="DataX" Source="DataX.DataX.lby" Memory="UserROM" Language="ANSIC" Debugging="true" />
     <LibraryObject Name="standard" Source="Libraries.standard.lby" Memory="UserROM" Language="binary" Debugging="true" />
+    <LibraryObject Name="libNodeJS" Source="NodeJS.libNodeJS.lby" Memory="None" Language="ANSIC" Debugging="true" />
     <LibraryObject Name="astime" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
     <LibraryObject Name="asieccon" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
-    <LibraryObject Name="libNodeJS" Source="NodeJS.libNodeJS.lby" Memory="None" Language="ANSIC" Debugging="true" />
   </Libraries>
 </SwConfiguration>

@@ -3,7 +3,8 @@
     {
       "target_name": "NodeJS",
       "sources": [
-        "libnodejs.cpp"
+        "libnodejs.c",
+        "libnodejs_wrap.cpp"
       ],
       "include_dirs": [
           '/usr/include'

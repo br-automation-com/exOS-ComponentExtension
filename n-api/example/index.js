@@ -1,52 +1,55 @@
-//const process = require('process');
-
-
-const myModule = require('./NodeJS');
+const myModuleLib = require('./NodeJS/build/Release/NodeJS');
+myModule = myModuleLib.libNodeJS_init();
 
 console.log(myModule);
 
-myModule.libNodeJS_init();
+myModule.connect();
 
+setInterval(() => {
+    myModule.process();
+    if (myModule.is_connected == true) {
+        if ((myModule.start.value == true) && (myModule.reset.value == false)) {
+            myModule.countUp.value++;
+            myModule.countUp.publish();
+            myModule.countDown.value++;
+            myModule.countDown.publish();
 
-/*let SimPanel = require('./simpanel');
+            console.log(`countUp   -> published: ${myModule.countUp.value}`);
+            console.log(`countDown -> published: ${myModule.countDown.value}`);
+        }
 
-let interval = (undefined != process.argv.find(element => element == "-i"));
+        if (myModule.reset.value == true) {
+            let doReset = false;
 
-SimPanel.DataModel.Encoder.onChange(() => {
-    console.log(`Encoder changed to: ${SimPanel.DataModel.Encoder.value}`);
-});
+            if (myModule.countUp.value != 0) {
+                myModule.countUp.value = 0;
+                myModule.countUp.publish();
+                doReset = true;
+            }
 
-SimPanel.DataModel.Knobs.onChange(() => {
-    console.log(`Knobs changed to: P1=${SimPanel.DataModel.Knobs.value.P1} P2=${SimPanel.DataModel.Knobs.value.P2}`);
-    if (SimPanel.DataModel.Knobs.value.P1 > 20 || SimPanel.DataModel.Knobs.value.P2 > 20) {
-        SimPanel.DataModel.Knobs.value.P1 = 0;
-        SimPanel.DataModel.Knobs.value.P2 = 0;
-        SimPanel.DataModel.Knobs.publish();
-        console.log("published Knobs - both reset to 0");
+            if (myModule.countDown.value != 0) {
+                myModule.countDown.value = 0;
+                myModule.countDown.publish();
+                doReset = true;
+            }
+
+            if (doReset == true) {
+                console.log(`COUNTERS RESET`);
+                console.log(`countUp   : ${myModule.countUp.value}`);
+                console.log(`countDown : ${myModule.countDown.value}`);
+            }
+        }
     }
-});
+}, 50);
 
-SimPanel.connectionOnChange(() => {
-    console.log("SimPanel changed state to: " + SimPanel.connectionState);
-});
-SimPanel.DataModel.Display.connectionOnChange(() => {
-    console.log("SimPanel.DataModel.Display changed state to: " + SimPanel.DataModel.Display.connectionState);
-});
-SimPanel.DataModel.Encoder.connectionOnChange(() => {
-    console.log("SimPanel.DataModel.Encoder changed state to: " + SimPanel.DataModel.Encoder.connectionState);
-});
-SimPanel.DataModel.Knobs.connectionOnChange(() => {
-    console.log("SimPanel.DataModel.Knobs changed state to: " + SimPanel.DataModel.Knobs.connectionState);
-});
-
-if (interval) {
-    let i = 1;
-    setInterval(() => {
-        i = (i + 2) % 10000;
-        SimPanel.DataModel.Display.value = ++i;
-        console.log(`Published ${SimPanel.DataModel.Display.value}`);
-        SimPanel.DataModel.Display.publish();
-        console.log(SimPanel);
-    }, 10000);
-}
-*/
+setInterval(() => {
+    console.log(``);
+    console.log(`countUp     : ${myModule.countUp.value}`);
+    console.log(`countDown   : ${myModule.countDown.value}`);
+    console.log(`connected   : ${myModule.is_connected}`);
+    console.log(`operational : ${myModule.is_operational}`);
+    console.log(`start       : ${myModule.start.value}`);
+    console.log(`reset       : ${myModule.reset.value}`);
+    console.log(``);
+    console.log(`-----------------`);
+}, 2000);

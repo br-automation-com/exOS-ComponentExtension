@@ -6,18 +6,29 @@
 typedef void (*libNodeJS_event_cb)(void);
 typedef void (*libNodeJS_method_fn)(void);
 
-typedef struct libNodeJScounters
+typedef struct libNodeJScountUp
 {
-    libNodeJS_method_fn publish;
     libNodeJS_event_cb on_change;
-    Counters_typ value;
-} libNodeJScounters_t;
+    int32_t value;
+} libNodeJScountUp_t;
 
-typedef struct libNodeJSrun_counter
+typedef struct libNodeJScountDown
+{
+    libNodeJS_event_cb on_change;
+    int32_t value;
+} libNodeJScountDown_t;
+
+typedef struct libNodeJSstart
 {
     libNodeJS_method_fn publish;
     bool value;
-} libNodeJSrun_counter_t;
+} libNodeJSstart_t;
+
+typedef struct libNodeJSreset
+{
+    libNodeJS_method_fn publish;
+    bool value;
+} libNodeJSreset_t;
 
 typedef struct libNodeJS
 {
@@ -31,8 +42,10 @@ typedef struct libNodeJS
     libNodeJS_event_cb on_operational;
     bool is_connected;
     bool is_operational;
-    libNodeJScounters_t counters;
-    libNodeJSrun_counter_t run_counter;
+    libNodeJSstart_t start;
+    libNodeJSreset_t reset;
+    libNodeJScountUp_t countUp;
+    libNodeJScountDown_t countDown;
 } libNodeJS_t;
 
 libNodeJS_t *libNodeJS_init(void);

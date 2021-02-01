@@ -4,8 +4,8 @@
     <Service Name="NodeJS Runtime Service" Executable="/usr/bin/python" Arguments="/home/user/nodejs/nodejs.py"/>
     <DataModelInstance Name="NodeJS"/>
     <Build>
-        <GenerateHeader FileName="NodeJS\NodeJS.typ" TypeName="NodeJS">
-            <SG4 Include="nodejsTYP.h"/>
+        <GenerateHeader FileName="NodeJS\blaha.typ" TypeName="NodeJS">
+            <SG4 Include="blahaTYP.h"/>
             <Output Path="Linux"/>
             <Output Path="libNodeJS"/>
         </GenerateHeader>

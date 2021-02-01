@@ -12,16 +12,27 @@
 %include "stdint.i"
 %include "exos_nodejs.h"
 
-typedef struct libNodeJScounters
-{
-    void publish(void);
-    Counters_typ value;
-} libNodeJScounters_t;
-
-typedef struct libNodeJSrun_counter
+typedef struct libNodeJSstart
 {
     bool value;
-} libNodeJSrun_counter_t;
+} libNodeJSstart_t;
+
+typedef struct libNodeJSreset
+{
+    bool value;
+} libNodeJSreset_t;
+
+typedef struct libNodeJScountUp
+{
+    void publish(void);
+    int32_t value;
+} libNodeJScountUp_t;
+
+typedef struct libNodeJScountDown
+{
+    void publish(void);
+    int32_t value;
+} libNodeJScountDown_t;
 
 typedef struct libNodeJS
 {
@@ -32,8 +43,10 @@ typedef struct libNodeJS
     void dispose(void);
     bool is_connected;
     bool is_operational;
-    libNodeJScounters_t counters;
-    libNodeJSrun_counter_t run_counter;
+    libNodeJSstart_t start;
+    libNodeJSreset_t reset;
+    libNodeJScountUp_t countUp;
+    libNodeJScountDown_t countDown;
 } libNodeJS_t;
 
 libNodeJS_t *libNodeJS_init(void);
