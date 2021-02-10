@@ -463,6 +463,17 @@ napi_value knobs_publish_method(napi_env env, napi_callback_info info)
     return NULL;
 }
 
+static void cleanup_simpanel(void *env)
+{
+    EXOS_ERROR_CODE ec = EXOS_ERROR_OK;
+
+    ec = exos_datamodel_delete(&exos_simpanel);
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't delete datamodel");
+    }
+}
+
 napi_value init_simpanel(napi_env env, napi_value exports)
 {
     napi_value simpanel_conn_change;
@@ -560,6 +571,13 @@ napi_value init_simpanel(napi_env env, napi_value exports)
         return NULL;
     }
 
+    //register cleanup hook
+    if (napi_ok != napi_add_env_cleanup_hook(env, cleanup_simpanel, env))
+    {
+        napi_throw_error(env, "EINVAL", "Can't register cleanup hook");
+        return NULL;
+    }
+
     EXOS_ERROR_CODE ec = EXOS_ERROR_OK;
 
     //exos inits
@@ -596,9 +614,8 @@ napi_value init_simpanel(napi_env env, napi_value exports)
     exos_knobs.user_context = NULL; //user defined
     exos_knobs.user_tag = 0;        //user defined
 
-    ec = exos_datamodel_connect_simpanel(&exos_simpanel, datamodelEvent);
-
     //register the artefact
+    ec = exos_datamodel_connect_simpanel(&exos_simpanel, datamodelEvent);
     if (EXOS_ERROR_OK != ec)
     {
         napi_throw_error(env, "EINVAL", "Can't connect SimPanel");
@@ -630,5 +647,3 @@ napi_value init_simpanel(napi_env env, napi_value exports)
 }
 
 NAPI_MODULE(NODE_GYP_MODULE_NAME, init_simpanel);
-
-//IMPLEMENT API_EXTERN napi_status napi_remove_env_cleanup_hook(napi_env env, void (*fun)(void* arg), void* arg);
