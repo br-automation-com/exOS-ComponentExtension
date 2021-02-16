@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ComponentPackage Version="1.0.0" ErrorHandling="Ignore" StartupTimeout="0">
+    <File Name="exos-comp-myapp" FileName="Linux\exos-comp-myapp-1.0.0.deb" Type="Project"/>
+    <Service Name="MyApp Runtime Service" Executable="/usr/bin/python" Arguments="/home/user/myapp/myapp.py"/>
+    <DataModelInstance Name="MyApp"/>
+    <File Name="myapp-script" FileName="Linux\myapp.py" Type="Project"/>
+    <Installation Type="Prerun" Command="cp /var/cache/exos/myapp.py /home/user/myapp/"/>
+    <Build>
+        <GenerateHeader FileName="MyApp\MyApp.typ" TypeName="MyApp">
+            <SG4 Include="myappTYP.h"/>
+            <Output Path="Linux"/>
+            <Output Path="libMyApp"/>
+        </GenerateHeader>
+        <BuildCommand Command="C:\Windows\Sysnative\wsl.exe" WorkingDirectory="Linux" Arguments="-d Debian -e sh build.sh">
+            <Dependency FileName="Linux\CMakeLists.txt"/>
+            <Dependency FileName="Linux\exos_myapp.h"/>
+            <Dependency FileName="Linux\libmyapp.h"/>
+            <Dependency FileName="Linux\libmyapp.c"/>
+            <Dependency FileName="Linux\libmyapp.i"/>
+        </BuildCommand>
+    </Build>
+</ComponentPackage>

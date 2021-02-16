@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<Package SubType="exosPackage" PackageType="exosPackage" xmlns="http://br-automation.co.at/AS/Package">
+  <Objects>
+    <Object Type="File">MyApp.exospkg</Object>
+    <Object Type="Program" Language="IEC">MyApp</Object>
+    <Object Type="Library" Language="ANSIC">libMyApp</Object>
+    <Object Type="Package">Linux</Object>
+  </Objects>
+</Package>

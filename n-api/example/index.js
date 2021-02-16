@@ -1,55 +1,51 @@
-const myModuleLib = require('./NodeJS/build/Release/NodeJS');
-myModule = myModuleLib.libNodeJS_init();
+const process = require('process');
+let MyApp = require('./MyApp');
 
-console.log(myModule);
+//connection callbacks
+MyApp.connectionOnChange(() => {
+    console.log("MyApp changed state to: " + MyApp.connectionState);
+});
+MyApp.dataModel.execute.connectionOnChange(() => {
+    console.log("MyApp.dataModel.execute changed state to: " + MyApp.dataModel.execute.connectionState);
+});
+MyApp.dataModel.done.connectionOnChange(() => {
+    console.log("MyApp.dataModel.done changed state to: " + MyApp.dataModel.done.connectionState);
+});
+MyApp.dataModel.parameters.connectionOnChange(() => {
+    console.log("MyApp.dataModel.parameters changed state to: " + MyApp.dataModel.parameters.connectionState);
+});
+MyApp.dataModel.results.connectionOnChange(() => {
+    console.log("MyApp.dataModel.results changed state to: " + MyApp.dataModel.results.connectionState);
+});
 
-myModule.connect();
+//value callbacks
+MyApp.dataModel.execute.onChange(() => {
+    console.log(`execute changed to: ${MyApp.dataModel.execute.value}`);
 
-setInterval(() => {
-    myModule.process();
-    if (myModule.is_connected == true) {
-        if ((myModule.start.value == true) && (myModule.reset.value == false)) {
-            myModule.countUp.value++;
-            myModule.countUp.publish();
-            myModule.countDown.value++;
-            myModule.countDown.publish();
+    if (MyApp.dataModel.execute.value) {
+        console.log(`calculating results...`);
 
-            console.log(`countUp   -> published: ${myModule.countUp.value}`);
-            console.log(`countDown -> published: ${myModule.countDown.value}`);
+        for (let i = 0; i < MyApp.dataModel.parameters.value.length; i++) {
+            MyApp.dataModel.results.value[i].product = MyApp.dataModel.parameters.value[i].x * MyApp.dataModel.parameters.value[i].y;
+            console.log(`calculating results...[${i}].product = ${MyApp.dataModel.results.value[i].product}`);
         }
 
-        if (myModule.reset.value == true) {
-            let doReset = false;
-
-            if (myModule.countUp.value != 0) {
-                myModule.countUp.value = 0;
-                myModule.countUp.publish();
-                doReset = true;
-            }
-
-            if (myModule.countDown.value != 0) {
-                myModule.countDown.value = 0;
-                myModule.countDown.publish();
-                doReset = true;
-            }
-
-            if (doReset == true) {
-                console.log(`COUNTERS RESET`);
-                console.log(`countUp   : ${myModule.countUp.value}`);
-                console.log(`countDown : ${myModule.countDown.value}`);
-            }
-        }
+        console.log(`publishing results...`);
+        MyApp.dataModel.results.publish();
+        MyApp.dataModel.done.value = true;
+        MyApp.dataModel.done.publish();
     }
-}, 50);
+});
 
+MyApp.dataModel.done.onChange(() => {
+    console.log(`done changed to: ${MyApp.dataModel.done.value}`);
+});
+
+MyApp.dataModel.parameters.onChange(() => {
+    console.log(`parameters changed to: ` + JSON.stringify(MyApp.dataModel.parameters.value));
+});
+
+//cyclic/application stuff
 setInterval(() => {
-    console.log(``);
-    console.log(`countUp     : ${myModule.countUp.value}`);
-    console.log(`countDown   : ${myModule.countDown.value}`);
-    console.log(`connected   : ${myModule.is_connected}`);
-    console.log(`operational : ${myModule.is_operational}`);
-    console.log(`start       : ${myModule.start.value}`);
-    console.log(`reset       : ${myModule.reset.value}`);
-    console.log(``);
-    console.log(`-----------------`);
-}, 2000);
+    ;
+}, 500);

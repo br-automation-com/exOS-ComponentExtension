@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<?AutomationStudio Version=4.9.2.34 FileVersion="4.9"?>
+<?AutomationStudio Version=4.9.2.46 FileVersion="4.9"?>
 <Hardware xmlns="http://br-automation.co.at/AS/Hardware">
   <Module Name="5APC2200_AL18_000" Type="5APC2200.AL18-000" Version="2.0.1.0">
     <Connector Name="IF3">
@@ -31,7 +31,7 @@
     <Parameter ID="SharedMemoryName2" Value="exos_log" />
     <Parameter ID="SharedMemorySize2" Value="1000000" />
     <Group ID="SharedMemoryPartition3" />
-    <Parameter ID="SharedMemoryName3" Value="NodeJS" />
+    <Parameter ID="SharedMemoryName3" Value="MyApp" />
     <Parameter ID="SharedMemorySize3" Value="200000" />
   </Module>
 </Hardware>

@@ -1,0 +1,19 @@
+{
+  "name": "mynapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": "node-gyp-build",
+    "prebuild": "prebuildify --napi"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-gyp-build": "^4.2.0"
+  },
+  "devDependencies": {
+    "prebuildify": "^2.6.0"
+  }
+}

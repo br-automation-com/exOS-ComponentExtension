@@ -1,0 +1,7 @@
+VAR
+	i : USINT;
+	done : BOOL;
+	MyAppInit_0 : MyAppInit;
+	MyAppCyclic_0 : MyAppCyclic;
+	MyAppExit_0 : MyAppExit;
+END_VAR

@@ -8,5 +8,6 @@
     <Object Type="Package">DataX</Object>
     <Object Type="Package">SimPanel</Object>
     <Object Type="Package">NodeJS</Object>
+    <Object Type="Package">MyApp</Object>
   </Objects>
 </Package>

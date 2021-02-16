@@ -49,10 +49,10 @@
         <Property ID="ComponentConfigurationLink" Value="" />
         <Group ID="DataModels">
           <Group ID="Instance[0]">
-            <Property ID="InstanceName" Value="NodeJS" />
+            <Property ID="InstanceName" Value="MyApp" />
             <Group ID="InstanceConnection">
               <Property ID="InstancePort" Value="49003" />
-              <Property ID="InstanceShmPath" Value="NodeJS" />
+              <Property ID="InstanceShmPath" Value="MyApp" />
             </Group>
           </Group>
         </Group>

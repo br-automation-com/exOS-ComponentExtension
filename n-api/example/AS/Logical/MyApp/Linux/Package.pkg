@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio Version=4.9.1.69?>
+<Package SubType="exosLinuxPackage" PackageType="exosLinuxPackage" xmlns="http://br-automation.co.at/AS/Package">
+  <Objects>
+    <Object Type="File">build.sh</Object>
+    <Object Type="File">CMakeLists.txt</Object>
+    <Object Type="File">myapp.py</Object>
+    <Object Type="File">exos_myapp.h</Object>
+    <Object Type="File">libmyapp.h</Object>
+    <Object Type="File">libmyapp.c</Object>
+    <Object Type="File">_libMyApp.so</Object>
+    <Object Type="File">libMyApp.py</Object>
+    <Object Type="File">libmyapp.i</Object>
+    <Object Type="File">exos-comp-myapp-1.0.0.deb</Object>
+  </Objects>
+</Package>
