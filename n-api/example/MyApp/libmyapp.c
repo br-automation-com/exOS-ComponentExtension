@@ -1,7 +1,6 @@
 #define NAPI_VERSION 6
 #include <node_api.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <exos_api.h>
 #include "exos_myapp.h"
 #include <uv.h>
@@ -25,6 +24,7 @@ typedef struct
 obj_handles myapp = {};
 obj_handles execute = {};
 obj_handles done = {};
+obj_handles message = {};
 obj_handles parameters = {};
 obj_handles results = {};
 
@@ -34,6 +34,7 @@ uv_idle_t cyclic_h;
 MyApp exos_data = {};
 exos_dataset_handle_t exos_execute;
 exos_dataset_handle_t exos_done;
+exos_dataset_handle_t exos_message;
 exos_dataset_handle_t exos_parameters;
 exos_dataset_handle_t exos_results;
 exos_datamodel_handle_t exos_myapp;
@@ -67,6 +68,21 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
                 napi_release_threadsafe_function(done.onchange_cb, napi_tsfn_release);
             }
         }
+        else if (0 == strcmp(dataset->name, "message"))
+        {
+            memcpy(&exos_data.message, dataset->data, sizeof(exos_data.message));
+            //truncate string to 20 chars since memcpy do not check for null char.
+            char *p = (char *)&exos_data.message;
+            p = p + sizeof(exos_data.message) - 1;
+            *p = '\0';
+
+            if (message.onchange_cb != NULL)
+            {
+                napi_acquire_threadsafe_function(message.onchange_cb);
+                napi_call_threadsafe_function(message.onchange_cb, &exos_data.message, napi_tsfn_blocking);
+                napi_release_threadsafe_function(message.onchange_cb, napi_tsfn_release);
+            }
+        }
         else if (0 == strcmp(dataset->name, "parameters"))
         {
             memcpy(&exos_data.parameters, dataset->data, sizeof(exos_data.parameters));
@@ -87,6 +103,10 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         {
             //bool *done = (bool *)dataset->data;
         }
+        else if (0 == strcmp(dataset->name, "message"))
+        {
+            //char *parameters = (char *)dataset->data;
+        }
         else if (0 == strcmp(dataset->name, "parameters"))
         {
             //(MyAppPar_t[10]) *parameters = (MyAppPar_t[10] *)dataset->data;
@@ -100,6 +120,10 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         if (0 == strcmp(dataset->name, "done"))
         {
             //bool *done = (bool *)dataset->data;
+        }
+        else if (0 == strcmp(dataset->name, "message"))
+        {
+            //char *parameters = (char *)dataset->data;
         }
         else if (0 == strcmp(dataset->name, "parameters"))
         {
@@ -125,6 +149,15 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
                 napi_acquire_threadsafe_function(done.connectiononchange_cb);
                 napi_call_threadsafe_function(done.connectiononchange_cb, exos_get_state_string(dataset->connection_state), napi_tsfn_blocking);
                 napi_release_threadsafe_function(done.connectiononchange_cb, napi_tsfn_release);
+            }
+        }
+        else if (0 == strcmp(dataset->name, "message"))
+        {
+            if (done.connectiononchange_cb != NULL)
+            {
+                napi_acquire_threadsafe_function(message.connectiononchange_cb);
+                napi_call_threadsafe_function(message.connectiononchange_cb, exos_get_state_string(dataset->connection_state), napi_tsfn_blocking);
+                napi_release_threadsafe_function(message.connectiononchange_cb, napi_tsfn_release);
             }
         }
         else if (0 == strcmp(dataset->name, "parameters"))
@@ -306,6 +339,26 @@ static void done_connonchange_js_cb(napi_env env, napi_value js_cb, void *contex
         napi_throw_error(env, "EINVAL", "Can't call \"connectionOnChange\" callback");
 }
 
+static void message_connonchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
+{
+    const char *string = data;
+    napi_value undefined;
+
+    napi_get_undefined(env, &undefined);
+
+    if (napi_ok != napi_create_string_utf8(env, string, strlen(string), &message.value))
+        napi_throw_error(env, "EINVAL", "Can't create utf8 string from char*");
+
+    if (napi_ok != napi_get_reference_value(env, message.ref, &message.object_value))
+        napi_throw_error(env, "EINVAL", "Can't get reference");
+
+    if (napi_ok != napi_set_named_property(env, message.object_value, "connectionState", message.value))
+        napi_throw_error(env, "EINVAL", "Can't set \"connectionState\" property");
+
+    if (napi_ok != napi_call_function(env, undefined, js_cb, 0, NULL, NULL))
+        napi_throw_error(env, "EINVAL", "Can't call \"connectionOnChange\" callback");
+}
+
 static void parameters_connonchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
 {
     const char *string = data;
@@ -388,6 +441,27 @@ static void done_onchange_js_cb(napi_env env, napi_value js_cb, void *context, v
         napi_throw_error(env, "EINVAL", "Can't call \"onChange\" callback");
 }
 
+static void message_onchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
+{
+    char *str = (char *)data;
+
+    napi_value undefined;
+
+    napi_get_undefined(env, &undefined);
+
+    if (napi_create_string_utf8(env, str, strlen(str), &message.value))
+        napi_throw_error(env, "EINVAL", "Can't create string  from message");
+
+    if (napi_ok != napi_get_reference_value(env, message.ref, &message.object_value))
+        napi_throw_error(env, "EINVAL", "Can't get reference");
+
+    if (napi_ok != napi_set_named_property(env, message.object_value, "value", message.value))
+        napi_throw_error(env, "EINVAL", "Can't set \"value\" property");
+
+    if (napi_ok != napi_call_function(env, undefined, js_cb, 0, NULL, NULL))
+        napi_throw_error(env, "EINVAL", "Can't call \"onChange\" callback");
+}
+
 static void parameters_onchange_js_cb(napi_env env, napi_value js_cb, void *context, void *data)
 {
 
@@ -436,6 +510,11 @@ napi_value done_connonchange_init(napi_env env, napi_callback_info info)
     return init_napi_onchange(env, info, "done connection change", done_connonchange_js_cb, &done.connectiononchange_cb);
 }
 
+napi_value message_connonchange_init(napi_env env, napi_callback_info info)
+{
+    return init_napi_onchange(env, info, "message connection change", message_connonchange_js_cb, &message.connectiononchange_cb);
+}
+
 napi_value parameters_connonchange_init(napi_env env, napi_callback_info info)
 {
     return init_napi_onchange(env, info, "parameters connection change", parameters_connonchange_js_cb, &parameters.connectiononchange_cb);
@@ -454,6 +533,11 @@ napi_value execute_onchange_init(napi_env env, napi_callback_info info)
 napi_value done_onchange_init(napi_env env, napi_callback_info info)
 {
     return init_napi_onchange(env, info, "done dataset change", done_onchange_js_cb, &done.onchange_cb);
+}
+
+napi_value message_onchange_init(napi_env env, napi_callback_info info)
+{
+    return init_napi_onchange(env, info, "message dataset change", message_onchange_js_cb, &message.onchange_cb);
 }
 
 napi_value parameters_onchange_init(napi_env env, napi_callback_info info)
@@ -485,6 +569,32 @@ napi_value done_publish_method(napi_env env, napi_callback_info info)
 
     exos_data.done = simple_value;
     exos_dataset_publish(&exos_done);
+
+    return NULL;
+}
+
+napi_value message_publish_method(napi_env env, napi_callback_info info)
+{
+    if (napi_ok != napi_get_reference_value(env, message.ref, &message.object_value))
+    {
+        napi_throw_error(env, "EINVAL", "Can't get reference");
+        return NULL;
+    }
+
+    if (napi_ok != napi_get_named_property(env, message.object_value, "value", &message.value))
+    {
+        napi_throw_error(env, "EINVAL", "Can't get property");
+        return NULL;
+    }
+
+    size_t result;
+    if (napi_ok != napi_get_value_string_utf8(env, message.value, (char *)&exos_data.message, sizeof(exos_data.message), &result))
+    {
+        napi_throw_error(env, "EINVAL", "Expected string");
+        return NULL;
+    }
+
+    exos_dataset_publish(&exos_message);
 
     return NULL;
 }
@@ -541,12 +651,15 @@ napi_value init_myapp(napi_env env, napi_value exports)
     napi_value myapp_conn_change;
     napi_value execute_conn_change;
     napi_value done_conn_change;
+    napi_value message_conn_change;
     napi_value parameters_conn_change;
     napi_value results_conn_change;
 
     napi_value execute_onchange;
     napi_value done_publish;
     napi_value done_onchange;
+    napi_value message_publish;
+    napi_value message_onchange;
     napi_value parameters_onchange;
     napi_value parameters_value_object;
     napi_value results_publish;
@@ -555,9 +668,10 @@ napi_value init_myapp(napi_env env, napi_value exports)
     napi_value dataModel;
     napi_value undefined;
 
-    napi_value def_bool, def_number;
+    napi_value def_bool, def_number, def_string;
     napi_get_boolean(env, BUR_NAPI_DEFAULT_BOOL_INIT, &def_bool);
     napi_create_int32(env, BUR_NAPI_DEFAULT_NUM_INIT, &def_number);
+    napi_create_string_utf8(env, BUR_NAPI_DEFAULT_STRING_INIT, sizeof(BUR_NAPI_DEFAULT_STRING_INIT), &def_string);
 
     napi_get_undefined(env, &undefined);
 
@@ -573,6 +687,9 @@ napi_value init_myapp(napi_env env, napi_value exports)
         return NULL;
 
     if (napi_ok != napi_create_object(env, &done.value))
+        return NULL;
+
+    if (napi_ok != napi_create_object(env, &message.value))
         return NULL;
 
     if (napi_ok != napi_create_object(env, &parameters.value))
@@ -602,6 +719,15 @@ napi_value init_myapp(napi_env env, napi_value exports)
     napi_create_function(env, NULL, 0, done_connonchange_init, NULL, &done_conn_change);
     napi_set_named_property(env, done.value, "connectionOnChange", done_conn_change);
     napi_set_named_property(env, done.value, "connectionState", undefined);
+
+    napi_create_function(env, NULL, 0, message_onchange_init, NULL, &message_onchange);
+    napi_set_named_property(env, message.value, "onChange", message_onchange);
+    napi_create_function(env, NULL, 0, message_publish_method, NULL, &message_publish);
+    napi_set_named_property(env, message.value, "publish", message_publish);
+    napi_set_named_property(env, message.value, "value", def_string);
+    napi_create_function(env, NULL, 0, message_connonchange_init, NULL, &message_conn_change);
+    napi_set_named_property(env, message.value, "connectionOnChange", message_conn_change);
+    napi_set_named_property(env, message.value, "connectionState", undefined);
 
     napi_create_function(env, NULL, 0, parameters_onchange_init, NULL, &parameters_onchange);
     napi_set_named_property(env, parameters.value, "onChange", parameters_onchange);
@@ -635,6 +761,7 @@ napi_value init_myapp(napi_env env, napi_value exports)
     //bind topics to artefact
     napi_set_named_property(env, dataModel, "execute", execute.value);
     napi_set_named_property(env, dataModel, "done", done.value);
+    napi_set_named_property(env, dataModel, "message", message.value);
     napi_set_named_property(env, dataModel, "parameters", parameters.value);
     napi_set_named_property(env, dataModel, "results", results.value);
     napi_set_named_property(env, myapp.value, "dataModel", dataModel);
@@ -659,6 +786,11 @@ napi_value init_myapp(napi_env env, napi_value exports)
     if (napi_ok != napi_create_reference(env, done.value, done.ref_count, &done.ref))
     {
         napi_throw_error(env, "EINVAL", "Can't create done reference");
+        return NULL;
+    }
+    if (napi_ok != napi_create_reference(env, message.value, message.ref_count, &message.ref))
+    {
+        napi_throw_error(env, "EINVAL", "Can't create message reference");
         return NULL;
     }
     if (napi_ok != napi_create_reference(env, parameters.value, parameters.ref_count, &parameters.ref))
@@ -707,6 +839,14 @@ napi_value init_myapp(napi_env env, napi_value exports)
     exos_done.user_context = NULL; //user defined
     exos_done.user_tag = 0;        //user defined
 
+    ec = exos_dataset_init(&exos_message, &exos_myapp, "message", &exos_data.message, sizeof(exos_data.message));
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't initialize message");
+    }
+    exos_message.user_context = NULL; //user defined
+    exos_message.user_tag = 0;        //user defined
+
     ec = exos_dataset_init(&exos_parameters, &exos_myapp, "parameters", &exos_data.parameters, sizeof(exos_data.parameters));
     if (EXOS_ERROR_OK != ec)
     {
@@ -741,6 +881,12 @@ napi_value init_myapp(napi_env env, napi_value exports)
     if (EXOS_ERROR_OK != ec)
     {
         napi_throw_error(env, "EINVAL", "Can't connect done");
+    }
+
+    ec = exos_dataset_connect(&exos_message, EXOS_DATASET_PUBLISH + EXOS_DATASET_SUBSCRIBE, datasetEvent);
+    if (EXOS_ERROR_OK != ec)
+    {
+        napi_throw_error(env, "EINVAL", "Can't connect message");
     }
 
     ec = exos_dataset_connect(&exos_parameters, EXOS_DATASET_SUBSCRIBE, datasetEvent);

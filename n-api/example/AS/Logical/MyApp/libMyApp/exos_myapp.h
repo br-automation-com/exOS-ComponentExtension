@@ -29,11 +29,11 @@ typedef struct MyAppRes_t
 
 typedef struct MyApp
 {
-    bool execute; //PUB
-    bool done; //PUBSUB
-    char message[21]; //PUBSUB
+    bool execute;                     //PUB
+    bool done;                        //PUBSUB
+    char message[21];                 //PUBSUB
     struct MyAppPar_t parameters[10]; //PUB
-    struct MyAppRes_t results[10]; //SUB
+    struct MyAppRes_t results[10];    //SUB
 
 } MyApp;
 
@@ -50,20 +50,19 @@ EXOS_ERROR_CODE exos_datamodel_connect_myapp(exos_datamodel_handle_t *datamodel,
 {
     MyApp data;
     exos_dataset_info_t datasets[] = {
-        {EXOS_DATASET_BROWSE_NAME_INIT,{}},
-        {EXOS_DATASET_BROWSE_NAME(execute),{}},
-        {EXOS_DATASET_BROWSE_NAME(done),{}},
-        {EXOS_DATASET_BROWSE_NAME(message),{}},
-        {EXOS_DATASET_BROWSE_NAME(parameters),{}},
-        {EXOS_DATASET_BROWSE_NAME(parameters[0]),{10}},
-        {EXOS_DATASET_BROWSE_NAME(parameters[0].x),{10}},
-        {EXOS_DATASET_BROWSE_NAME(parameters[0].y),{10}},
-        {EXOS_DATASET_BROWSE_NAME(results),{}},
-        {EXOS_DATASET_BROWSE_NAME(results[0]),{10}},
-        {EXOS_DATASET_BROWSE_NAME(results[0].product),{10}}
-    };
+        {EXOS_DATASET_BROWSE_NAME_INIT, {}},
+        {EXOS_DATASET_BROWSE_NAME(execute), {}},
+        {EXOS_DATASET_BROWSE_NAME(done), {}},
+        {EXOS_DATASET_BROWSE_NAME(message), {}},
+        {EXOS_DATASET_BROWSE_NAME(parameters), {}},
+        {EXOS_DATASET_BROWSE_NAME(parameters[0]), {10}},
+        {EXOS_DATASET_BROWSE_NAME(parameters[0].x), {10}},
+        {EXOS_DATASET_BROWSE_NAME(parameters[0].y), {10}},
+        {EXOS_DATASET_BROWSE_NAME(results), {}},
+        {EXOS_DATASET_BROWSE_NAME(results[0]), {10}},
+        {EXOS_DATASET_BROWSE_NAME(results[0].product), {10}}};
 
-    _exos_internal_calc_offsets(datasets,sizeof(datasets));
+    _exos_internal_calc_offsets(datasets, sizeof(datasets));
 
     return _exos_internal_datamodel_connect(datamodel, config_myapp, datasets, sizeof(datasets), datamodel_event_callback);
 }

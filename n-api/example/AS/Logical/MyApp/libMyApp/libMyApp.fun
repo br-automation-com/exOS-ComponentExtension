@@ -1,4 +1,3 @@
-
 FUNCTION_BLOCK MyAppInit
 	VAR_OUTPUT
 		Handle : UDINT;

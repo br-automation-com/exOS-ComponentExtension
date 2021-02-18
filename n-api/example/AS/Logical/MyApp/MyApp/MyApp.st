@@ -11,7 +11,7 @@ END_PROGRAM
 
 PROGRAM _CYCLIC
 	
-	MyAppCyclic_0.message = ADR(message);
+	MyAppCyclic_0.message := ADR(message);
 	MyAppCyclic_0.done := ADR(done);
     MyAppCyclic_0(Handle := MyAppInit_0.Handle);
 

@@ -11,6 +11,9 @@ MyApp.dataModel.execute.connectionOnChange(() => {
 MyApp.dataModel.done.connectionOnChange(() => {
     console.log("MyApp.dataModel.done changed state to: " + MyApp.dataModel.done.connectionState);
 });
+MyApp.dataModel.message.connectionOnChange(() => {
+    console.log("MyApp.dataModel.message changed state to: " + MyApp.dataModel.message.connectionState);
+});
 MyApp.dataModel.parameters.connectionOnChange(() => {
     console.log("MyApp.dataModel.parameters changed state to: " + MyApp.dataModel.parameters.connectionState);
 });
@@ -41,11 +44,16 @@ MyApp.dataModel.done.onChange(() => {
     console.log(`done changed to: ${MyApp.dataModel.done.value}`);
 });
 
+MyApp.dataModel.message.onChange(() => {
+    console.log(`message changed to: ${MyApp.dataModel.message.value}`);
+});
+
 MyApp.dataModel.parameters.onChange(() => {
     console.log(`parameters changed to: ` + JSON.stringify(MyApp.dataModel.parameters.value));
 });
 
 //cyclic/application stuff
 setInterval(() => {
-    ;
-}, 500);
+    MyApp.dataModel.message.value = "123456789009876543211234567890";
+    MyApp.dataModel.message.publish();
+}, 30000);
