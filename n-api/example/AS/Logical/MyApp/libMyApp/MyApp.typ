@@ -3,6 +3,7 @@ TYPE
 	MyApp : 	STRUCT 
 		execute : BOOL; (*PUB*)
 		done : BOOL; (*PUBSUB*)
+		message : STRING[20]; (*PUBSUB*)
 		parameters : {REDUND_UNREPLICABLE} ARRAY[0..9]OF MyAppPar_t; (*PUB*)
 		results : ARRAY[0..9]OF MyAppRes_t; (*SUB*)
 	END_STRUCT;

@@ -15,6 +15,7 @@ FUNCTION_BLOCK MyAppCyclic
 		Start : BOOL;
 		execute : BOOL;
 		done : REFERENCE TO BOOL;
+		message : REFERENCE TO STRING[20];
 		parameters : ARRAY[0..9] OF MyAppPar_t;
 	END_VAR
 	VAR_OUTPUT

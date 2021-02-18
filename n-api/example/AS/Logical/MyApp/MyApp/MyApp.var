@@ -1,4 +1,5 @@
 VAR
+	message : STRING[80];
 	i : USINT;
 	done : BOOL;
 	MyAppInit_0 : MyAppInit;

@@ -21,6 +21,7 @@ typedef struct
 
     exos_dataset_handle_t execute_dataset;
     exos_dataset_handle_t done_dataset;
+    exos_dataset_handle_t message_dataset;
     exos_dataset_handle_t parameters_dataset;
     exos_dataset_handle_t results_dataset;
 } MyAppHandle_t;
@@ -42,6 +43,13 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
                 *inst->done = *(BOOL *)dataset->data;
             }
         }
+        else if(0 == strcmp(dataset->name, "message"))
+        {
+            if(NULL != inst->message)
+            {
+                memcpy(inst->message, dataset->data, dataset->size);
+            }
+        }
         else if(0 == strcmp(dataset->name, "results"))
         {
             memcpy(&inst->results, dataset->data, dataset->size);
@@ -59,6 +67,10 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         {
             // BOOL *done_dataset = (BOOL *)dataset->data;
         }
+        else if(0 == strcmp(dataset->name, "message"))
+        {
+            // STRING *message_dataset = (STRING *)dataset->data;
+        }
         else if(0 == strcmp(dataset->name, "parameters"))
         {
             // MyAppPar_t *parameters_dataset = (MyAppPar_t *)dataset->data;
@@ -75,6 +87,10 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         else if(0 == strcmp(dataset->name, "done"))
         {
             // BOOL *done_dataset = (BOOL *)dataset->data;
+        }
+        else if(0 == strcmp(dataset->name, "message"))
+        {
+            // STRING *message_dataset = (STRING *)dataset->data;
         }
         else if(0 == strcmp(dataset->name, "parameters"))
         {
@@ -162,12 +178,14 @@ _BUR_PUBLIC void MyAppInit(struct MyAppInit *inst)
     exos_datamodel_handle_t *myapp = &handle->myapp;
     exos_dataset_handle_t *execute_dataset = &handle->execute_dataset;
     exos_dataset_handle_t *done_dataset = &handle->done_dataset;
+    exos_dataset_handle_t *message_dataset = &handle->message_dataset;
     exos_dataset_handle_t *parameters_dataset = &handle->parameters_dataset;
     exos_dataset_handle_t *results_dataset = &handle->results_dataset;
     EXOS_ASSERT_OK(exos_datamodel_init(myapp, "MyApp", "MyApp_AR"));
 
     EXOS_ASSERT_OK(exos_dataset_init(execute_dataset, myapp, "execute", &handle->data.execute, sizeof(handle->data.execute)));
     EXOS_ASSERT_OK(exos_dataset_init(done_dataset, myapp, "done", &handle->data.done, sizeof(handle->data.done)));
+    EXOS_ASSERT_OK(exos_dataset_init(message_dataset, myapp, "message", &handle->data.message, sizeof(handle->data.message)));
     EXOS_ASSERT_OK(exos_dataset_init(parameters_dataset, myapp, "parameters", &handle->data.parameters, sizeof(handle->data.parameters)));
     EXOS_ASSERT_OK(exos_dataset_init(results_dataset, myapp, "results", &handle->data.results, sizeof(handle->data.results)));
     
@@ -203,6 +221,10 @@ _BUR_PUBLIC void MyAppCyclic(struct MyAppCyclic *inst)
     exos_dataset_handle_t *done_dataset = &handle->done_dataset;
     done_dataset->user_context = NULL; //user defined
     done_dataset->user_tag = 0; //user defined
+
+    exos_dataset_handle_t *message_dataset = &handle->message_dataset;
+    message_dataset->user_context = NULL; //user defined
+    message_dataset->user_tag = 0; //user defined
 
     exos_dataset_handle_t *parameters_dataset = &handle->parameters_dataset;
     parameters_dataset->user_context = NULL; //user defined
@@ -241,6 +263,7 @@ _BUR_PUBLIC void MyAppCyclic(struct MyAppCyclic *inst)
         EXOS_ASSERT_OK(exos_datamodel_connect_myapp(myapp, datamodelEvent));
         EXOS_ASSERT_OK(exos_dataset_connect(execute_dataset, EXOS_DATASET_PUBLISH, datasetEvent));
         EXOS_ASSERT_OK(exos_dataset_connect(done_dataset, EXOS_DATASET_PUBLISH + EXOS_DATASET_SUBSCRIBE, datasetEvent));
+        EXOS_ASSERT_OK(exos_dataset_connect(message_dataset, EXOS_DATASET_PUBLISH + EXOS_DATASET_SUBSCRIBE, datasetEvent));
         EXOS_ASSERT_OK(exos_dataset_connect(parameters_dataset, EXOS_DATASET_PUBLISH, datasetEvent));
         EXOS_ASSERT_OK(exos_dataset_connect(results_dataset, EXOS_DATASET_SUBSCRIBE, datasetEvent));
 
@@ -278,6 +301,15 @@ _BUR_PUBLIC void MyAppCyclic(struct MyAppCyclic *inst)
             {
                 data->done = *inst->done;
                 exos_dataset_publish(done_dataset);
+            }
+        }
+        if (NULL != inst->message)
+        {
+            //publish the message_dataset dataset as soon as there are changes
+            if (0 != memcmp(inst->message, &data->message, sizeof(data->message)))
+            {
+                memcpy(&data->message, inst->message, sizeof(data->message));
+                exos_dataset_publish(message_dataset);
             }
         }
         //publish the parameters_dataset dataset as soon as there are changes

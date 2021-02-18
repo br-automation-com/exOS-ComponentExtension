@@ -31,6 +31,7 @@ typedef struct MyApp
 {
     bool execute; //PUB
     bool done; //PUBSUB
+    char message[21]; //PUBSUB
     struct MyAppPar_t parameters[10]; //PUB
     struct MyAppRes_t results[10]; //SUB
 
@@ -42,7 +43,7 @@ typedef struct MyApp
 #ifdef EXOS_STATIC_INCLUDE
 EXOS_ERROR_CODE exos_datamodel_connect_myapp(exos_datamodel_handle_t *datamodel, exos_datamodel_event_cb datamodel_event_callback);
 #else
-const char config_myapp[] = "{\"name\":\"struct\",\"attributes\":{\"name\":\"<NAME>\",\"nodeId\":\"\",\"dataType\":\"MyApp\",\"comment\":\"\",\"arraySize\":0,\"info\":\"<infoId0>\"},\"children\":[{\"name\":\"variable\",\"attributes\":{\"name\":\"execute\",\"nodeId\":\"\",\"dataType\":\"BOOL\",\"comment\":\"PUB\",\"arraySize\":0,\"info\":\"<infoId1>\"}},{\"name\":\"variable\",\"attributes\":{\"name\":\"done\",\"nodeId\":\"\",\"dataType\":\"BOOL\",\"comment\":\"PUBSUB\",\"arraySize\":0,\"info\":\"<infoId2>\"}},{\"name\":\"struct\",\"attributes\":{\"name\":\"parameters\",\"nodeId\":\"\",\"dataType\":\"MyAppPar_t\",\"comment\":\"PUB\",\"arraySize\":10,\"info\":\"<infoId3>\",\"info2\":\"<infoId4>\"},\"children\":[{\"name\":\"variable\",\"attributes\":{\"name\":\"x\",\"nodeId\":\"\",\"dataType\":\"INT\",\"comment\":\"\",\"arraySize\":0,\"info\":\"<infoId5>\"}},{\"name\":\"variable\",\"attributes\":{\"name\":\"y\",\"nodeId\":\"\",\"dataType\":\"INT\",\"comment\":\"\",\"arraySize\":0,\"info\":\"<infoId6>\"}}]},{\"name\":\"struct\",\"attributes\":{\"name\":\"results\",\"nodeId\":\"\",\"dataType\":\"MyAppRes_t\",\"comment\":\"SUB\",\"arraySize\":10,\"info\":\"<infoId7>\",\"info2\":\"<infoId8>\"},\"children\":[{\"name\":\"variable\",\"attributes\":{\"name\":\"product\",\"nodeId\":\"\",\"dataType\":\"DINT\",\"comment\":\"\",\"arraySize\":0,\"info\":\"<infoId9>\"}}]}]}";
+const char config_myapp[] = "{\"name\":\"struct\",\"attributes\":{\"name\":\"<NAME>\",\"nodeId\":\"\",\"dataType\":\"MyApp\",\"comment\":\"\",\"arraySize\":0,\"info\":\"<infoId0>\"},\"children\":[{\"name\":\"variable\",\"attributes\":{\"name\":\"execute\",\"nodeId\":\"\",\"dataType\":\"BOOL\",\"comment\":\"PUB\",\"arraySize\":0,\"info\":\"<infoId1>\"}},{\"name\":\"variable\",\"attributes\":{\"name\":\"done\",\"nodeId\":\"\",\"dataType\":\"BOOL\",\"comment\":\"PUBSUB\",\"arraySize\":0,\"info\":\"<infoId2>\"}},{\"name\":\"variable\",\"attributes\":{\"name\":\"message\",\"nodeId\":\"\",\"dataType\":\"STRING\",\"stringLength\":21,\"comment\":\"PUBSUB\",\"arraySize\":0,\"info\":\"<infoId3>\"}},{\"name\":\"struct\",\"attributes\":{\"name\":\"parameters\",\"nodeId\":\"\",\"dataType\":\"MyAppPar_t\",\"comment\":\"PUB\",\"arraySize\":10,\"info\":\"<infoId4>\",\"info2\":\"<infoId5>\"},\"children\":[{\"name\":\"variable\",\"attributes\":{\"name\":\"x\",\"nodeId\":\"\",\"dataType\":\"INT\",\"comment\":\"\",\"arraySize\":0,\"info\":\"<infoId6>\"}},{\"name\":\"variable\",\"attributes\":{\"name\":\"y\",\"nodeId\":\"\",\"dataType\":\"INT\",\"comment\":\"\",\"arraySize\":0,\"info\":\"<infoId7>\"}}]},{\"name\":\"struct\",\"attributes\":{\"name\":\"results\",\"nodeId\":\"\",\"dataType\":\"MyAppRes_t\",\"comment\":\"SUB\",\"arraySize\":10,\"info\":\"<infoId8>\",\"info2\":\"<infoId9>\"},\"children\":[{\"name\":\"variable\",\"attributes\":{\"name\":\"product\",\"nodeId\":\"\",\"dataType\":\"DINT\",\"comment\":\"\",\"arraySize\":0,\"info\":\"<infoId10>\"}}]}]}";
 
 /*Connect the MyApp datamodel to the server*/
 EXOS_ERROR_CODE exos_datamodel_connect_myapp(exos_datamodel_handle_t *datamodel, exos_datamodel_event_cb datamodel_event_callback)
@@ -52,6 +53,7 @@ EXOS_ERROR_CODE exos_datamodel_connect_myapp(exos_datamodel_handle_t *datamodel,
         {EXOS_DATASET_BROWSE_NAME_INIT,{}},
         {EXOS_DATASET_BROWSE_NAME(execute),{}},
         {EXOS_DATASET_BROWSE_NAME(done),{}},
+        {EXOS_DATASET_BROWSE_NAME(message),{}},
         {EXOS_DATASET_BROWSE_NAME(parameters),{}},
         {EXOS_DATASET_BROWSE_NAME(parameters[0]),{10}},
         {EXOS_DATASET_BROWSE_NAME(parameters[0].x),{10}},
