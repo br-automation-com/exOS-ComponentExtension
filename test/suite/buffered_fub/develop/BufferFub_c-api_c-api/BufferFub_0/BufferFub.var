@@ -1,0 +1,8 @@
+VAR
+    BufferFubInit_0 : BufferFubInit;
+    BufferFubCyclic_0 : BufferFubCyclic;
+    BufferFubExit_0 : BufferFubExit;
+    BufferFub_0 : BufferFub;
+    ExComponentInfo_0 : ExComponentInfo;
+    ExDatamodelInfo_0 : ExDatamodelInfo;
+END_VAR
