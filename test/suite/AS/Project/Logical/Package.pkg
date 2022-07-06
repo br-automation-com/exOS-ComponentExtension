@@ -7,5 +7,6 @@
     <Object Type="Package" Description="Global libraries">Libraries</Object>
     <Object Type="Package">Package</Object>
     <Object Type="Package" Description="typ files need to be present in the project for the STRUCT to be available">typfiles</Object>
+    <Object Type="Package">BufferedFub</Object>
   </Objects>
 </Package>
