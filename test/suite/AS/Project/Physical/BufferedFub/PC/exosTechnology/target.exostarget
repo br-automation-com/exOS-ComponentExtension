@@ -43,7 +43,16 @@
         <Property ID="ComponentsCycleTimeMsec" Value="100" />
       </Group>
       <Group ID="Component[0]">
-        <Property ID="ComponentConfigurationLink" Value="gPackage_0" />
+        <Property ID="ComponentConfigurationLink" Value="gBufferFub_0" />
+        <Group ID="DataModels">
+          <Group ID="Instance[0]">
+            <Property ID="InstanceName" Value="BufferFub_0" />
+            <Group ID="InstanceConnection">
+              <Property ID="InstancePort" Value="49003" />
+              <Property ID="InstanceShmPath" Value="BufferFub_0" />
+            </Group>
+          </Group>
+        </Group>
       </Group>
     </Group>
     <Group ID="ComponentDataConnection">

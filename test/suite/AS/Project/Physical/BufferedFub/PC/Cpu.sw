@@ -5,9 +5,7 @@
   <TaskClass Name="Cyclic#2" />
   <TaskClass Name="Cyclic#3" />
   <TaskClass Name="Cyclic#4">
-    <Task Name="BufferFub0" Source="BufferedFub.BufferFub_c-api_c-api.BufferFub_0.prg" Memory="UserROM" Language="IEC" Debugging="true" />
-    <Task Name="BufferFub1" Source="BufferedFub.BufferFub_cpp_c-api.BufferFub_0.prg" Memory="UserROM" Language="IEC" Debugging="true" />
-    <Task Name="BufferFub2" Source="BufferedFub.BufferFub_c-static_c-api.BufferFub_0.prg" Memory="UserROM" Language="IEC" Debugging="true" />
+    <Task Name="BufferFub_" Source="BufferedFub.BufferFub_c-api_c-api.BufferFub_0.prg" Memory="UserROM" Language="IEC" Debugging="true" />
   </TaskClass>
   <TaskClass Name="Cyclic#5" />
   <TaskClass Name="Cyclic#6" />

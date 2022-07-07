@@ -21,8 +21,9 @@
   </Objects>
   <Configuration ModuleId="PC_any">
     <AutomationRuntime Version="B4.92" />
-    <Build GccVersion="4.1.2" />
+    <Build AnsicIncludeDirectories="\Logical\Libraries\ExData\SG4\" GccVersion="6.3.0" />
     <DefaultTargetMemory Tasks="UserROM" />
+    <Transfer SavedOfflineInstallationFolder="" SavedPipDestinationFolder="" SavedRuntimeUtilityCenterPackagePath="" />
     <Vc FirmwareVersion="V4.72.5" />
   </Configuration>
 </Cpu>
