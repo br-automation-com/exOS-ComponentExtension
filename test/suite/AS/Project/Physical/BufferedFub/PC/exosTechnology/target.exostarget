@@ -5,11 +5,11 @@
     <Group ID="General">
       <Property ID="ConnectionIP" Value="192.168.137.2" />
       <Group ID="Logging">
-        <Property ID="LogLevel" Value="Success" />
+        <Property ID="LogLevel" Value="Debug" />
         <Group ID="LogFilters">
-          <Property ID="LogFilterUser" Value="On" />
-          <Property ID="LogFilterSystem" Value="Off" />
-          <Property ID="LogFilterVerbose" Value="Off" />
+          <Property ID="LogFilterUser" Value="Off" />
+          <Property ID="LogFilterSystem" Value="On" />
+          <Property ID="LogFilterVerbose" Value="On" />
         </Group>
         <Property ID="LogDestination" Value="Volatile" />
       </Group>
