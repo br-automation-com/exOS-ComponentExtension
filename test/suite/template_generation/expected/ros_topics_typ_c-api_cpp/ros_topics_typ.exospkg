@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ComponentPackage Version="2.0.0" ErrorHandling="Component" StartupTimeout="0">
+    <File FileName="Linux\exos-comp-ros_topics_typ_1.0.0_amd64.deb" ChangeEvent="Reinstall"/>
+    <Service Type="Runtime" Command="./ros_topics_typ" WorkingDirectory="/home/user/ros_topics_typ"/>
+    <Service Type="Install" Command="dpkg -i exos-comp-ros_topics_typ_1.0.0_amd64.deb"/>
+    <Service Type="Remove" Command="dpkg --purge exos-comp-ros_topics_typ"/>
+    <DatamodelInstance Name="ros_topics_typ_0"/>
+    <Build>
+        <GenerateDatamodel FileName="ros_topics\ros_topics_typ.typ" TypeName="ros_topics_typ">
+            <SG4 Include="ros_topics.h"/>
+            <Output Path="ros_topics"/>
+            <Output Path="Linux"/>
+        </GenerateDatamodel>
+        <BuildCommand Command="C:\Windows\Sysnative\wsl.exe" WorkingDirectory="Linux" Arguments="-d Debian -e sh build.sh $(EXOS_VERSION)">
+            <Dependency FileName="Linux\exos_ros_topics_typ.h"/>
+            <Dependency FileName="Linux\exos_ros_topics_typ.c"/>
+            <Dependency FileName="Linux\ros_topics_typDataset.hpp"/>
+            <Dependency FileName="Linux\ros_topics_typDatamodel.hpp"/>
+            <Dependency FileName="Linux\ros_topics_typDatamodel.cpp"/>
+            <Dependency FileName="Linux\ros_topics_typLogger.hpp"/>
+            <Dependency FileName="Linux\ros_topics_typLogger.cpp"/>
+            <Dependency FileName="Linux\ros_topics_typ.cpp"/>
+            <Dependency FileName="Linux\termination.h"/>
+            <Dependency FileName="Linux\termination.c"/>
+            <Dependency FileName="Linux\CMakeLists.txt"/>
+            <Dependency FileName="Linux\build.sh"/>
+        </BuildCommand>
+    </Build>
+    <!-- ComponentGenerator info - do not change! -->
+    <ComponentGenerator Class="ExosComponentC" Version="2.0.1">
+        <Option Name="templateLinux" Value="cpp"/>
+        <Option Name="exportLinux" Value="exos-comp-ros_topics_typ_1.0.0_amd64.deb"/>
+        <Option Name="templateAR" Value="c-api"/>
+        <Option Name="typeName" Value="ros_topics_typ"/>
+        <Option Name="typeFile" Value="ros_topics\ros_topics_typ.typ"/>
+        <Option Name="SG4Includes" Value="ros_topics.h"/>
+    </ComponentGenerator>
+</ComponentPackage>

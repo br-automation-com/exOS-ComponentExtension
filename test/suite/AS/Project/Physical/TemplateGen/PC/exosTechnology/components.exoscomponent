@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<Configuration>
+  <Element ID="gStringAndArray_0" Type="exoscomponent">
+    <Property ID="PackageSelection" Value="Logical\TemplateGen\StringAndArray\StringAndArray.exospkg" />
+    <Property ID="ErrorHandling" Value="Component" />
+    <Property ID="RestartEvent" Value="Component" />
+    <Property ID="StartupTimeout" Value="0" />
+    <Group ID="Predefined">
+      <Group ID="Files">
+        <Group ID="File[0]">
+          <Property ID="FileName" Value="Linux\exos-comp-stringandarray_1.0.0_amd64.deb" />
+          <Property ID="ChangeEvent" Value="Reinstall" />
+        </Group>
+      </Group>
+      <Group ID="Services">
+        <Group ID="Service[0]">
+          <Property ID="Type" Value="Runtime" />
+          <Property ID="Command" Value="./stringandarray" />
+          <Property ID="WorkingDirectory" Value="/home/user/stringandarray" />
+        </Group>
+        <Group ID="Service[1]">
+          <Property ID="Type" Value="Install" />
+          <Property ID="Command" Value="dpkg -i exos-comp-stringandarray_1.0.0_amd64.deb" />
+          <Property ID="WorkingDirectory" />
+        </Group>
+        <Group ID="Service[2]">
+          <Property ID="Type" Value="Remove" />
+          <Property ID="Command" Value="dpkg --purge exos-comp-stringandarray" />
+          <Property ID="WorkingDirectory" />
+        </Group>
+      </Group>
+    </Group>
+  </Element>
+</Configuration>

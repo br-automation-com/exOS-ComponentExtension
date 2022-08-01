@@ -104,15 +104,6 @@ class ExosComponentC extends ExosComponentAR {
                 this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._templateLinux.datamodelSource);
                 this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._templateLinux.loggerHeader);
                 this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._templateLinux.loggerSource);
-
-                if (this.datamodel != undefined) {
-                    this._templateBuild.options.executable.staticLibrary.enable = true;
-                    this._templateBuild.options.executable.staticLibrary.sourceFiles = [this._templateLinux.datasetHeader.name,
-                                                                                        this._templateLinux.datamodelHeader.name,
-                                                                                        this._templateLinux.datamodelSource.name,
-                                                                                        this._templateLinux.loggerHeader.name,
-                                                                                        this._templateLinux.loggerSource.name];
-                }
                 break;
             case "c-api":
             default:
@@ -127,6 +118,12 @@ class ExosComponentC extends ExosComponentAR {
         this._templateBuild.options.executable.sourceFiles = [this._templateLinux.termination.terminationSource.name, this._templateLinux.mainSource.name]
         if (this._datamodel != undefined) {
             this._templateBuild.options.executable.sourceFiles.push(this._datamodel.sourceFile.name)
+        }
+        if (this._templateLinux.datamodelSource != undefined) {
+            this._templateBuild.options.executable.sourceFiles.push(this._templateLinux.datamodelSource.name)
+        }
+        if (this._templateLinux.loggerSource != undefined) {
+            this._templateBuild.options.executable.sourceFiles.push(this._templateLinux.loggerSource.name)
         }
         if(this._options.packaging == "deb") {
             this._templateBuild.options.debPackage.enable = true;

@@ -16,6 +16,12 @@ function run() {
 			if (err) {
 				return e(err);
 			}
+			
+			console.log("Control which tests to run in " + path.resolve(__dirname, "index.js"));
+			// Uncomment below to filter away certain tests
+			//files = files.filter(item => item !== 'suite/extension.test.js')
+			//files = files.filter(item => item !== 'suite/datamodel_generation/datamodel.generation.test.js')
+			//files = files.filter(item => item !== 'suite/template_generation/template.generation.test.js')
 
 			// Add files to the test suite
 			files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));

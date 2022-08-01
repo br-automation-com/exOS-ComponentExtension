@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<Package xmlns="http://br-automation.co.at/AS/Package">
+  <Objects>
+    <Object Type="Package" Description="Contents is git ignored. Copy templates from \test\suite\template_generation\expected\StringAndArray_X_Y to this folder">StringAndArray</Object>
+  </Objects>
+</Package>

@@ -5,7 +5,7 @@
 	"displayName": "exOS Component Generator",
 	"description": "Code Generator for exOS Hybrid Components",
 	"icon": "exOS.png",
-	"version": "2.1.1",
+	"version": "2.1.2",
 	"license": "MPL 2.0",
 	"engines": {
 		"vscode": "^1.50.0"

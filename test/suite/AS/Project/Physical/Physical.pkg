@@ -4,5 +4,6 @@
   <Objects>
     <Object Type="Configuration">Config1</Object>
     <Object Type="Configuration">BufferedFub</Object>
+    <Object Type="Configuration" Description="For testing templates from e.g. \test\suite\template_generation\expected\">TemplateGen</Object>
   </Objects>
 </Physical>

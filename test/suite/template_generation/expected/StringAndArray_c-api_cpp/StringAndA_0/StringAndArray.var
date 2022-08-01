@@ -1,0 +1,8 @@
+VAR
+    StringAndArrayInit_0 : StringAndArrayInit;
+    StringAndArrayCyclic_0 : StringAndArrayCyclic;
+    StringAndArrayExit_0 : StringAndArrayExit;
+    StringAndArray_0 : StringAndArray;
+    ExComponentInfo_0 : ExComponentInfo;
+    ExDatamodelInfo_0 : ExDatamodelInfo;
+END_VAR

@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1.2] - 2022-07-12
+
+### Fixed
+
+- Fixed missing source files (...Datamodel.cpp and ...Logger.cpp) in CMakeLists.txt for Linux C++ template generation
+
 ## [2.1.1] - 2022-04-26
 
 ### Fixed
