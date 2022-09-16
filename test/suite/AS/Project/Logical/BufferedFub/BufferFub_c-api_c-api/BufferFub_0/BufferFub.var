@@ -2,7 +2,11 @@ VAR
     BufferFubInit_0 : BufferFubInit;
     BufferFubCyclic_0 : BufferFubCyclic;
     BufferFubExit_0 : BufferFubExit;
+    BufferFubBufferUpdate_0 : BufferFubBufferUpdate;
     BufferFub_0 : BufferFub;
     ExComponentInfo_0 : ExComponentInfo;
     ExDatamodelInfo_0 : ExDatamodelInfo;
+    BufferedSampleRecvIdx : USINT; (*test code*)
+    testState : UINT; (*test code*)
+    BufferedSampleRecv : ARRAY[0..19] OF UDINT; (*test code*)
 END_VAR

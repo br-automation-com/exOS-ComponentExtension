@@ -4,5 +4,6 @@
   <Files>
     <File Description="BufferFub variable declaration" Private="true">BufferFub.var</File>
     <File Description="BufferFub application">BufferFub.st</File>
+    <File>UpdateBufferActions.st</File>
   </Files>
 </Program>

@@ -14,15 +14,49 @@
 typedef struct
 {
     void *self;
+    void* pData;
+    size_t dataSize;
+    void* databuffer;
+    size_t bufferSize;
+    size_t head;
+    size_t tail;
+    size_t overflowErrors;
+} BufferFubBufferHandle_t;
+
+typedef struct
+{
+    void *self;
     exos_log_handle_t logger;
     BufferFub data;
 
     exos_datamodel_handle_t bufferfub;
 
     exos_dataset_handle_t bufferedsample;
+    BufferFubBufferHandle_t bufferedsample_buffer;
     exos_dataset_handle_t setup_dataset;
     exos_dataset_handle_t cmdsendburst;
 } BufferFubHandle_t;
+
+static int BufferFubBufferPush(BufferFubBufferHandle_t* bufferHandle, void* data)
+{
+    if (NULL == bufferHandle)
+    {
+        return -1;
+    }
+    if ((void *)bufferHandle != bufferHandle->self)
+    {
+        return -1;
+    }
+    if (((bufferHandle->head + 1) % bufferHandle->bufferSize) == bufferHandle->tail)
+    {
+        return -1;
+    }
+
+    memcpy(bufferHandle->databuffer + (bufferHandle->head * bufferHandle->dataSize), data, bufferHandle->dataSize);
+    bufferHandle->head = (bufferHandle->head + 1) % bufferHandle->bufferSize;
+
+    return 0;
+}
 
 static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE event_type, void *info)
 {
@@ -36,7 +70,13 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         //handle each subscription dataset separately
         if(0 == strcmp(dataset->name, "bufferedSample"))
         {
-            inst->pBufferFub->bufferedSample = *(UDINT *)dataset->data;
+            //inst->pBufferFub->bufferedSample = *(UDINT *)dataset->data;
+            
+            if(BufferFubBufferPush(&handle->bufferedsample_buffer, dataset->data))
+            {
+                handle->bufferedsample_buffer.overflowErrors++;
+                ERROR("Buffer overflow in bufferedSample update");
+            }
         }
         break;
 
@@ -146,6 +186,26 @@ _BUR_PUBLIC void BufferFubInit(struct BufferFubInit *inst)
     memset(&handle->data, 0, sizeof(handle->data));
     handle->self = handle;
 
+    // buffered alloc
+    handle->bufferedsample_buffer.pData = 0; // set in BufferFubCyclic
+    handle->bufferedsample_buffer.dataSize = sizeof(handle->data.bufferedSample);
+    handle->bufferedsample_buffer.bufferSize = 20; // Note that empty is head==tail, thus only bufferSize-1 entries may be used.
+    TMP_alloc(handle->bufferedsample_buffer.dataSize * handle->bufferedsample_buffer.bufferSize, (void **)&handle->bufferedsample_buffer.databuffer);
+    if (NULL == handle->bufferedsample_buffer.databuffer)
+    {
+        inst->bufferedSampleBufferHandle = 0;
+        TMP_free(sizeof(BufferFubHandle_t), (void *)handle);
+        inst->Handle = 0;
+        return;
+    }
+    
+    handle->bufferedsample_buffer.head = 0;
+    handle->bufferedsample_buffer.tail = 0;
+    handle->bufferedsample_buffer.overflowErrors = 0;
+    memset(handle->bufferedsample_buffer.databuffer, 0, handle->bufferedsample_buffer.dataSize * handle->bufferedsample_buffer.bufferSize);
+    inst->bufferedSampleBufferHandle = &handle->bufferedsample_buffer;
+    handle->bufferedsample_buffer.self = &handle->bufferedsample_buffer;
+    
     exos_log_init(&handle->logger, "gBufferFub_0");
 
     
@@ -163,6 +223,83 @@ _BUR_PUBLIC void BufferFubInit(struct BufferFubInit *inst)
     inst->Handle = (UDINT)handle;
 }
 
+_BUR_PUBLIC void BufferFubBufferUpdate(struct BufferFubBufferUpdate* inst)
+{
+    if (!inst->Enable)
+    {
+        inst->Active = false;
+        inst->DatasetUpdated = false;
+        inst->Error = false;
+        inst->OverflowErrors = 0;
+        inst->PendingUpdates = 0;
+        return;
+    }
+    BufferFubBufferHandle_t *bufferHandle =  (BufferFubBufferHandle_t *)inst->BufferHandle;
+    if (NULL == bufferHandle)
+    {
+        inst->Error = true;
+        return;
+    }
+    if ((void *)bufferHandle != bufferHandle->self)
+    {
+        inst->Error = true;
+        return;
+    }
+
+    inst->Active = true;
+    inst->Error = false;
+    inst->OverflowErrors = bufferHandle->overflowErrors;
+
+    // test code begin
+    if(inst->testAddRandomDatasets)
+    {
+        uint32_t data = 1;
+        for (size_t i = 0; i < inst->testAddRandomDatasets; i++)
+        {
+            if(BufferFubBufferPush(bufferHandle, &data))
+            {
+                bufferHandle->overflowErrors++;
+                //ERROR("Buffer overflow in bufferedSample update (testcode)");
+            }
+            data++;
+        }
+    }
+    // test code end
+
+    if(inst->UpdateDataset)
+    {
+        if (bufferHandle->tail == bufferHandle->head) // empty
+        {
+            inst->DatasetUpdated = false;
+        }
+        else
+        {
+            if(NULL != bufferHandle->pData)
+            {
+                memcpy(bufferHandle->pData, bufferHandle->databuffer + (bufferHandle->tail * bufferHandle->dataSize), bufferHandle->dataSize);
+                //void* handle = bufferHandle->data[bufferHandle->tail];
+                //should we set 0? bufferHandle->data[bufferHandle->tail] = NULL;
+                bufferHandle->tail = (bufferHandle->tail + 1) % bufferHandle->bufferSize;
+                inst->DatasetUpdated = true;
+            }
+            else
+            {
+                inst->Error = true;
+                inst->DatasetUpdated = false;
+            }
+        }
+    }
+    else
+    {
+        inst->DatasetUpdated = false;
+    }
+
+    if (bufferHandle->tail > bufferHandle->head)
+        inst->PendingUpdates = bufferHandle->bufferSize - (bufferHandle->tail - bufferHandle->head);
+    else
+        inst->PendingUpdates = bufferHandle->head - bufferHandle->tail;
+}
+
 _BUR_PUBLIC void BufferFubCyclic(struct BufferFubCyclic *inst)
 {
     BufferFubHandle_t *handle = (BufferFubHandle_t *)inst->Handle;
@@ -178,6 +315,9 @@ _BUR_PUBLIC void BufferFubCyclic(struct BufferFubCyclic *inst)
         inst->Error = true;
         return;
     }
+
+    // setup buffer address for xUpdate FUB:
+    handle->bufferedsample_buffer.pData = &inst->pBufferFub->bufferedSample;
 
     BufferFub *data = &handle->data;
     exos_datamodel_handle_t *bufferfub = &handle->bufferfub;
@@ -322,6 +462,19 @@ _BUR_PUBLIC void BufferFubExit(struct BufferFubExit *inst)
     exos_datamodel_handle_t *bufferfub = &handle->bufferfub;
 
     EXOS_ASSERT_OK(exos_datamodel_delete(bufferfub));
+
+    //delete buffer:
+    BufferFubBufferHandle_t *bufferHandle =  (BufferFubBufferHandle_t *)&handle->bufferedsample_buffer;
+    if (NULL == bufferHandle)
+    {
+        ERROR("BufferFubExit: NULL bufferhandle, cannot delete resources");
+        return;
+    }
+    if ((void *)bufferHandle != bufferHandle->self)
+    {
+        ERROR("BufferFubExit: invalid bufferhandle, cannot delete resources");
+        return;
+    }
 
     //finish with deleting the log
     exos_log_delete(&handle->logger);
