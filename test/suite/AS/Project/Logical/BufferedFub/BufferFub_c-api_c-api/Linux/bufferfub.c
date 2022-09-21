@@ -13,6 +13,16 @@
 
 exos_log_handle_t logger;
 
+typedef struct {
+    BufferFub *data;
+
+    exos_datamodel_handle_t* bufferfub;
+
+    exos_dataset_handle_t* bufferedsample;
+    exos_dataset_handle_t* setup_dataset;
+    exos_dataset_handle_t* cmdsendburst;
+} application_info_t;
+
 static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE event_type, void *info)
 {
     switch (event_type)
@@ -27,6 +37,23 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         else if(0 == strcmp(dataset->name,"cmdSendBurst"))
         {
             bool *cmdsendburst = (bool *)dataset->data;
+
+            if (*cmdsendburst){
+                
+                application_info_t *application = (application_info_t *)dataset->user_context;
+                if (NULL != application)
+                {
+                    VERBOSE("Send burst, sampleCount=%u, sampleDelay=%u  ", application->data->setup.sampleCount, application->data->setup.sampleDelay);
+
+                    for (size_t i = 0; i < application->data->setup.sampleCount; i++)
+                    {
+                        application->data->bufferedSample = i + 1;
+                        exos_dataset_publish(application->bufferedsample);
+
+                        usleep(application->data->setup.sampleDelay);
+                    }
+                }
+            }
         }
         break;
 
@@ -110,7 +137,9 @@ int main()
     exos_dataset_handle_t bufferedsample;
     exos_dataset_handle_t setup_dataset;
     exos_dataset_handle_t cmdsendburst;
-    
+
+    application_info_t myapplication = {&data, &bufferfub, &bufferedsample, &setup_dataset, &cmdsendburst};
+
     exos_log_init(&logger, "gBufferFub_0");
 
     SUCCESS("starting BufferFub application..");
@@ -130,7 +159,7 @@ int main()
     setup_dataset.user_tag = 0; //user defined
 
     EXOS_ASSERT_OK(exos_dataset_init(&cmdsendburst, &bufferfub, "cmdSendBurst", &data.cmdSendBurst, sizeof(data.cmdSendBurst)));
-    cmdsendburst.user_context = NULL; //user defined
+    cmdsendburst.user_context = &myapplication; //user defined
     cmdsendburst.user_tag = 0; //user defined
 
     //connect the datamodel

@@ -5,6 +5,7 @@ ACTION UpdateBufferSampleSingle:
 	
 	
 	IF BufferFubBufferUpdate_0.DatasetUpdated THEN
+	
 		(* Your code here *)
 		
 		// test code begin
@@ -29,7 +30,8 @@ ACTION UpdateBufferSampleAll:
 	
 		BufferFubBufferUpdate_0(UpdateDataset := TRUE);
 				
-	
+		(* Your code here *)
+		
 		// test code begin
 		BufferedSampleRecv[BufferedSampleRecvIdx] := BufferFub_0.bufferedSample;
 		

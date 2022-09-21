@@ -7,7 +7,7 @@
       <Group ID="Logging">
         <Property ID="LogLevel" Value="Debug" />
         <Group ID="LogFilters">
-          <Property ID="LogFilterUser" Value="Off" />
+          <Property ID="LogFilterUser" Value="On" />
           <Property ID="LogFilterSystem" Value="On" />
           <Property ID="LogFilterVerbose" Value="On" />
         </Group>

@@ -25,23 +25,25 @@ PROGRAM _CYCLIC
 		0:
 			// nothing
 		5:
-			BufferFubBufferUpdate_0.testAddRandomDatasets := 5;
-			testState := 10;
+			// startup
+			BufferFubCyclic_0.Enable := TRUE;
+			IF BufferFubCyclic_0.Connected THEN
+				BufferFubCyclic_0.Start := TRUE;
+				testState := 10;
+			END_IF
 		10:
-			//fill data
-			BufferFubBufferUpdate_0(UpdateDataset := FALSE);
-			BufferFubBufferUpdate_0.testAddRandomDatasets := 0;
-			testState := 0;
+			IF BufferFubCyclic_0.Operational THEN
+				testState := 20;
+			END_IF
 		20:
-			//update single
-			UpdateBufferSampleSingle;
-			testState := 0;
+			// tell linux to burst
+			BufferFub_0.setup.sampleCount := 12;
+			BufferFub_0.setup.sampleDelay := 0;
+			BufferFub_0.cmdSendBurst := TRUE;
+			testState := 25;
 		30:
-			//update single
 			UpdateBufferSampleAll;
 			testState := 0;
-		 
-	
 	END_CASE;
 	// test code end
 	
