@@ -225,15 +225,11 @@ _BUR_PUBLIC void BufferFubInit(struct BufferFubInit *inst)
 
 _BUR_PUBLIC void BufferFubBufferUpdate(struct BufferFubBufferUpdate* inst)
 {
-    if (!inst->Enable)
-    {
-        inst->Active = false;
-        inst->DatasetUpdated = false;
-        inst->Error = false;
-        inst->OverflowErrors = 0;
-        inst->PendingUpdates = 0;
-        return;
-    }
+    inst->DatasetUpdated = false;
+    inst->Error = false;
+    inst->OverflowErrors = 0;
+    inst->PendingUpdates = 0;
+
     BufferFubBufferHandle_t *bufferHandle =  (BufferFubBufferHandle_t *)inst->BufferHandle;
     if (NULL == bufferHandle)
     {
@@ -246,25 +242,8 @@ _BUR_PUBLIC void BufferFubBufferUpdate(struct BufferFubBufferUpdate* inst)
         return;
     }
 
-    inst->Active = true;
     inst->Error = false;
     inst->OverflowErrors = bufferHandle->overflowErrors;
-
-    // test code begin
-    if(inst->testAddRandomDatasets)
-    {
-        uint32_t data = 1;
-        for (size_t i = 0; i < inst->testAddRandomDatasets; i++)
-        {
-            if(BufferFubBufferPush(bufferHandle, &data))
-            {
-                bufferHandle->overflowErrors++;
-                //ERROR("Buffer overflow in bufferedSample update (testcode)");
-            }
-            data++;
-        }
-    }
-    // test code end
 
     if(inst->UpdateDataset)
     {

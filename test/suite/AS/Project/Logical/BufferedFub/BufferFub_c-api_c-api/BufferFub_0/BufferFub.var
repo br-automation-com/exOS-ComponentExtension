@@ -6,7 +6,4 @@ VAR
     BufferFub_0 : BufferFub;
     ExComponentInfo_0 : ExComponentInfo;
     ExDatamodelInfo_0 : ExDatamodelInfo;
-    BufferedSampleRecvIdx : USINT; (*test code*)
-    testState : UINT; (*test code*)
-    BufferedSampleRecv : ARRAY[0..19] OF UDINT; (*test code*)
 END_VAR

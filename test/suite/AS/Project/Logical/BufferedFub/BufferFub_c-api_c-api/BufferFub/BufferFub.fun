@@ -2,7 +2,7 @@
 FUNCTION_BLOCK BufferFubInit
 	VAR_OUTPUT
 		Handle : UDINT;
-		bufferedSampleBufferHandle : UDINT;
+		bufferedSampleBufferHandle : UDINT; (*Initialized BufferHandle for bufferedSample. Bufferhandle is linked to data in Cyclic*)
 	END_VAR
 	VAR
 		_state : USINT;
@@ -38,20 +38,15 @@ FUNCTION_BLOCK BufferFubExit
 	END_VAR
 END_FUNCTION_BLOCK
 
-FUNCTION_BLOCK BufferFubBufferUpdate (*Must be called in same TC as BufferFubCyclic*)
+FUNCTION_BLOCK BufferFubBufferUpdate (*Must be called in same TC as Cyclic. This function block finalizes in one scan and can be used for several different buffers*)
 	VAR_INPUT
-		Enable : BOOL;
-		BufferHandle : UDINT;
-		UpdateDataset : BOOL;
-		testAddRandomDatasets : UDINT; (*test code: Just for testing (fill buffer with the set number of numbers)*)
-		Address : UDINT;
-		Size : UDINT;
+		BufferHandle : UDINT; (*Set this to the correct bufferhandle (from Init function block) before calling action UpdateBufferSampleSingle or UpdateBufferSampleAll*)
+		UpdateDataset : BOOL; (*Set to TRUE to update dataset, PendingUpdates and OverflowErrors. Set to FALSE to only update PendingUpdates and OverflowErrors for BufferHandle without updating dataset*)
 	END_VAR
 	VAR_OUTPUT
-		Active : BOOL;
-		Error : BOOL;
-		DatasetUpdated : BOOL;
-		PendingUpdates : UDINT;
-		OverflowErrors : UDINT;
+		Error : BOOL; (*Set in case BufferHandle is invalid*)
+		DatasetUpdated : BOOL; (*Set if dataset was updated successfully. Only when UpdateDataset is set to TRUE and there is something in the buffer*)
+		PendingUpdates : UDINT; (*Number of datasets waiting in the buffer*)
+		OverflowErrors : UDINT; (*Number of overflow errors which occurs when the buffer is full and new data arrives from GPOS*)
 	END_VAR
 END_FUNCTION_BLOCK
