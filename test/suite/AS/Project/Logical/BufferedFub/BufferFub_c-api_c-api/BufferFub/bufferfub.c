@@ -70,8 +70,6 @@ static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE
         //handle each subscription dataset separately
         if(0 == strcmp(dataset->name, "bufferedSample"))
         {
-            //inst->pBufferFub->bufferedSample = *(UDINT *)dataset->data;
-            
             if(BufferFubBufferPush(&handle->bufferedsample_buffer, dataset->data))
             {
                 handle->bufferedsample_buffer.overflowErrors++;
@@ -186,7 +184,7 @@ _BUR_PUBLIC void BufferFubInit(struct BufferFubInit *inst)
     memset(&handle->data, 0, sizeof(handle->data));
     handle->self = handle;
 
-    // buffered alloc
+    // Allocation and initialization of buffer(s)
     handle->bufferedsample_buffer.pData = 0; // set in BufferFubCyclic
     handle->bufferedsample_buffer.dataSize = sizeof(handle->data.bufferedSample);
     handle->bufferedsample_buffer.bufferSize = 20; // Note that empty is head==tail, thus only bufferSize-1 entries may be used.
@@ -203,7 +201,7 @@ _BUR_PUBLIC void BufferFubInit(struct BufferFubInit *inst)
     handle->bufferedsample_buffer.tail = 0;
     handle->bufferedsample_buffer.overflowErrors = 0;
     memset(handle->bufferedsample_buffer.databuffer, 0, handle->bufferedsample_buffer.dataSize * handle->bufferedsample_buffer.bufferSize);
-    inst->bufferedSampleBufferHandle = &handle->bufferedsample_buffer;
+    inst->bufferedSampleBufferHandle = (UDINT)&handle->bufferedsample_buffer;
     handle->bufferedsample_buffer.self = &handle->bufferedsample_buffer;
     
     exos_log_init(&handle->logger, "gBufferFub_0");
@@ -295,9 +293,9 @@ _BUR_PUBLIC void BufferFubCyclic(struct BufferFubCyclic *inst)
         return;
     }
 
-    // setup buffer address for xUpdate FUB:
+    // setup buffer address(es) for BufferFubUpdate:
     handle->bufferedsample_buffer.pData = &inst->pBufferFub->bufferedSample;
-
+    
     BufferFub *data = &handle->data;
     exos_datamodel_handle_t *bufferfub = &handle->bufferfub;
     //the user context of the datamodel points to the BufferFubCyclic instance
@@ -442,7 +440,7 @@ _BUR_PUBLIC void BufferFubExit(struct BufferFubExit *inst)
 
     EXOS_ASSERT_OK(exos_datamodel_delete(bufferfub));
 
-    //delete buffer:
+    //delete buffer(s):
     BufferFubBufferHandle_t *bufferHandle =  (BufferFubBufferHandle_t *)&handle->bufferedsample_buffer;
     if (NULL == bufferHandle)
     {

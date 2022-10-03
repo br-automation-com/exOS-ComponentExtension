@@ -147,6 +147,13 @@ class Datamodel {
      */
     SG4Includes;
 
+    /**
+     * true if one or more AR SUB dataset(s) are BUFFERED
+     * 
+     * @type {boolean} 
+     */
+     hasBuffered;
+
     //limit constants - generates error of exceeded
     static MAX_ARRAY_NEST = 10;
     static MAX_STRUCT_NEST = 32; // avoid infinite loops with cyclic declared types. Not sure what the AS limit is (There is a limit e.g. Error number: 5868)
@@ -175,6 +182,7 @@ class Datamodel {
         this.fileName = fileName;
         this.typeName = typeName;
         this.SG4Includes = SG4Includes;
+        this.hasBuffered = false;
 
         this.dataset = [];
         this.sortedStructs = [];

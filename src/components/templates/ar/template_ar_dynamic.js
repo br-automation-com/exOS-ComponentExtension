@@ -38,6 +38,12 @@ class TemplateARDynamic extends Template {
     iecProgramST;
 
     /**
+     * application implementation code for buffered datasets in in action ST
+     * @type {GeneratedFileObj} 
+     */
+     iecBufferedActionST;
+
+    /**
      * @type {TemplateARHeap}
      */
     heap;
@@ -63,6 +69,8 @@ class TemplateARDynamic extends Template {
         this.libraryFun = {name:`${this.datamodel.typeName.substr(0,10)}.fun`, contents:this._generateFun(), description:`${this.datamodel.typeName} function blocks`}; // Avoid Error in AS: The name of the .fun file is not equal to the name of the library.	(9348)
         this.iecProgramVar = {name:`${this.datamodel.typeName}.var`, contents:this._generateIECProgramVar(), description:`${this.datamodel.typeName} variable declaration`};
         this.iecProgramST = {name:`${this.datamodel.typeName}.st`, contents:this._generateIECProgramST(), description:`${this.datamodel.typeName} application`};
+        if(datamodel.hasBuffered)
+            this.iecBufferedActionST = {name:`UpdateBufferActions.st`, contents:this._generateIECBufferedActionST(), description:`${this.datamodel.typeName} buffer actions`};
         this.heap = new TemplateARHeap(100000);
     }
     
@@ -100,6 +108,22 @@ class TemplateARDynamic extends Template {
         function generateHandle(template) {
             let out = "";
         
+            if(template.datamodel.hasBuffered)
+            {
+                out += `typedef struct\n`;
+                out += `{\n`;
+                out += `    void *self;\n`;
+                out += `    void* pData;\n`;
+                out += `    size_t dataSize;\n`;
+                out += `    void* databuffer;\n`;
+                out += `    size_t bufferSize;\n`;
+                out += `    size_t head;\n`;
+                out += `    size_t tail;\n`;
+                out += `    size_t overflowErrors;\n`;
+                out += `} ${template.datamodel.structName}BufferHandle_t;\n`;
+                out += `\n`;
+            }
+
             out += `typedef struct\n{\n`;
             out += `    void *self;\n`
             out += `    exos_log_handle_t ${template.logname};\n`;
@@ -114,6 +138,9 @@ class TemplateARDynamic extends Template {
                 if (dataset.isSub || dataset.isPub) {
                     out += `    exos_dataset_handle_t ${dataset.varName};\n`;
                 }
+                if (dataset.isBuffered) {
+                    out += `    ${template.datamodel.structName}BufferHandle_t ${dataset.varName}_buffer;\n`;
+                }
             }
         
             out += `} ${template.handle.dataType};\n\n`;
@@ -126,6 +153,31 @@ class TemplateARDynamic extends Template {
          */
         function generateCallbacks(template) {
             let out = "";
+
+            if(template.datamodel.hasBuffered)
+            {
+                // Helper function for datasetEvent 
+                out += `static int ${template.datamodel.structName}BufferPush(${template.datamodel.structName}BufferHandle_t* bufferHandle, void* data)\n`;
+                out += `{\n`;
+                out += `    if (NULL == bufferHandle)\n`;
+                out += `    {\n`;
+                out += `        return -1;\n`;
+                out += `    }\n`;
+                out += `    if ((void *)bufferHandle != bufferHandle->self)\n`;
+                out += `    {\n`;
+                out += `        return -1;\n`;
+                out += `    }\n`;
+                out += `    if (((bufferHandle->head + 1) % bufferHandle->bufferSize) == bufferHandle->tail)\n`;
+                out += `    {\n`;
+                out += `        return -1;\n`;
+                out += `    }\n\n`;
+
+                out += `    memcpy(bufferHandle->databuffer + (bufferHandle->head * bufferHandle->dataSize), data, bufferHandle->dataSize);\n`;
+                out += `    bufferHandle->head = (bufferHandle->head + 1) % bufferHandle->bufferSize;\n\n`;
+
+                out += `    return 0;\n`;
+                out += `}\n\n`;
+            }
         
             out += `static void datasetEvent(exos_dataset_handle_t *dataset, EXOS_DATASET_EVENT_TYPE event_type, void *info)\n{\n`;
             out += `    struct ${template.datamodel.structName}Cyclic *inst = (struct ${template.datamodel.structName}Cyclic *)dataset->datamodel->user_context;\n`;
@@ -146,11 +198,22 @@ class TemplateARDynamic extends Template {
                     }
                     out += `if(0 == strcmp(dataset->name, "${dataset.structName}"))\n`;
                     out += `        {\n`;
-                    if(Datamodel.isScalarType(dataset) && (dataset.arraySize == 0)) {
-                        out += `            inst->p${template.datamodel.structName}->${dataset.structName} = *(${dataset.dataType} *)dataset->data;\n`;
+                    if(dataset.isBuffered)
+                    {
+                        out += `            if(${template.datamodel.structName}BufferPush(&handle->${dataset.varName}_buffer, dataset->data))\n`;
+                        out += `            {\n`;
+                        out += `                handle->${dataset.varName}_buffer.overflowErrors++;\n`;
+                        out += `                ERROR("Buffer overflow in ${dataset.structName} update");\n`;
+                        out += `            }\n`;
                     }
-                    else {
-                        out += `            memcpy(&inst->p${template.datamodel.structName}->${dataset.structName}, dataset->data, dataset->size);\n`;
+                    else
+                    {
+                        if(Datamodel.isScalarType(dataset) && (dataset.arraySize == 0)) {
+                            out += `            inst->p${template.datamodel.structName}->${dataset.structName} = *(${dataset.dataType} *)dataset->data;\n`;
+                        }
+                        else {
+                            out += `            memcpy(&inst->p${template.datamodel.structName}->${dataset.structName}, dataset->data, dataset->size);\n`;
+                        }
                     }
                     out += `        }\n`;
                 }
@@ -279,6 +342,36 @@ class TemplateARDynamic extends Template {
             out += `    }\n\n`;
             out += `    memset(&${template.handle.name}->data, 0, sizeof(${template.handle.name}->data));\n`;
             out += `    ${template.handle.name}->self = ${template.handle.name};\n\n`;
+
+            if(template.datamodel.hasBuffered)
+            {
+                out += `    // Allocation and initialization of buffer(s)\n`;
+                template.datasets.filter((dataset) => {
+                    if(dataset.isBuffered)
+                    {
+                        out += `    handle->${dataset.varName}_buffer.pData = 0; // set in ${template.datamodel.structName}Cyclic\n`;
+                        out += `    handle->${dataset.varName}_buffer.dataSize = sizeof(handle->data.${dataset.structName});\n`;
+                        out += `    handle->${dataset.varName}_buffer.bufferSize = 20; // Note that empty is head==tail, thus only bufferSize-1 entries may be used.\n`;
+                        out += `    TMP_alloc(handle->${dataset.varName}_buffer.dataSize * handle->${dataset.varName}_buffer.bufferSize, (void **)&handle->${dataset.varName}_buffer.databuffer);\n`;
+                        out += `    if (NULL == handle->${dataset.varName}_buffer.databuffer)\n`;
+                        out += `    {\n`;
+                        out += `        inst->${dataset.structName}BufferHandle = 0;\n`;
+                        out += `        TMP_free(sizeof(${template.datamodel.structName}Handle_t), (void *)handle);\n`;
+                        out += `        inst->Handle = 0;\n`;
+                        out += `        return;\n`;
+                        out += `    }\n`;
+                        out += `    \n`;
+                        out += `    handle->${dataset.varName}_buffer.head = 0;\n`;
+                        out += `    handle->${dataset.varName}_buffer.tail = 0;\n`;
+                        out += `    handle->${dataset.varName}_buffer.overflowErrors = 0;\n`;
+                        out += `    memset(handle->${dataset.varName}_buffer.databuffer, 0, handle->${dataset.varName}_buffer.dataSize * handle->${dataset.varName}_buffer.bufferSize);\n`;
+                        out += `    inst->${dataset.structName}BufferHandle = (UDINT)&handle->${dataset.varName}_buffer;\n`;
+                        out += `    handle->${dataset.varName}_buffer.self = &handle->${dataset.varName}_buffer;\n`;
+                        out += `    \n`;
+                    }
+                });
+            }
+
             out += `    exos_log_init(&${template.handle.name}->${template.logname}, "${template.aliasName}");\n\n`;
             out += `    \n`;
             out += `    \n`;
@@ -309,7 +402,67 @@ class TemplateARDynamic extends Template {
          */
         function generateCyclic(template) {
             let out = "";
-        
+
+            if(template.datamodel.hasBuffered)
+            {
+                // BufferUpdate is kind of a cyclic thing
+                out += `_BUR_PUBLIC void ${template.datamodel.structName}BufferUpdate(struct ${template.datamodel.structName}BufferUpdate* inst)\n`;
+                out += `{\n`;
+                out += `    inst->DatasetUpdated = false;\n`;
+                out += `    inst->Error = false;\n`;
+                out += `    inst->OverflowErrors = 0;\n`;
+                out += `    inst->PendingUpdates = 0;\n`;
+                out += `\n`;
+                out += `    ${template.datamodel.structName}BufferHandle_t *bufferHandle =  (${template.datamodel.structName}BufferHandle_t *)inst->BufferHandle;\n`;
+                out += `    if (NULL == bufferHandle)\n`;
+                out += `    {\n`;
+                out += `        inst->Error = true;\n`;
+                out += `        return;\n`;
+                out += `    }\n`;
+                out += `    if ((void *)bufferHandle != bufferHandle->self)\n`;
+                out += `    {\n`;
+                out += `        inst->Error = true;\n`;
+                out += `        return;\n`;
+                out += `    }\n`;
+                out += `\n`;
+                out += `    inst->Error = false;\n`;
+                out += `    inst->OverflowErrors = bufferHandle->overflowErrors;\n`;
+                out += `\n`;
+                out += `    if(inst->UpdateDataset)\n`;
+                out += `    {\n`;
+                out += `        if (bufferHandle->tail == bufferHandle->head) // empty\n`;
+                out += `        {\n`;
+                out += `            inst->DatasetUpdated = false;\n`;
+                out += `        }\n`;
+                out += `        else\n`;
+                out += `        {\n`;
+                out += `            if(NULL != bufferHandle->pData)\n`;
+                out += `            {\n`;
+                out += `                memcpy(bufferHandle->pData, bufferHandle->databuffer + (bufferHandle->tail * bufferHandle->dataSize), bufferHandle->dataSize);\n`;
+                out += `                //void* handle = bufferHandle->data[bufferHandle->tail];\n`;
+                out += `                //should we set 0? bufferHandle->data[bufferHandle->tail] = NULL;\n`;
+                out += `                bufferHandle->tail = (bufferHandle->tail + 1) % bufferHandle->bufferSize;\n`;
+                out += `                inst->DatasetUpdated = true;\n`;
+                out += `            }\n`;
+                out += `            else\n`;
+                out += `            {\n`;
+                out += `                inst->Error = true;\n`;
+                out += `                inst->DatasetUpdated = false;\n`;
+                out += `            }\n`;
+                out += `        }\n`;
+                out += `    }\n`;
+                out += `    else\n`;
+                out += `    {\n`;
+                out += `        inst->DatasetUpdated = false;\n`;
+                out += `    }\n`;
+                out += `\n`;
+                out += `    if (bufferHandle->tail > bufferHandle->head)\n`;
+                out += `        inst->PendingUpdates = bufferHandle->bufferSize - (bufferHandle->tail - bufferHandle->head);\n`;
+                out += `    else\n`;
+                out += `        inst->PendingUpdates = bufferHandle->head - bufferHandle->tail;\n`;
+                out += `}\n\n`;
+            }
+
             out += `_BUR_PUBLIC void ${template.datamodel.structName}Cyclic(struct ${template.datamodel.structName}Cyclic *inst)\n{\n`;
         
             out += `    ${template.handle.dataType} *${template.handle.name} = (${template.handle.dataType} *)inst->Handle;\n\n`;
@@ -325,6 +478,17 @@ class TemplateARDynamic extends Template {
             out += `        return;\n`;
             out += `    }\n\n`;
         
+            if(template.datamodel.hasBuffered)
+            {
+                out += `    // setup buffer address(es) for ${template.datamodel.structName}Update:\n`;
+                template.datasets.filter((dataset) => {
+                    if(dataset.isBuffered)
+                    {
+                        out += `    handle->${dataset.varName}_buffer.pData = &inst->pBufferFub->${dataset.structName};\n`;
+                    }
+                });
+                out += `    \n`;
+            }
             out += `    ${template.datamodel.dataType} *data = &${template.handle.name}->data;\n`;
             out += `    exos_datamodel_handle_t *${template.datamodel.varName} = &${template.handle.name}->${template.datamodel.varName};\n`;
             out += `    //the user context of the datamodel points to the ${template.datamodel.structName}Cyclic instance\n`;
@@ -466,7 +630,29 @@ class TemplateARDynamic extends Template {
             out += `    exos_datamodel_handle_t *${template.datamodel.varName} = &${template.handle.name}->${template.datamodel.varName};\n`;
             out += `\n`;
             out += `    EXOS_ASSERT_OK(exos_datamodel_delete(${template.datamodel.varName}));\n\n`;
-        
+
+            if(template.datamodel.hasBuffered)
+            {
+                template.datasets.filter((dataset) => {
+                    if(dataset.isBuffered)
+                    {
+                        out += `    //delete buffer(s):\n`;
+                        out += `    ${template.datamodel.structName}BufferHandle_t *bufferHandle =  (${template.datamodel.structName}BufferHandle_t *)&handle->bufferedsample_buffer;\n`;
+                        out += `    if (NULL == bufferHandle)\n`;
+                        out += `    {\n`;
+                        out += `        ERROR("${template.datamodel.structName}Exit: NULL bufferhandle, cannot delete resources");\n`;
+                        out += `        return;\n`;
+                        out += `    }\n`;
+                        out += `    if ((void *)bufferHandle != bufferHandle->self)\n`;
+                        out += `    {\n`;
+                        out += `        ERROR("${template.datamodel.structName}Exit: invalid bufferhandle, cannot delete resources");\n`;
+                        out += `        return;\n`;
+                        out += `    }\n\n`;
+
+                    }
+                });
+            }
+            
             out += `    //finish with deleting the log\n`;
             out += `    exos_log_delete(&${template.handle.name}->${template.logname});\n`;
         
@@ -505,6 +691,10 @@ class TemplateARDynamic extends Template {
             out += `    ${template.datamodel.structName}Init_0 : ${template.datamodel.structName}Init;\n`;
             out += `    ${template.datamodel.structName}Cyclic_0 : ${template.datamodel.structName}Cyclic;\n`;
             out += `    ${template.datamodel.structName}Exit_0 : ${template.datamodel.structName}Exit;\n`;
+            if(template.datamodel.hasBuffered)
+            {
+                out += `    ${template.datamodel.structName}BufferUpdate_0 : ${template.datamodel.structName}BufferUpdate;\n`;
+            }
             out += `    ${template.datamodel.structName}_0 : ${template.datamodel.structName};\n`;
             out += `    ExComponentInfo_0 : ExComponentInfo;\n`;
             out += `    ExDatamodelInfo_0 : ExDatamodelInfo;\n`;
@@ -538,6 +728,18 @@ class TemplateARDynamic extends Template {
             out += `    //${template.datamodel.structName}Cyclic_0.Enable := ExComponentInfo_0.Operational; // Component has been deployed and started up successfully\n`;
             out += `    \n`;
             out += `    ${template.datamodel.structName}Cyclic_0(Handle := ${template.datamodel.structName}Init_0.Handle, p${template.datamodel.structName} := ADR(${template.datamodel.structName}_0));\n`;
+            if(template.datamodel.hasBuffered)
+            {
+                template.datasets.filter((dataset) => {
+                    if(dataset.isBuffered)
+                    {
+                        out += `    \n`;
+                        out += `    ${template.datamodel.structName}BufferUpdate_0.BufferHandle := ${template.datamodel.structName}Init_0.${dataset.structName}BufferHandle;\n`;
+                        out += `    UpdateBufferSampleSingle;\n`;
+                        out += `    //UpdateBufferSampleAll;\n`;
+                    }
+                });
+            }
             out += `    \n`;
             out += `    ExComponentInfo_0(ExTargetLink := ADR(${template.targetName}), ExComponentLink := ADR(${template.aliasName}), Enable := TRUE);\n`;
             out += `    \n`;
@@ -557,6 +759,47 @@ class TemplateARDynamic extends Template {
     }
 
     /**
+     * @returns {string} `UpdateBufferActions.st`: buffer action implementation code in ST
+     */
+     _generateIECBufferedActionST() {
+        /**
+         * @param {ApplicationTemplate} template 
+         */
+        function generateIECBufferedActionST(template) {
+            let out = "";
+
+            out += `\n`;
+            out += `(*Read a single change on ${template.datamodel.structName}BufferUpdate_0.BufferHandle per scan*)\n`;
+            out += `ACTION UpdateBufferSampleSingle:\n`;
+            out += `    ${template.datamodel.structName}BufferUpdate_0(UpdateDataset := TRUE);\n`;
+            out += `    \n`;
+            out += `    IF ${template.datamodel.structName}BufferUpdate_0.DatasetUpdated THEN\n`;
+            out += `    \n`;
+            out += `        (* Your code here *)\n`;
+            out += `        \n`;
+            out += `    END_IF\n`;
+            out += `END_ACTION\n`;
+            out += `\n`;
+            out += `\n`;
+            out += `(*Read all changes on ${template.datamodel.structName}BufferUpdate_0.BufferHandle within a single scan*)\n`;
+            out += `ACTION UpdateBufferSampleAll:\n`;
+            out += `    \n`;
+            out += `    ${template.datamodel.structName}BufferUpdate_0(UpdateDataset := FALSE); // update PendingUpdates without requesting UpdateDataset\n`;
+            out += `    \n`;
+            out += `    WHILE ${template.datamodel.structName}BufferUpdate_0.PendingUpdates > 0 DO\n`;
+            out += `    \n`;
+            out += `        ${template.datamodel.structName}BufferUpdate_0(UpdateDataset := TRUE);\n`;
+            out += `        \n`;
+            out += `        (* Your code here *)\n`;
+            out += `        \n`;
+            out += `    END_WHILE\n`;
+            out += `END_ACTION\n`;
+            return out;
+        }
+        return generateIECBufferedActionST(this.template);
+    }
+    
+    /**
      * @returns {string} `{LibraryName}.fun`: function block declaration for the AR library (needs to have the same name as the library itself)
      */
     _generateFun() {
@@ -570,6 +813,12 @@ class TemplateARDynamic extends Template {
             out += `FUNCTION_BLOCK ${template.datamodel.structName}Init\n`;
             out += `	VAR_OUTPUT\n`;
             out += `		Handle : UDINT;\n`;
+            template.datasets.filter((dataset) => {
+                if(dataset.isBuffered)
+                {
+                    out += `		${dataset.structName}BufferHandle : UDINT; (*Initialized BufferHandle for bufferedSample. Bufferhandle is linked to data in Cyclic*)\n`;
+                }
+            });
             out += `	END_VAR\n`;
             out += `	VAR\n`;
             out += `		_state : USINT;\n`;
@@ -606,6 +855,24 @@ class TemplateARDynamic extends Template {
             out += `		_state : USINT;\n`;
             out += `	END_VAR\n`;
             out += `END_FUNCTION_BLOCK\n`;
+
+            if(template.datamodel.hasBuffered)
+            {
+                out += `\n`;
+                out += `FUNCTION_BLOCK ${template.datamodel.structName}BufferUpdate (*Must be called in same TC as Cyclic. This function block finalizes in one scan and can be used for several different buffers*)\n`;
+                out += `	VAR_INPUT\n`;
+                out += `		BufferHandle : UDINT; (*Set this to the correct bufferhandle (from Init function block) before calling action UpdateBufferSampleSingle or UpdateBufferSampleAll*)\n`;
+                out += `		UpdateDataset : BOOL; (*Set to TRUE to update dataset, PendingUpdates and OverflowErrors. Set to FALSE to only update PendingUpdates and OverflowErrors for BufferHandle without updating dataset*)\n`;
+                out += `	END_VAR\n`;
+                out += `	VAR_OUTPUT\n`;
+                out += `		Error : BOOL; (*Set in case BufferHandle is invalid*)\n`;
+                out += `		DatasetUpdated : BOOL; (*Set if dataset was updated successfully. Only when UpdateDataset is set to TRUE and there is something in the buffer*)\n`;
+                out += `		PendingUpdates : UDINT; (*Number of datasets waiting in the buffer*)\n`;
+                out += `		OverflowErrors : UDINT; (*Number of overflow errors which occurs when the buffer is full and new data arrives from GPOS*)\n`;
+                out += `	END_VAR\n`;
+                out += `END_FUNCTION_BLOCK\n`;
+            }
+
         
             return out;
         }

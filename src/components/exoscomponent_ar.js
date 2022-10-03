@@ -11,6 +11,8 @@ const { TemplateARDynamic } = require('./templates/ar/template_ar_dynamic');
 const { TemplateARStaticCLib } = require('./templates/ar/template_ar_static_c_lib');
 const { TemplateARCpp } = require('./templates/ar/template_ar_cpp');
 const { ExosComponent, ExosComponentUpdate } = require('./exoscomponent');
+const { getVSCodeDownloadUrl } = require('vscode-test/out/util');
+const { window } = require('vscode');
 
 class ExosComponentAR extends ExosComponent {
 
@@ -59,13 +61,20 @@ class ExosComponentAR extends ExosComponent {
         this._cLibrary.addNewFileObj(this._templateAR.librarySource);
         this._cLibrary.addNewFileObj(this._templateAR.heap.heapSource);
 
+        this._iecProgram.addNewFileObj(this._templateAR.iecProgramVar);
+        this._iecProgram.addNewFileObj(this._templateAR.iecProgramST);
+
         switch(this._template)
         {
             case "c-static":
+                if(this._datamodel.hasBuffered)
+                    window.showWarningMessage("BUFFERED is defined in typ file but is not supported for c-static");
                 this._cLibrary.addNewFileObj(this._templateAR.staticLibraryHeader);
                 this._cLibrary.addNewFileObj(this._templateAR.staticLibrarySource);
                 break;
             case "cpp":
+                if(this._datamodel.hasBuffered)
+                    window.showWarningMessage("BUFFERED is defined in typ file but is not supported for cpp");
                 this._cLibrary.addNewFileObj(this._templateAR.datasetHeader);
                 this._cLibrary.addNewFileObj(this._templateAR.datamodelHeader);
                 this._cLibrary.addNewFileObj(this._templateAR.datamodelSource);
@@ -73,13 +82,12 @@ class ExosComponentAR extends ExosComponent {
                 this._cLibrary.addNewFileObj(this._templateAR.loggerSource);
                 break;
             case "c-api":
+                if(this._datamodel.hasBuffered)
+                    this._iecProgram.addNewFileObj(this._templateAR.iecBufferedActionST);
             case "deploy-only":
             default:
                 break;
         }
-        
-        this._iecProgram.addNewFileObj(this._templateAR.iecProgramVar);
-        this._iecProgram.addNewFileObj(this._templateAR.iecProgramST);
 
         this._exospackage.exospkg.addGeneratorOption("templateAR",this._template);
 

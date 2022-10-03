@@ -1,4 +1,3 @@
-
 FUNCTION_BLOCK BufferFubInit
 	VAR_OUTPUT
 		Handle : UDINT;

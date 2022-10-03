@@ -2,7 +2,7 @@
 PROGRAM _INIT
 
     BufferFubInit_0();
-    
+
 END_PROGRAM
 
 PROGRAM _CYCLIC

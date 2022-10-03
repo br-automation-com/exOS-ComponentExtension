@@ -42,7 +42,7 @@ suite('Buffered FUB generation and run tests (<name> <AR side> <Linux side>)', (
             });
             this.timeout(0); // avoid Error: Timeout of 2000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. 
         });
-
+/*
         test(`${typName} c-static c-api`, function() { // py is actually only for the title as ExosComponentSWIG doesnt use the linux template in the options
             genAndCompare(this.test.title, function() {
                 let templateC = new ExosComponentC(typFile, selectedStructure.label, selectedOptions);
@@ -58,6 +58,7 @@ suite('Buffered FUB generation and run tests (<name> <AR side> <Linux side>)', (
             });
             this.timeout(0); // avoid Error: Timeout of 2000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
         });
+        */
     });
 
 
@@ -68,6 +69,9 @@ suite('Buffered FUB generation and run tests (<name> <AR side> <Linux side>)', (
         splitTitle = title.split(" ");
 
         genPath = path.resolve(__dirname, '../buffered_fub/generated');
+
+        // start with deleting everything previously generated
+        fse.emptyDirSync(genPath);
 
         typFolder = path.resolve(__dirname, '../typFiles/');
 
@@ -92,9 +96,13 @@ suite('Buffered FUB generation and run tests (<name> <AR side> <Linux side>)', (
         assert.equal(fse.existsSync(genPath), true, `${genPath} doesnt exist`);
 
         // moved to a type named folder
-        fse.moveSync(genPath, path.resolve(__dirname, '../buffered_fub/generated/', `${typName}_${selectedOptions.templateAR}_${selectedOptions.templateLinux}`));
-
+        //genNamedPath = path.resolve(__dirname, '../buffered_fub/generated/', `${typName}_${selectedOptions.templateAR}_${selectedOptions.templateLinux}`);
+        //fse.moveSync(genPath, genNamedPath);
         
+        // Move to AS project for testing
+        asPath = path.resolve(__dirname, '../AS/Project/Logical/BufferedFub/', `${typName}_${selectedOptions.templateAR}_${selectedOptions.templateLinux}`);
+        fse.emptyDirSync(asPath);
+        fse.moveSync(genPath, asPath, { overwrite: true });
 
         // TODO: inject some code to runtime test this
 

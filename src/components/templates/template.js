@@ -42,6 +42,7 @@ const {Datamodel, Dataset} = require('../../datamodel');
  * @property {boolean} isPub set via the comment to `true` if the dataset should be published. (platform dependent - this is `(*PUB*)` for AR and `(*SUB*)` for GPOS)
  * @property {boolean} isSub set via the comment to `true` if the dataset should be subscribed to. (platform dependent - this is `(*SUB*)` for AR and `(*PUB*)`for GPOS)
  * @property {boolean} isPrivate set to true if the comment includes the word `private`
+ * @property {boolean} isBuffered set to true if the comment includes the word `BUFFERED`
  * 
  * @typedef {Object} ApplicationTemplate
  * @property {string} targetName default name of the target, set in the TP => `gTarget_0`
@@ -134,11 +135,18 @@ class Template
                         {
                             object["isPub"] = child.attributes.comment.includes("SUB");
                             object["isSub"] = child.attributes.comment.includes("PUB");
+                            object["isBuffered"] = child.attributes.comment.includes("BUFFERED"); // not used in Linux
                         }
                         else
                         {
                             object["isPub"] = child.attributes.comment.includes("PUB");
                             object["isSub"] = child.attributes.comment.includes("SUB");
+                            object["isBuffered"] = child.attributes.comment.includes("BUFFERED");
+                            if(object["isBuffered"])
+                            {
+                                datamodel.hasBuffered = true;
+                                template.datamodel.hasBuffered = true;
+                            }
                         }
                         object["isPrivate"] = child.attributes.comment.includes("private");
                     } else {
@@ -146,6 +154,7 @@ class Template
                         object["isPub"] = false;
                         object["isSub"] = false;
                         object["isPrivate"] = false;
+                        object["isBuffered"] = false;
                     }
                     if (child.attributes.hasOwnProperty("stringLength")) { object["stringLength"] = child.attributes.stringLength; }
                     
@@ -153,7 +162,7 @@ class Template
                     {
                         object["datasets"] = [];
                         if(child.name == "struct") {
-                            readDatasets(object["datasets"],child, recurse);
+                            readDatasets(object["datasets"], child, recurse);
                         }
                     }
                     datasets.push(object);
@@ -181,7 +190,8 @@ class Template
                     comment: "",
                     libStructName: "",
                     handleName: "",
-                    className: ""
+                    className: "",
+                    hasBuffered: false
                 },
                 datasets: []
             }
@@ -210,7 +220,7 @@ class Template
             template.datamodel.libStructName = "lib" + types.attributes.dataType;
             template.datamodel.handleName = "h_" + types.attributes.dataType;
     
-            readDatasets(template.datasets,types, recurse);
+            readDatasets(template.datasets, types, recurse);
         
             return template;
         }
