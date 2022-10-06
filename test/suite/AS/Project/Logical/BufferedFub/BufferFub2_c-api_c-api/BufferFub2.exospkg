@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ComponentPackage Version="2.0.0" ErrorHandling="Component" StartupTimeout="0">
+    <File FileName="Linux\exos-comp-bufferfub2_1.0.0_amd64.deb" ChangeEvent="Reinstall"/>
+    <Service Type="Runtime" Command="./bufferfub2" WorkingDirectory="/home/user/bufferfub2"/>
+    <Service Type="Install" Command="dpkg -i exos-comp-bufferfub2_1.0.0_amd64.deb"/>
+    <Service Type="Remove" Command="dpkg --purge exos-comp-bufferfub2"/>
+    <DatamodelInstance Name="BufferFub2_0"/>
+    <Build>
+        <GenerateDatamodel FileName="BufferFub2\BufferFub2.typ" TypeName="BufferFub2">
+            <SG4 Include="BufferFub2.h"/>
+            <Output Path="BufferFub2"/>
+            <Output Path="Linux"/>
+        </GenerateDatamodel>
+        <BuildCommand Command="C:\Windows\Sysnative\wsl.exe" WorkingDirectory="Linux" Arguments="-d Debian -e sh build.sh $(EXOS_VERSION)">
+            <Dependency FileName="Linux\exos_bufferfub2.h"/>
+            <Dependency FileName="Linux\exos_bufferfub2.c"/>
+            <Dependency FileName="Linux\bufferfub2.c"/>
+            <Dependency FileName="Linux\termination.h"/>
+            <Dependency FileName="Linux\termination.c"/>
+            <Dependency FileName="Linux\CMakeLists.txt"/>
+            <Dependency FileName="Linux\build.sh"/>
+        </BuildCommand>
+    </Build>
+    <!-- ComponentGenerator info - do not change! -->
+    <ComponentGenerator Class="ExosComponentC" Version="2.0.1">
+        <Option Name="templateLinux" Value="c-api"/>
+        <Option Name="exportLinux" Value="exos-comp-bufferfub2_1.0.0_amd64.deb"/>
+        <Option Name="templateAR" Value="c-api"/>
+        <Option Name="typeName" Value="BufferFub2"/>
+        <Option Name="typeFile" Value="BufferFub2\BufferFub2.typ"/>
+        <Option Name="SG4Includes" Value="BufferFub2.h"/>
+    </ComponentGenerator>
+</ComponentPackage>

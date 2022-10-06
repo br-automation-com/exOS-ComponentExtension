@@ -32,4 +32,35 @@
       </Group>
     </Group>
   </Element>
+  <Element ID="gBufferFub2_0" Type="exoscomponent">
+    <Property ID="PackageSelection" Value="Logical\BufferedFub\BufferFub2_c-api_c-api\BufferFub2.exospkg" />
+    <Property ID="ErrorHandling" Value="Component" />
+    <Property ID="RestartEvent" Value="Component" />
+    <Property ID="StartupTimeout" Value="0" />
+    <Group ID="Predefined">
+      <Group ID="Files">
+        <Group ID="File[0]">
+          <Property ID="FileName" Value="Linux\exos-comp-bufferfub2_1.0.0_amd64.deb" />
+          <Property ID="ChangeEvent" Value="Reinstall" />
+        </Group>
+      </Group>
+      <Group ID="Services">
+        <Group ID="Service[0]">
+          <Property ID="Type" Value="Runtime" />
+          <Property ID="Command" Value="./bufferfub2" />
+          <Property ID="WorkingDirectory" Value="/home/user/bufferfub2" />
+        </Group>
+        <Group ID="Service[1]">
+          <Property ID="Type" Value="Install" />
+          <Property ID="Command" Value="dpkg -i exos-comp-bufferfub2_1.0.0_amd64.deb" />
+          <Property ID="WorkingDirectory" />
+        </Group>
+        <Group ID="Service[2]">
+          <Property ID="Type" Value="Remove" />
+          <Property ID="Command" Value="dpkg --purge exos-comp-bufferfub2" />
+          <Property ID="WorkingDirectory" />
+        </Group>
+      </Group>
+    </Group>
+  </Element>
 </Configuration>

@@ -3,5 +3,6 @@
 <Package xmlns="http://br-automation.co.at/AS/Package">
   <Objects>
     <Object Type="Package">BufferFub_c-api_c-api</Object>
+    <Object Type="Package">BufferFub2_c-api_c-api</Object>
   </Objects>
 </Package>

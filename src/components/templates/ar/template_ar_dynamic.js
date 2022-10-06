@@ -484,7 +484,7 @@ class TemplateARDynamic extends Template {
                 template.datasets.filter((dataset) => {
                     if(dataset.isBuffered)
                     {
-                        out += `    handle->${dataset.varName}_buffer.pData = &inst->pBufferFub->${dataset.structName};\n`;
+                        out += `    handle->${dataset.varName}_buffer.pData = &inst->p${template.datamodel.structName}->${dataset.structName};\n`;
                     }
                 });
                 out += `    \n`;

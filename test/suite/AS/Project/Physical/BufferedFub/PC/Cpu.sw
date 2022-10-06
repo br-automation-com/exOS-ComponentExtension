@@ -3,6 +3,7 @@
 <SwConfiguration CpuAddress="SL1" xmlns="http://br-automation.co.at/AS/SwConfiguration">
   <TaskClass Name="Cyclic#1">
     <Task Name="BufferFub_" Source="BufferedFub.BufferFub_c-api_c-api.BufferFub_0.prg" Memory="UserROM" Language="IEC" Debugging="true" />
+    <Task Name="BufferF2_" Source="BufferedFub.BufferFub2_c-api_c-api.BufferFub2_0.prg" Memory="UserROM" Language="IEC" Debugging="true" />
   </TaskClass>
   <TaskClass Name="Cyclic#2" />
   <TaskClass Name="Cyclic#3" />
@@ -38,5 +39,6 @@
     <LibraryObject Name="asieccon" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
     <LibraryObject Name="exdeploy" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
     <LibraryObject Name="astcp" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
+    <LibraryObject Name="BufferFub2" Source="BufferedFub.BufferFub2_c-api_c-api.BufferFub2.lby" Memory="UserROM" Language="ANSIC" Debugging="true" />
   </Libraries>
 </SwConfiguration>

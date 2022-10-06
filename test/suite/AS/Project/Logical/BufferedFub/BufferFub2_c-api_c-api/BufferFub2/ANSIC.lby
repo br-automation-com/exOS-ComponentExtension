@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.10"?>
+<Library SubType="ANSIC" xmlns="http://br-automation.co.at/AS/Library">
+  <Files>
+    <File Description="BufferFub2 datamodel declaration">BufferFub2.typ</File>
+    <File Description="Generated datamodel header for BufferFub2">exos_bufferfub2.h</File>
+    <File Description="Generated datamodel source for BufferFub2">exos_bufferfub2.c</File>
+    <File Description="BufferFub2 function blocks">BufferFub2.fun</File>
+    <File Description="BufferFub2 library source">bufferfub2.c</File>
+    <File Description="Dynamic heap configuration">heapsize.cpp</File>
+  </Files>
+  <Dependencies>
+    <Dependency ObjectName="ExData" />
+  </Dependencies>
+</Library>

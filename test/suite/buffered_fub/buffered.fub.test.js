@@ -27,7 +27,8 @@ suite('Buffered FUB generation and run tests (<name> <AR side> <Linux side>)', (
     // but lets keep it as an active choice to get them tested
     // The names must match both the filename and the STRUCT name
     typNames = [
-        "BufferFub"
+        "BufferFub",
+        "BufferFub2"
     ];
 
     // start with deleting everything previously generated
@@ -106,6 +107,91 @@ suite('Buffered FUB generation and run tests (<name> <AR side> <Linux side>)', (
 
         // TODO: inject some code to runtime test this
 
-        
+        // ### In UpdateBufferSampleSingle and UpdateBufferSampleAll actions
+        // ### below '(* Your code here *)'
+        /*
+            // test code begin
+            BufferedSampleRecv[BufferedSampleRecvIdx] := BufferFub_0.bufferedSample;
+            BufferedSampleRecvIdx := BufferedSampleRecvIdx + 1;
+            IF BufferedSampleRecvIdx > 19 THEN
+                BufferedSampleRecvIdx := 0;
+            END_IF
+            // test code end
+        */
+
+        // ### BufferFub.var:
+        /*
+            BufferedSampleRecvIdx : USINT; (*test code*)
+            testState : UINT; (*test code*)
+            BufferedSampleRecv : ARRAY[0..19] OF UDINT; (*test code*)
+        */
+    
+        // ### In BufferFub.st replace 'UpdateBufferSampleSingle;' with:
+        /*
+            // test code begin
+            CASE testState OF
+                0:
+                    // nothing
+                5:
+                    // startup
+                    BufferFubCyclic_0.Enable := TRUE;
+                    IF BufferFubCyclic_0.Connected THEN
+                        BufferFubCyclic_0.Start := TRUE;
+                        testState := 10;
+                    END_IF
+                10:
+                    IF BufferFubCyclic_0.Operational THEN
+                        testState := 20;
+                    END_IF
+                20:
+                    // tell linux to burst
+                    BufferFub_0.setup.sampleCount := 12;
+                    BufferFub_0.setup.sampleDelay := 0;
+                    testState := 25;
+                25:
+                    // wait a scan to let setup arrive first
+                    BufferFub_0.cmdSendBurst := TRUE;
+                    testState := 30;
+                50:
+                    UpdateBufferSampleAll;
+                    testState := 0;
+                60:
+                    UpdateBufferSampleSingle;
+                    testState := 0;
+            END_CASE;
+            // test code end
+        */
+
+        // ### in Linux/bufferfub.c add:
+        /*
+            typedef struct {
+                BufferFub *data;
+                exos_datamodel_handle_t* bufferfub;
+                exos_dataset_handle_t* bufferedsample;
+                exos_dataset_handle_t* setup_dataset;
+                exos_dataset_handle_t* cmdsendburst;
+            } application_info_t;
+
+        // in case EXOS_DATASET_EVENT_UPDATED:
+            if (*cmdsendburst){
+                
+                application_info_t *application = (application_info_t *)dataset->user_context;
+                if (NULL != application)
+                {
+                    VERBOSE("Send burst, sampleCount=%u, sampleDelay=%u  ", application->data->setup.sampleCount, application->data->setup.sampleDelay);
+                    for (size_t i = 0; i < application->data->setup.sampleCount; i++)
+                    {
+                        application->data->bufferedSample = i + 1;
+                        exos_dataset_publish(application->bufferedsample);
+                        usleep(application->data->setup.sampleDelay);
+                    }
+                }
+            }
+
+        // in main():
+            application_info_t myapplication = {&data, &bufferfub, &bufferedsample, &setup_dataset, &cmdsendburst};
+        // and:
+            cmdsendburst.user_context = &myapplication; //user defined
+        */
     }
 });

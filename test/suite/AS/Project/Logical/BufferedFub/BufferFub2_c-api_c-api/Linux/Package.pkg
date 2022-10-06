@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.10"?>
+<Package SubType="exosLinuxPackage" PackageType="exosLinuxPackage" xmlns="http://br-automation.co.at/AS/Package">
+  <Objects>
+    <Object Type="File" Description="Generated datamodel header for BufferFub2">exos_bufferfub2.h</Object>
+    <Object Type="File" Description="Generated datamodel source for BufferFub2">exos_bufferfub2.c</Object>
+    <Object Type="File" Description="Linux application">bufferfub2.c</Object>
+    <Object Type="File" Description="Handling for Ctrl-C header">termination.h</Object>
+    <Object Type="File" Description="Handling for Ctrl-C source">termination.c</Object>
+    <Object Type="File" Description="CMake build file script">CMakeLists.txt</Object>
+    <Object Type="File" Description="build file shell script">build.sh</Object>
+    <Object Type="File" Description="BufferFub2 debian package">exos-comp-bufferfub2_1.0.0_amd64.deb</Object>
+    <Object Type="File" Description="BufferFub2 application">bufferfub2</Object>
+  </Objects>
+</Package>

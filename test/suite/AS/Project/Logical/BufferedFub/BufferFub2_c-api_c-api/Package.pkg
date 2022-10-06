@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.10"?>
+<Package SubType="exosPackage" PackageType="exosPackage" xmlns="http://br-automation.co.at/AS/Package">
+  <Objects>
+    <Object Type="File" Description="exOS package description">BufferFub2.exospkg</Object>
+    <Object Type="Program" Language="IEC" Description="BufferFub2 application">BufferFub2_0</Object>
+    <Object Type="Library" Language="ANSIC" Description="BufferFub2 exOS library">BufferFub2</Object>
+    <Object Type="Package" Description="BufferFub2 Linux resources">Linux</Object>
+  </Objects>
+</Package>
