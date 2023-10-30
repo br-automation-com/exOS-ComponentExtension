@@ -235,7 +235,7 @@ class ExosComponent extends Component {
      * @param {string} typeName  
      * @param {string} template `c-static` | `cpp` | `c-api` | `deploy-only` - default: `c-api` 
      */
-    constructor(fileName, typeName, template) {
+    constructor(fileName, typeName, template, useJuliet) {
 
         super(typeName);
 
@@ -252,7 +252,7 @@ class ExosComponent extends Component {
             this._typFile = {name:this._typeFileName, contents:fs.readFileSync(fileName).toString(), description:`${typeName} datamodel declaration`}
             this._SG4Includes = [`${typeName.substr(0,10)}.h`];
 
-            this._datamodel = new Datamodel(fileName, typeName, this._SG4Includes);
+            this._datamodel = new Datamodel(fileName, typeName, this._SG4Includes, useJuliet);
             
             this._iecProgram = this._exospackage.getNewIECProgram(`${typeName.substr(0,10)}_0`,`${typeName} application`);
 
@@ -264,8 +264,13 @@ class ExosComponent extends Component {
             this._exospackage.exospkg.addGenerateDatamodel(path.join(this._cLibrary._folderName,this._typeFileName), typeName, this._SG4Includes, [typeName.substr(0,10), "Linux"]);
 
             this._linuxPackage = this._exospackage.getNewLinuxPackage("Linux", `${typeName} Linux resources`);
-            this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._datamodel.headerFile);
-            this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._datamodel.sourceFile);
+            if (!useJuliet) {
+                this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._datamodel.headerFile);
+                this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._datamodel.sourceFile);
+            }
+            else {
+                this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._datamodel.julietSourceFile)
+            }
         }
         else
         {
