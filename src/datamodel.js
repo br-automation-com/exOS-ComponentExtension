@@ -125,6 +125,20 @@ class Datamodel {
     sourceFile;
 
     /**
+     * Object holding Juliet-datatype definitions(of the datatype {@link typeName}) for Juliet.
+     * 
+     * @type {string}}
+     */
+    julietDataTypeCode;
+
+    /**
+     * the generated juliet source code and preset name of the generated source code file
+     * 
+     * @type {GeneratedFileObj} 
+     */
+    julietSourceFile;
+
+    /**
      * fileName name of the file that has been parsed, e.g. ./SomeFolder/MyApplication.typ
      * 
      * @type {string}
@@ -170,7 +184,7 @@ class Datamodel {
      * 
      * PREVIOUSLY generateHeader
      */
-    constructor(fileName, typeName, SG4Includes) {
+    constructor(fileName, typeName, SG4Includes, useJulietMakeSource) {
         
         this.fileName = fileName;
         this.typeName = typeName;
@@ -201,6 +215,14 @@ class Datamodel {
         this.headerFile.description = `Generated datamodel header for ${this.typeName}`;
         this.sourceFile.name = `exos_${this.typeName.toLowerCase()}.c`;
         this.sourceFile.description = `Generated datamodel source for ${this.typeName}`;
+
+        if (useJulietMakeSource) {
+            this.julietSourceFile = {name:"", contents:"", description:""};
+            this.julietDataTypeCode = this._makeJulietDataTypes();
+            this.julietSourceFile.contents = this._makeJulietSource();
+            this.julietSourceFile.name = `exos_${this.typeName.toLowerCase()}.jlt`;
+            this.julietSourceFile.description = `Generated datamodel source for ${this.typeName}`;
+        }
     }
 
     /**
@@ -222,6 +244,28 @@ class Datamodel {
             case "STRING": return "char";
             default: //returning the type makes the function valid even if you insert a struct or enum
                 return type;
+        }
+    }
+
+    /**
+     * @returns {Object} Object with datatype (BOOL, UDINT) as stdint.h/stdbool.h datatype (bool, uint32_t) or struct/enum (unchanged) and its size
+     * @param {string} type IEC type, like BOOL or UDINT 
+     */
+    static convertPlcTypeToJulietTypes(type) {
+        switch (type) {
+            case "BOOL": return { type: "Bool", size: 1 };
+            case "USINT": return { type: "UInt8", size: 1 };
+            case "SINT": return { type: "Int8", size: 1 };
+            case "UINT": return { type: "UInt16", size: 2 };
+            case "INT": return { type: "Int16", size: 2 };
+            case "UDINT": return { type: "UInt32", size: 4 };
+            case "DINT": return { type: "Int32", size: 4 }; 
+            case "REAL": return { type: "Float32", size: 4 };
+            case "LREAL": return { type: "Float64", size: 8 };
+            case "BYTE": return { type: "Char", size: 1 };
+            case "STRING": return { type: "String", size: null }; // The size of a string can vary. Consider providing a default size if needed
+            default: //returning the type makes the function valid even if you insert a struct or enum
+                return { type: type, size: null };
         }
     }
 
@@ -343,6 +387,35 @@ class Datamodel {
         //now split with line endings
         fileLines = fileLines.split("\n");
         return fileLines;
+    }
+
+    /**
+         * internal function to generate the juliet-source file that can be accessed via the `Datamodel.julietSourceFile` property. `_makeJsonTypes()` must have been called prior to this method 
+         * @returns {string}
+    */
+    _makeJulietSource() {
+        let out = "";
+        out = `#Automatically generated juliet file from ${path.basename(this.fileName)}\r\n\r\n`;
+
+        out += `module exos_${path.basename(this.typeName).toLowerCase()}\n`;
+        out += `using exoscomlib\n\n`;
+
+        out += `export\n`;
+        out += `\tdata,\n`;
+        out += `\tencode_dataset,\n`;
+        out += `\tdecode_dataset,\n`;
+        out += `\tinit_data_set_handle,\n`;
+        out += `\tconnect_${path.basename(this.typeName).toLowerCase()}_datamodel,\n`;
+        out += this.julietDataTypeCode.imports;
+        out += `\tsizeOf\n\n`;
+
+        out += `import exoscomlib: init_data_set_handle_internal, bytearray\n\n`
+
+        out += this.julietDataTypeCode.out;
+
+        out += `end # exos_${path.basename(this.typeName).toLowerCase()}\n`;
+
+        return out;
     }
     /** 
      * internal function to generate the c-source file that can be accessed via the `Datamodel.sourceCode` property. `_makeJsonTypes()` must have been called prior to this method 
@@ -577,7 +650,7 @@ class Datamodel {
     
     /**
      * Internal function to generate the C-declaration of the IEC datatype `typeName`, that can be accessible via `Datamodel.dataTypeCode` or `Datamodel.dataTypeCodeSWIG` properties.
-     * 
+     *
      * @param {boolean} swig create additional swig datatype information
      * @returns {string}
      */
@@ -786,6 +859,660 @@ class Datamodel {
 
         return out;
     }
+
+    /**
+     * Internal function to generate the Juliet-declaration of the IEC datatype `typeName`, that can be accessible via `Datamodel.julietDataTypeCode` 
+     * @returns {string}
+     */
+    _makeJulietDataTypes() {
+
+            /**
+         *
+         * @param {string} name
+         * @param {StructDependencies[]} sortedStructs
+         */
+        function _placeAtEnd(name, sortedStructs) {
+            let i = sortedStructs.length;
+            while(i--) {
+                if(sortedStructs[i].name == name) {
+                    sortedStructs.splice(i,1);
+                }
+            }
+            sortedStructs.push({name:name, dependencies:[]});
+        }
+
+
+        let infoId = 0;
+
+        /** adds the .info attributes to all children, containing the <infoId{infoId}> tag and returns the DatasetInfo list for these infoIds*/
+        /**
+         *
+         * @param {Dataset[]} children
+         * @param {string} parent
+         * @param {string} parentArray
+         * @param {StructDependencies[]} sortedStructs
+         * @returns
+         */
+        function _infoChildren(children, parent, parentArray, sortedStructs) {
+
+            let out = "";
+
+            if (Array.isArray(children)) {
+                for (let [index, child] of children.entries()) {
+
+                    infoId++; // start by increasing to reserve 0 for top level structure
+
+                    if (infoId > Datamodel.MAX_IDS) throw (`Too many infoId indexes needed. Max ${Datamodel.MAX_IDS} can be used.`);
+
+                    child.attributes.info = "<infoId" + infoId + ">";
+
+                    let arrayStr = "";
+                    if (child.attributes.arraySize > 0) {
+                        if (parentArray != "") {
+                            arrayStr = `${parentArray},${child.attributes.arraySize}`;
+                        }
+                        else {
+                            arrayStr = `${child.attributes.arraySize}`;
+                        }
+                    }
+                    else {
+                        arrayStr = `${parentArray}`;
+                    }
+
+                    function checkExosInfoCallParam(call) {
+                        let area = call.split("(")[1].split(",")[0].trim();
+                        if (area.length > Datamodel.MAX_AREA_NAME_LENGTH) throw (`Area name "${area}" longer than max (${Datamodel.MAX_AREA_NAME_LENGTH})`);
+                        return call;
+                    }
+
+                    // Create a string with 10 elements
+                    let arrayValues = [];
+                    if (arrayStr) {
+                        arrayValues = arrayStr.split(',').map(str => str.trim());
+                    }
+                    let zeroCount = 10 - arrayValues.length;
+                    for(let i = 0; i < zeroCount; i++) {
+                        arrayValues.push('0');
+                    }
+                    let paddedArrayStr = arrayValues.join(',');
+                    let name = child.attributes.name;
+
+                    // retrieve the size of each type
+                    let basicSize;
+                    if (Datamodel.convertPlcTypeToJulietTypes(child.attributes.dataType).size) {
+                        basicSize = Datamodel.convertPlcTypeToJulietTypes(child.attributes.dataType).size;
+                    } else if (child.attributes.dataType === "STRING") {
+                        basicSize = child.attributes.stringLength;
+                    } else {
+                        basicSize = `sizeOf(${child.attributes.dataType}_t)`;
+                    }
+
+                    // multiply by arraysize to get total size for dataset_info elements
+                    let totalSize;
+                    if (typeof basicSize === "string" && basicSize.startsWith("sizeOf")) {
+                        totalSize = `${basicSize} * ${child.attributes.arraySize}`;
+                    } else {
+                        totalSize = basicSize*child.attributes.arraySize;
+                    }
+
+                    // This latch is to assist in setting the offset in juliet
+                    let arrayLatch = (index === children.length - 1) ? 2 : 0;
+
+                    if (child.name == "variable" || child.name == "enum") {
+                        if(child.name == "enum") {
+                            _placeAtEnd(child.attributes.dataType,sortedStructs);
+                        }
+
+                        if (parent == "") {
+                            if (child.attributes.arraySize > 0) {
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${name}", ${totalSize}, 0, 3, [${paddedArrayStr}]),\r\n`);
+                                infoId++;
+                                child.attributes.info2 = "<infoId" + infoId + ">";
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${name}[0]", ${basicSize}, 1, 0, [${paddedArrayStr}]),\r\n`);
+                            }
+                            else {
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${name}", ${basicSize}, 1, 0, [${paddedArrayStr}]),\r\n`);
+                            }
+                        }
+                        else {
+                            if (child.attributes.arraySize > 0) {
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${parent}.${name}", ${totalSize}, 0, 3, [${paddedArrayStr}]),\r\n`);
+                                infoId++;
+                                child.attributes.info2 = "<infoId" + infoId + ">";
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${parent}.${name}[0]", ${basicSize}, 1, ${arrayLatch}, [${paddedArrayStr}]),\r\n`);
+                            }
+                            else {
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${parent}.${name}", ${basicSize}, 1, ${arrayLatch},[${paddedArrayStr}]),\r\n`);
+                            }
+                        }
+                    }
+                    else if (child.name == "struct" && child.hasOwnProperty("children")) {
+                        _placeAtEnd(child.attributes.dataType,sortedStructs);
+
+                        if (parent == "") {
+                            if (child.attributes.arraySize > 0) {
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${name}", ${totalSize}, 0, 1, [${paddedArrayStr}]),\r\n`);
+                                infoId++;
+                                child.attributes.info2 = "<infoId" + infoId + ">";
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${name}[0]", ${basicSize}, 0, 0, [${paddedArrayStr}]),\r\n`);
+                                out += _infoChildren(child.children, `${name}[0]`, arrayStr,sortedStructs);
+                            }
+                            else {
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${name}", ${basicSize}, 0, 0, [${paddedArrayStr}]),\r\n`);
+                                out += _infoChildren(child.children, name, arrayStr, sortedStructs);
+                            }
+                        }
+                        else {
+                            if (child.attributes.arraySize > 0) {
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${parent}.${name}", ${totalSize}, 0, 3, [${paddedArrayStr}]),\r\n`);
+                                infoId++;
+                                child.attributes.info2 = "<infoId" + infoId + ">";
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${parent}.${name}[0]", ${basicSize}, 0, ${arrayLatch}, [${paddedArrayStr}]),\r\n`);
+                                out += _infoChildren(child.children, `${parent}.${name}[0]`, arrayStr, sortedStructs);
+
+                            }
+                            else {
+                                out += checkExosInfoCallParam(`\t\tDatasetInfo("${parent}.${name}", ${basicSize}, 0, ${arrayLatch}, [${paddedArrayStr}]),\r\n`);
+                                out += _infoChildren(child.children, `${parent}.${name}`, arrayStr, sortedStructs);
+                            }
+                        }
+                    }
+                }
+            }
+            return out;
+        }
+
+        /** Replacer function to clean out unecessary thing when stringifying */
+        function replacer(key, value) {
+            if ((key == 'arraySize' && value == 0)
+                || (key == 'nodeId' && value == '')
+                || (key == 'comment' && value == '')) {
+                return undefined; // return undefined so JSON.stringify will omitt it
+            }
+            if(key == 'comment') {
+                //clear all comments that are not purely PUB SUB
+                let commentStr = '';
+                if(value.includes("PUB")) {
+                    commentStr += "PUB";
+                }
+                if(value.includes("SUB")) {
+                    if(commentStr.length > 0) {
+                        commentStr += " SUB";
+                    }
+                    else {
+                        commentStr += "SUB";
+                    }
+                }
+                if(commentStr.length > 0)
+                    return commentStr;
+                else 
+                    return undefined;
+            }
+            return value; // otherwise return the value as it is
+        }
+
+        _placeAtEnd(this.typeName,this.sortedStructs);
+
+        this.dataset.attributes.info = "<infoId" + infoId + ">"; // top level
+        let info = _infoChildren(this.dataset.children, "", "", this.sortedStructs); // needs to be called before JSON.stringify to generate infoId
+
+        this.sortedStructs.reverse();
+
+        let jsonConfig = JSON.stringify(this.dataset, replacer).split('"').join('\\"');
+        if (jsonConfig.length > Datamodel.MAX_CONFIG_LENGTH) throw (`JSON config (${jsonConfig.length} chars) is longer than maximum (${Datamodel.MAX_CONFIG_LENGTH}).`);
+
+        /**return the code for a datatype member with the given properties */
+        function _outputMember(type, name, arrays, comment) {
+            let out = "";
+            out += `    ${type} ${name}`
+
+            if (arrays.length > 0) {
+                for (let arr of arrays) {
+                    if (arr > 0) {
+                        out += `[${arr}]`
+                    }
+                }
+            }
+            if (comment != "") out += ` #${comment}`;
+            out += `\r\n`;
+            return out;
+        }
+
+        /**search the fileLines to see if name is a structure, returns true if name is a structure*/
+        function _isStructType(fileLines, name) {
+            for (let line of fileLines) {
+                if (line.includes("STRUCT") && line.includes(":")) {
+                    if (name == line.split(":")[0].trim()) return true;
+                }
+            }
+            return false;
+        }
+        function _isEnumType(fileLines, name) {
+            for (let line of fileLines) {
+                if (line.includes("enum") && line.includes(":")) {
+                    if (name == line.split(":")[0].trim()) return true;
+                }
+            }
+            return false;
+        }
+
+        /** return the string between two delimiters (start,end) of a given line. return null if one of the delimiters isn't found*/
+        function _takeout(line, start, end) {
+            if (line.includes(start) && line.includes(end)) {
+                return line.split(start)[1].split(end)[0];
+            }
+            else return null;
+        }
+
+        let out = "";
+        let structname = "";
+        let members = 0;
+        let cmd = "find_struct_enum";
+        let structs = [];
+
+        // Add metadata to struct
+        function addMetadataToStructs(metadataName, metaType ="", metadataSize = 0, metadataArraySize = 0) {
+            if (structs.length === 0) return; // No structs to add metadata to
+
+            let latestStruct = structs[structs.length - 1];
+            let newMetadata = {
+                name: metadataName,
+                metaType: metaType,
+                size: metadataSize,
+                arraySize: metadataArraySize
+            };
+            latestStruct.metadata.push(newMetadata);
+        }
+        function updateArraySize(type, newSize) {
+            for(let struct of structs) {
+                if(struct.name === type) {
+                    struct.arraySize = newSize;
+                    return;
+                }
+            }
+        }
+
+        for (let line of this.fileLines) {
+            let comment = ""
+            if (line.includes("(*")) {
+                comment = _takeout(line, "(*", "*)");
+            }
+
+            switch (cmd) {
+                case "find_struct_enum":
+                    //analyze row check for struct, enum and directly derived types
+
+                    line = line.split("(*")[0];
+                    line = line.split(":");
+                    for (let i = 0; i < line.length; i++) line[i] = line[i].trim();
+
+                    if (line[1] == ("STRUCT")) {
+                        cmd = "read_struct";
+                        if (comment != "") out += "#" + comment + "\r\n";
+                        structname = line[0];
+                        out += `struct ${structname}\r\n`;
+
+                        structs.push({ name: structname, out: "", depends: [], metadata: [], arraySize: 0});
+                    }
+                    else if (line[1] == ("")) {
+                        cmd = "read_enum";
+                        if (comment != "") out += "#" + comment + "\r\n";
+                        structname = line[0];
+                        out += `@enum ${structname} begin\r\n`;
+                        members = 0;
+                        structs.push({ name: structname, out: "", depends: [], metadata: [], arraySize: 0 });
+                        addMetadataToStructs(structname, "enum");
+                    }
+                    //"else" line[1] is not "" (enum) and not "STRUCT" then it have to be a derived type = do nothing
+                    break;
+
+                case "read_enum":
+                    if (line.includes(")")) {
+                        cmd = "find_struct_enum";
+                        if (members > 0) {
+                            out = out.slice(0, -3); //remove the last ,\r\n
+                            out += `\r\n`;
+                        }
+                        out += `end\r\n\r\n`;
+                        structs[structs.length - 1].out = out;
+                        out = "";
+                    }
+                    else if (!line.includes("(")) {
+                        if (line.includes(":=")) {
+                            let name = line.split(":=")[0].trim();
+                            let enumValue = line.split(":=")[1].trim();
+                            enumValue = parseInt(enumValue.split(",")[0].trim());
+                            out += `\t${name} = ${enumValue},\r\n`;
+                        }
+                        else {
+                            let name = line.split(",")[0].trim();
+                            out += `\t${name}\r\n`;
+                        }
+                        members++;
+                    }
+                    break;
+
+                case "read_struct":
+                    if (line.includes("END_STRUCT")) {
+                        cmd = "find_struct_enum";
+                        out += `end\r\n`;
+                        structs[structs.length - 1].out = out;
+                        out = "";
+                    }
+                    else {
+                        let arraySize = 0;
+                        if (line.includes("ARRAY")) {
+                            let range = _takeout(line, "[", "]")
+                            if (range != null) {
+                                let from = parseInt(range.split("..")[0].trim());
+                                let to = parseInt(range.split("..")[1].trim());
+                                arraySize = to - from + 1;
+                            }
+                        }
+                        if (line.includes(":")) {
+                            let name = line.split(":")[0].trim();
+                            let type = "";
+                            if (arraySize > 0) {
+                                type = line.split(":")[1].split("OF")[1].trim();
+                            }
+                            else {
+                                type = line.split(":")[1].trim();
+                            }
+                            let comment = "";
+                            if (type.includes("(*")) {
+                                comment = _takeout(type, "(*", "*)");
+                                type = type.split("(*")[0].trim();
+                            }
+    
+                            let stdtype = Datamodel.convertPlcTypeToJulietTypes(type).type;
+                            let stdsize = Datamodel.convertPlcTypeToJulietTypes(type).size;
+                            let dataset = {dataType: type, type: "notenum"};
+                            if (type.includes("STRING")) {
+                                let length = _takeout(type, "[", "]");
+                                if (length != null) {
+                                    addMetadataToStructs(name, "String", parseInt(length) + 1, arraySize);
+                                    if (arraySize > 0){
+                                        name += ('::Array{String, 1}');
+                                    } else {
+                                        name += ('::String');
+                                    }
+                                    out += _outputMember("", name, "", comment);
+                                }
+                            }
+                            else if (Datamodel.isScalarType(dataset)) {
+
+                                if (arraySize > 0){
+                                    addMetadataToStructs(name, stdtype, stdsize*arraySize, arraySize);
+                                    name += ('::Array{' + stdtype + ', 1}');
+                                } else{
+                                    addMetadataToStructs(name, stdtype, stdsize, arraySize);
+                                    name += `::${stdtype}`;
+                                }
+                                out += _outputMember("", name, "", comment);
+                            }
+                            else {
+                                structs[structs.length - 1].depends.push(type); // push before adding "struct "
+                                if (_isStructType(this.fileLines, type)) {
+                                    addMetadataToStructs(name, `${type}_t`, 0, arraySize);
+                                    if (arraySize > 0){
+                                        name += ('::Array{' + type + ', 1}');
+                                        updateArraySize(type, arraySize);
+                                    } else {
+                                        name += `::${type}`;
+                                    }
+                                }
+                                if (_isEnumType(this.fileLines, type)){
+                                    name += ('::Int64');
+                                }
+                                out += _outputMember(name, "", "", comment);
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+    
+        let sizeOf = ``;
+        let julietDatasets = ``;
+        let initFunctions = [];
+        let decodeFunctions = ``;
+        let encodeFunctions = ``;
+        let imports = ``;
+
+        for(let i = 0; i < this.sortedStructs.length; i++) {
+            for (let struct of structs) {
+                let isEnum;
+                if (this.sortedStructs[i].name == struct.name) {
+                    this.sortedStructs[i].dependencies = struct.depends;
+                    out += struct.out;
+
+                    let isLastIteration = (i === (this.sortedStructs.length - 1));
+
+                    if (isLastIteration) {
+                        julietDatasets += `var data = ${struct.name}(`;
+                        let initToKeep = [];
+                        for (let i = 0; i < struct.metadata.length; i++) {
+                            let metaType = struct.metadata[i].metaType;
+                            let cleanMetaType = metaType.endsWith('_t')
+                                ? metaType.slice(0, -2)
+                                : metaType;
+                            initToKeep[i] = cleanMetaType;
+                        }
+                        initFunctions = initFunctions.filter(functionString =>
+                            initToKeep.some(initValue => functionString.includes(initValue))
+                        );
+                    } else {
+                        for (let meta of struct.metadata) {
+                            (meta.metaType == "enum") && (isEnum = true);
+                        }
+                        !isEnum && (julietDatasets += `var ${struct.name}_t = ${struct.name}(`);
+                        imports += `\t${struct.name},\n`;
+
+                        encodeFunctions += `function encode_dataset(val::`;
+                        decodeFunctions += `function decode_dataset(bytes::Array{UInt8, 1}, ::Type{`;
+                        initFunctions[i] = `function init_data_set_handle(name::String, val::`;
+                        if (struct.arraySize > 0) {
+                            initFunctions[i] += `Array{`;
+                            decodeFunctions += `Array{`;
+                        }
+                        initFunctions[i]+= struct.name;
+                        encodeFunctions += `${struct.name})::Array{UInt8, 1}\n`;
+                        encodeFunctions += `\tvar buf = IOBuffer()\n`;
+                        decodeFunctions += struct.name;
+                        if (struct.arraySize > 0) {
+                            initFunctions[i] += `, 1}`;
+                            decodeFunctions += `, 1}`;
+                        }
+                        initFunctions[i] += `)::Dataset\n`;
+                        if (struct.arraySize > 0) {
+                            decodeFunctions += `})::Array{${struct.name}, 1}\n`;
+                            decodeFunctions += `\tvar array = fill(${struct.name}_t, ${struct.arraySize})\n`;
+                            decodeFunctions += `\tfor i in 1:${struct.arraySize}\n`;
+                            decodeFunctions += `\t\tconst idx = (i - 1) * sizeOf(${struct.name})\n`;
+                            decodeFunctions += `\t\tarray[i] = `;
+                        } else {
+                            decodeFunctions += `})::${struct.name}\n\t`;
+                        }
+                    }
+
+                    let bytearraySize = 0;
+                    for (let metadata of struct.metadata) {
+                        if (metadata.metaType.includes("String")) {
+                            !isEnum && (julietDatasets += metadata.arraySize > 0
+                                ? `fill("", ${metadata.arraySize}), `
+                                : `"" ,`);
+                        } else {
+                            let metaTypeValue = metadata.metaType.endsWith("_t")
+                                ? metadata.metaType
+                                : `${metadata.metaType}(0)`;
+
+                            !isEnum && (julietDatasets += metadata.arraySize > 0
+                                ? `fill(${metaTypeValue}, ${metadata.arraySize}), `
+                                : `${metaTypeValue}, `);
+                        }
+                        if (!isLastIteration){
+                            bytearraySize += metadata.size;
+                        }
+                    }
+
+                    !isEnum && (julietDatasets = julietDatasets.slice(0, -2));  // Removing the trailing comma and space
+                    !isEnum && (julietDatasets += `)\n`);
+
+                    if(!isLastIteration){
+                        let arraySize = 0;
+
+                        if(struct.arraySize){
+                            arraySize = struct.arraySize;
+                        }
+                        if(struct.arraySize > 0){
+                            initFunctions[i] += `\tvar dataset = Dataset(name, fill(UInt8(0), Int64(length(val))*sizeOf(val[1])), 0, 0)\n`;
+                        } else {
+                            initFunctions[i] += `\tvar dataset = Dataset(name, fill(UInt8(0), sizeOf(val)), 0, 0)\n`;
+                        }
+                        initFunctions[i] += `\tinit_data_set_handle_internal(dataset)\n`;
+                        initFunctions[i] += `end\n\n`;
+
+                        sizeOf += `function sizeOf(::${struct.name})::Int64\n`;
+
+                        let sizeOfcontent = `\treturn ${bytearraySize}`;
+                        decodeFunctions += `${struct.name}(\n`;
+
+                        let sizeOfStructs = ``;
+                        let sizeOfNumbers = 1;
+
+                        for (let metadata of struct.metadata) {
+                            if(metadata.metaType.endsWith("_t")){
+                                encodeFunctions += `\twrite(buf, encode_dataset(val.${metadata.name}))\n`;
+                                sizeOfcontent += ` + sizeOf(${metadata.metaType})`;
+                                if(struct.arraySize>0){
+                                    if(sizeOfStructs == ``){
+                                        decodeFunctions += `\t\t\tdecode_dataset(bytes[(${sizeOfNumbers} + idx):`;
+                                    } else {
+                                        decodeFunctions += `\t\t\tdecode_dataset(bytes[(${sizeOfNumbers} + ${sizeOfStructs} + idx):`;
+                                    }
+                                } else {
+                                    if(sizeOfStructs == ``){
+                                        decodeFunctions += `\t\tdecode_dataset(bytes[${sizeOfNumbers}:`;
+                                    } else {
+                                        decodeFunctions += `\t\tdecode_dataset(bytes[(${sizeOfNumbers} + ${sizeOfStructs}):`;
+                                    }
+                                }
+
+
+
+                                if (sizeOfStructs == ``){
+                                    sizeOfStructs = `sizeOf(${metadata.metaType})`;
+                                } else {
+                                    sizeOfStructs += ` + sizeOf(${metadata.metaType})`;
+                                }
+                                if(struct.arraySize>0){
+                                    if(sizeOfNumbers > 1){
+                                        decodeFunctions += `(${sizeOfStructs} - 1 + idx)`;
+                                    } else {
+                                        decodeFunctions += `(${sizeOfStructs} + ${sizeOfNumbers - 1} + idx)`;
+                                    }
+                                } else {
+                                    if(sizeOfNumbers > 1){
+                                        decodeFunctions += `(${sizeOfStructs} - 1)`;
+                                    } else {
+                                        decodeFunctions += `(${sizeOfStructs} + ${sizeOfNumbers - 1})`;
+                                    }
+                                }
+
+                                if (metadata.arraySize > 0) {
+                                    let cleanMetaType = metadata.metaType.endsWith('_t')
+                                                        ? metadata.metaType.slice(0, -2)
+                                                        : metadata.metaType;
+                                    decodeFunctions += `] , Array{${cleanMetaType}, 1}),\n`;
+                                } else {
+                                    let cleanMetaType = metadata.metaType.endsWith('_t')
+                                                        ? metadata.metaType.slice(0, -2)
+                                                        : metadata.metaType;
+                                    decodeFunctions += `] , ${cleanMetaType}),\n`;
+                                }
+                            } else {
+                                encodeFunctions += `\twrite(buf, val.${metadata.name})\n`;
+                                if(struct.arraySize>0){
+                                    if(sizeOfStructs == ``){
+                                        decodeFunctions += `\t\t\texoscomlib.decode_dataset(bytes[(${sizeOfNumbers} + idx):`;
+                                    } else {
+                                        decodeFunctions += `\t\t\texoscomlib.decode_dataset(bytes[(${sizeOfNumbers} + ${sizeOfStructs} + idx):`;
+                                    }
+                                } else {
+                                    if(sizeOfStructs == ``){
+                                        decodeFunctions += `\t\texoscomlib.decode_dataset(bytes[${sizeOfNumbers}:`;
+                                    } else {
+                                        decodeFunctions += `\t\texoscomlib.decode_dataset(bytes[(${sizeOfNumbers} + ${sizeOfStructs}):`;
+                                    }
+                                }
+                                sizeOfNumbers += metadata.size;
+                                if(struct.arraySize>0){
+                                    if(sizeOfStructs == ``){
+                                        decodeFunctions += `(${sizeOfNumbers - 1} + idx)], `;
+                                    } else {
+                                        decodeFunctions += `(${sizeOfNumbers - 1} + ${sizeOfStructs} + idx)], `;
+                                    }
+                                } else {
+                                    if(sizeOfStructs == ``){
+                                        decodeFunctions += `${sizeOfNumbers - 1}], `;
+                                    } else {
+                                        decodeFunctions += `(${sizeOfNumbers - 1} + ${sizeOfStructs})], `;
+                                    }
+                                }
+
+                                if (metadata.arraySize > 0){
+                                    decodeFunctions += `Array{${metadata.metaType}, 1}`;
+                                    if (metadata.metaType == "String"){
+                                        decodeFunctions += `, ${metadata.size}`;
+                                    }
+                                    decodeFunctions += `),\n`;
+                                } else {
+                                    decodeFunctions += `${metadata.metaType}),\n`;
+                                }
+                            }
+                        }
+                        sizeOf += sizeOfcontent;
+                        decodeFunctions = decodeFunctions.slice(0, -2);
+                        encodeFunctions += `\n\ttake!(buf)\nend\n`;
+                        if (struct.arraySize>0){
+                            decodeFunctions += `\n\t\t)\n\tend\n\tarray\nend\n`;
+                        } else {
+                            decodeFunctions += `\n\t)\nend\n`;
+                        }
+                        sizeOf += `\n`;
+                        sizeOf += `end\n`;
+                        sizeOf += `function sizeOf(::Type{${struct.name}})::Int64\n`;
+                        sizeOf += sizeOfcontent;
+                        sizeOf += `\nend\n\n`;
+                    }
+                }
+            }
+        }
+        julietDatasets += `\n`;
+        out += `\n\n`;
+        out += `var config_${this.typeName.toLowerCase()} = "${jsonConfig}";\r\n\r\n`;
+        out += `function connect_${this.typeName.toLowerCase()}_datamodel()::Int64\r\n`;
+        out += `    var datasets = [\r\n`;
+        out += info;
+        out = out.slice(0, -3); //remove the last ,\r\n
+        out += `\r\n`;
+        out += `    ]\r\n`;
+        out += `    connect_data_model(config_${this.typeName.toLowerCase()}, datasets)\n`;
+        out += `end`;
+
+        out += `\n\n`;
+
+        out += julietDatasets;
+        for (const initFunc of initFunctions) {
+            out += initFunc;
+        }
+        out += encodeFunctions;
+        out += decodeFunctions;
+        out += sizeOf;
+
+        return {out, imports};
+    }
+
 
     /**
      * Internal function which parses the IEC datatype `typeName` and generates a JSON structure for further usage.
