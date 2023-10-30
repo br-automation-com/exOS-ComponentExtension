@@ -140,6 +140,9 @@ class TemplateLinuxBuild {
             python: {
                 enable: false
             },
+            juliet: {
+                enable: false
+            },
             js: {
                 enable: false,
                 includeNodeModules: true
@@ -218,6 +221,22 @@ class TemplateLinuxBuild {
                 if(this.options.napi.includeNodeModules) {
                     out += `install(DIRECTORY node_modules DESTINATION ${this.options.debPackage.destination})\n`;
                 }
+            }
+        }
+        else if(this.options.juliet.enable) {
+            if(this.options.debPackage.enable) {
+                let fname = `${this.options.executable.executableName}`;
+                out += `add_custom_command(\n`;
+                out += `  OUTPUT ${fname}.rvm\n`;
+                out += `  COMMAND /home/user/language/compiler_build/juliet \${CMAKE_CURRENT_SOURCE_DIR}/exos_${fname}.jlt \${CMAKE_CURRENT_SOURCE_DIR}/${fname}.jlt -o ${fname}.rvm\n`;
+                out += `  DEPENDS ${fname}.jlt\n`;
+                out += `  COMMENT "Generating ${fname}.rvm"\n`;
+                out += `)\n\n`;
+                out += `add_custom_target(\n`;
+                out += `  RunJuliet ALL\n`;
+                out += `  DEPENDS ${fname}.rvm\n`;
+                out += `)\n\n`;
+                out += `install(FILES \${CMAKE_CURRENT_BINARY_DIR}/${fname}.rvm DESTINATION /home/user/${fname})\n\n`;
             }
         }
         else if(this.options.swigPython.enable) {
@@ -450,6 +469,9 @@ class TemplateLinuxBuild {
             if(this.options.executable.enable) {
                 out += `cp -f ${this.options.executable.executableName} ..\n\n`;
             }
+        }
+        if(this.options.juliet.enable) {
+            out += `cp -f ${this.options.executable.executableName}.rvm ..\n\n`;
         }
 
         out += `finalize 0\n`;

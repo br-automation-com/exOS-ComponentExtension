@@ -19,6 +19,7 @@ const { ExosComponentNAPI, ExosComponentNAPIUpdate } = require('./src/components
 const { ExosComponentSWIG, ExosComponentSWIGUpdate } = require('./src/components/exoscomponent_swig');
 const { ExosComponentPython, ExosComponentPythonUpdate } = require('./src/components/exoscomponent_python');
 const { ExosComponentJS, ExosComponentJSUpdate } = require('./src/components/exoscomponent_js');
+const { ExosComponentJuliet, ExosComponentJulietUpdate} = require('./src/components/exoscomponent_jlt');
 const { ExosExport, ASConfiguration } = require('./src/exosexport');
 const { Package } = require('./src/exospackage');
 const { ASProject, ASProjectConfiguration } = require('./src/asproject')
@@ -430,6 +431,15 @@ function activate(context) {
 							templateJS.makeComponent(makeComponentPath);
 						}
 						break;
+					case "Juliet Module":
+						let templateJuliet = new ExosComponentJuliet(uri.fsPath, selectedStructure.label, {
+							packaging:selectedPackaging.label,
+							templateLinux:convertLabel2Template(selectedLinuxType.label), 
+							templateAR:convertLabel2Template(selectedASType.label),
+							destinationDirectory:destination
+						});
+						templateJuliet.makeComponent(makeComponentPath);
+						break;
 					default:
 						vscode.window.showErrorMessage(`The selected template for linux: ${selectedLinuxType.label} not found!`);
 						return;
@@ -465,6 +475,7 @@ function activate(context) {
 				pickLinuxType.push({label: "C++ Class", detail:`C++ application with no datamodel`})
 				pickLinuxType.push({label: "Python Module", detail:`Python application with no datamodel`})
 				pickLinuxType.push({label: "JavaScript Module", detail:`nodejs JavaScript application with no datamodel`})
+				pickLinuxType.push({label: "Juliet Module", detail:`Juliet application with no datamodel`})
 				
 				vscode.window.showQuickPick(pickLinuxType,{title:`Using no datamodel - Select which template to use for Linux`}).then(selectedLinuxType => {
 
@@ -542,6 +553,7 @@ function activate(context) {
 							pickLinuxType.push({label: "C++ Class", detail:`C++ application which uses a C++ class for the ${selectedStructure.label} datamodel`})
 							pickLinuxType.push({label: "Python Module", detail:`Python application which uses a SWIG module for the ${selectedStructure.label} datamodel`})
 							pickLinuxType.push({label: "JavaScript Module", detail:`nodejs JavaScript application which uses an N-API module for the ${selectedStructure.label} datamodel`})
+							pickLinuxType.push({label: "Juliet Module", detail:`Juliet application which uses native functions directly using the exOS C-API ${selectedStructure.label} datamodel`})
 						}
 						
 						vscode.window.showQuickPick(pickLinuxType,{title:`Using datamodel: ${selectedStructure.label} - Select which template to use for Linux`}).then(selectedLinuxType => {
@@ -725,6 +737,13 @@ function activate(context) {
 							case "ExosComponentJS":
 							case "ExosComponentPython":
 								vscode.window.showInformationMessage(`Component is deploy-only and does not support updating`);
+								break;
+							case "ExosComponentJuliet":
+								{
+									let component = new ExosComponentJulietUpdate(uri.fsPath, updateAll);
+									componentName = component._name;
+									results = component.updateComponent(recreate);
+								}
 								break;
 							default:
 								vscode.window.showErrorMessage(`Component can not be updated: class ${exospkg.componentClass} can not be found`);
