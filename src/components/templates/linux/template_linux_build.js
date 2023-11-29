@@ -53,6 +53,8 @@ const {GeneratedFileObj} = require('../../../datamodel')
  * 
  * @typedef {Object} BuildOptionsPython
  * @property {boolean} enable whether or not a python module should be created. mutually exclusive with `executable`, `swigPython`, `js` , and `napi`. default: `false`
+ * @typedef {Object} BuildOptionsJulia
+ * @property {boolean} enable whether or not a python module should be created. mutually exclusive with `executable`, `swigPython`, `js` , and `napi`. default: `false`
  * 
  * @typedef {Object} BuildOptionsJS
  * @property {boolean} enable whether or not a nodejs module should be created. mutually exclusive with `executable`, `napi`, `python` , and `swigPython`. default: `false`
@@ -66,6 +68,7 @@ const {GeneratedFileObj} = require('../../../datamodel')
  * @property {BuildOptionsSWIGPython} swigPython build options for creating a SWIG python module
  * @property {BuildOptionsNAPI} napi build options for creating a nodejs module.
  * @property {BuildOptionsPython} python build options for creating a python module
+ * @property {BuildOptionsJulia} julia build options for creating a python module
  * @property {BuildOptionsJS} js build options for creating a nodejs module.
  * @property {BuildOptionsDebPackage} debPackage build options for creating a deb package, if enabled, all needed files will be added to the package
  * 
@@ -140,6 +143,9 @@ class TemplateLinuxBuild {
             python: {
                 enable: false
             },
+            julia: {
+                enable: false
+            },
             js: {
                 enable: false,
                 includeNodeModules: true
@@ -185,7 +191,7 @@ class TemplateLinuxBuild {
         out += `\n`;
         out += `project(${this.name.toLowerCase()})\n`;
         out += `\n`;
-        out += `set(CMAKE_BUILD_TYPE ${this.options.buildType})\n`;
+        out += `set(CMAKE_BUILD_TYPE ${this.options.buildType})\n\n`;
 
         if(this.options.napi.enable) {
             
@@ -263,6 +269,34 @@ class TemplateLinuxBuild {
                 out += `    )\n`;
                 out += `\n`;
                 out += `install(FILES \${${this.name.toUpperCase()}_MODULE_FILES} DESTINATION ${this.options.debPackage.destination})\n`;
+            }
+        }
+        // else if(this.options.swigJulia.enable) {
+        //     this.options.swigJulia.soFileName = `_${this.options.swigJulia.moduleName}.so`;
+        //     this.options.swigJulia.jlFileName = `${this.options.swigJulia.moduleName}.jl`;
+        // }
+        else if(this.options.julia.enable) {
+            if(this.options.debPackage.enable) {
+                let fname = `${this.options.executable.executableName}`;
+                out += `set(${fname.toUpperCase()}_PKG_FILES\n`;
+                out += `  ${fname}.jl\n`;
+                out += `  README.md\n`;
+                out += `)\n`;
+                out += `set(${fname.toUpperCase()}_MODULE_FILES\n`;
+                out += `  Manifest.toml\n`;
+                out += `  Project.toml\n`;
+                out += `)\n`;
+                out += `set(${fname.toUpperCase()}_SRC_FILES\n`;
+                out += `  EXOS.jl\n`;
+                out += `  api.jl\n`;
+                out += `  enums.jl\n`;
+                out += `  types.jl\n`;
+                out += `)\n`;
+
+                out += `install(FILES \${${fname.toUpperCase()}_PKG_FILES} DESTINATION /home/user/${fname})\n`;
+                out += `install(FILES \${${fname.toUpperCase()}_MODULE_FILES} DESTINATION /home/user/${fname}/EXOS)\n`;
+                out += `install(FILES \${${fname.toUpperCase()}_SRC_FILES} DESTINATION /home/user/${fname}/EXOS/src)\n`;
+
             }
         }
         else if(this.options.executable.enable) {
@@ -445,6 +479,9 @@ class TemplateLinuxBuild {
         if(this.options.swigPython.enable) {
             out += `cp -f ${this.options.swigPython.soFileName} ..\n\n`;
             out += `cp -f ${this.options.swigPython.pyFileName} ..\n\n`;
+        }
+        if(this.options.julia.enable) {
+            //nothing
         }
         else {
             if(this.options.executable.enable) {

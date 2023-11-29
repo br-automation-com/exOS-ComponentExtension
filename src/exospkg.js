@@ -12,7 +12,7 @@ const parser = require('xml-parser');
 const fs = require('fs');
 const path = require('path');
 
-const EXOSPKG_VERSION = "2.0.0";
+const EXOSPKG_VERSION = "2.1.0";
 
 /**
  * 
@@ -165,7 +165,7 @@ const EXOSPKG_VERSION = "2.0.0";
 
         switch(exosPkgJson.root.attributes.Version) {
             case "1.1.0":
-            case "2.0.0":
+            case "2.1.0":
                 //TODO populate after new syntax
                 if(exosPkgJson.root.attributes.ErrorHandling) {
                     this.errorHandling = exosPkgJson.root.attributes.ErrorHandling;
@@ -309,7 +309,7 @@ const EXOSPKG_VERSION = "2.0.0";
                             parseResults.parseErrors ++;
                             continue;
                         }
-                        
+
                         //check if it is the special .deb thing
                         if(child.attributes.FileName.endsWith(".deb")) {
                             if(!child.attributes.Name) {
@@ -720,7 +720,7 @@ const EXOSPKG_VERSION = "2.0.0";
         for(const datamodel of this._datamodels) {
             out += `    <DatamodelInstance Name="${datamodel.name}"/>\n`;
         }
-
+        
         if(this._generateDatamodels.length > 0 || this._buildCommands.length > 0)
         {
             out += `    <Build>\n`;
@@ -739,9 +739,19 @@ const EXOSPKG_VERSION = "2.0.0";
                 for(const dependency of buildCommand.Dependencies) {
                     out += `            <Dependency FileName="${dependency}"/>\n`;
                 }
+                if(this.componentClass == "ExosComponentJulia")
+                {
+                    out += `            <Dependency FileName="Linux/Manifest.toml"/>\n`;
+                    out += `            <Dependency FileName="Linux/Project.toml"/>\n`;
+                    out += `            <Dependency FileName="Linux/EXOS.jl"/>\n`;
+                    out += `            <Dependency FileName="Linux/api.jl"/>\n`;
+                    out += `            <Dependency FileName="Linux/enums.jl"/>\n`;
+                    out += `            <Dependency FileName="Linux/types.jl"/>\n`;
+                    out += `            <Dependency FileName="Linux/README.md"/>\n`;
+                }
                 out += `        </BuildCommand>\n`;
             }
-            
+
             out += `    </Build>\n`;
         }
 

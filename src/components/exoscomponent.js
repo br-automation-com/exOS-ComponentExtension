@@ -16,7 +16,7 @@ const path = require('path')
 const fs = require('fs');
 const { IndentAction } = require('vscode');
 
-const EXOS_COMPONENT_VERSION = "2.0.1"
+const EXOS_COMPONENT_VERSION = "2.1.0"
 
 class Component {
 
@@ -235,7 +235,7 @@ class ExosComponent extends Component {
      * @param {string} typeName  
      * @param {string} template `c-static` | `cpp` | `c-api` | `deploy-only` - default: `c-api` 
      */
-    constructor(fileName, typeName, template) {
+    constructor(fileName, typeName, template, useJulia) {
 
         super(typeName);
 
@@ -252,7 +252,7 @@ class ExosComponent extends Component {
             this._typFile = {name:this._typeFileName, contents:fs.readFileSync(fileName).toString(), description:`${typeName} datamodel declaration`}
             this._SG4Includes = [`${typeName.substr(0,10)}.h`];
 
-            this._datamodel = new Datamodel(fileName, typeName, this._SG4Includes);
+            this._datamodel = new Datamodel(fileName, typeName, this._SG4Includes, useJulia);
             
             this._iecProgram = this._exospackage.getNewIECProgram(`${typeName.substr(0,10)}_0`,`${typeName} application`);
 
@@ -264,8 +264,29 @@ class ExosComponent extends Component {
             this._exospackage.exospkg.addGenerateDatamodel(path.join(this._cLibrary._folderName,this._typeFileName), typeName, this._SG4Includes, [typeName.substr(0,10), "Linux"]);
 
             this._linuxPackage = this._exospackage.getNewLinuxPackage("Linux", `${typeName} Linux resources`);
-            this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._datamodel.headerFile);
-            this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._datamodel.sourceFile);
+
+            if (!useJulia) {
+                this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._datamodel.headerFile);
+                this._linuxPackage.addNewBuildFileObj(this._linuxBuild, this._datamodel.sourceFile);
+            } 
+            else{
+                this._api = {name: "api.jl", contents: fs.readFileSync(path.join(__dirname, '..', 'JuliaFiles','api.jl')).toString(), description: `${typeName} datamodel declaration`};
+                this._enums = {name: "enums.jl", contents: fs.readFileSync(path.join(__dirname, '..', 'JuliaFiles','enums.jl')).toString(), description: `${typeName} datamodel declaration`};
+                this._EXOS = {name: "EXOS.jl", contents: fs.readFileSync(path.join(__dirname, '..', 'JuliaFiles','EXOS.jl')).toString(), description: `${typeName} datamodel declaration`};
+                this._Manifest = {name: "Manifest.toml", contents: fs.readFileSync(path.join(__dirname, '..', 'JuliaFiles','Manifest.toml')).toString(), description: `${typeName} datamodel declaration`};
+                this._Project = {name: "Project.toml", contents: fs.readFileSync(path.join(__dirname, '..', 'JuliaFiles','Project.toml')).toString(), description: `${typeName} datamodel declaration`};
+                this._README = {name: "README.md", contents: fs.readFileSync(path.join(__dirname, '..', 'JuliaFiles','README.md')).toString(), description: `${typeName} datamodel declaration`};
+                this._types = {name: "types.jl", contents: fs.readFileSync(path.join(__dirname, '..', 'JuliaFiles','types.jl')).toString(), description: `${typeName} datamodel declaration`};
+                
+                this._linuxPackage.addNewFileObj(this._api);
+                this._linuxPackage.addNewFileObj(this._enums);
+                this._linuxPackage.addNewFileObj(this._EXOS);
+                this._linuxPackage.addNewFileObj(this._Manifest);
+                this._linuxPackage.addNewFileObj(this._Project);
+                this._linuxPackage.addNewFileObj(this._README);
+                this._linuxPackage.addNewFileObj(this._types);
+    
+                }
         }
         else
         {
