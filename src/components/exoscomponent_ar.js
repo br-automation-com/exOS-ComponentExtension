@@ -30,9 +30,9 @@ class ExosComponentAR extends ExosComponent {
      * @param {*} typeName 
      * @param {string} template `c-static` | `cpp` | `c-api` | `deploy-only` - default: `c-api` 
      */
-    constructor(fileName, typeName, template) {
+    constructor(fileName, typeName, template, useJulia=false) {
         
-        super(fileName, typeName, template);
+        super(fileName, typeName, template, useJulia);
 
         this._template = template;
         switch(this._template)
